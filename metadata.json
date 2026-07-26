@@ -1,0 +1,6 @@
+{
+  "name": "Multan Outreach Engine & Website Generator",
+  "description": "An instant client website generator engine for Multan clinics, dentists, skin aesthetics, pet shops, eye specialists, and realtors with Pakistani imagery, WhatsApp leads, and GitHub Pages code export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
