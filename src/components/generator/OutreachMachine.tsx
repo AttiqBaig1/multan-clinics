@@ -38,6 +38,7 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedPitch, setCopiedPitch] = useState(false);
   const [customDomainName, setCustomDomainName] = useState('alshafi-dental-multan');
+  const [githubPagesBaseUrl, setGithubPagesBaseUrl] = useState<string>('https://attiqbaig1.github.io/multan-clinics/');
 
   // Handle selecting a preset
   const handleSelectPreset = (index: number) => {
@@ -83,8 +84,50 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
     }));
   };
 
-  // Generate Dynamic Query URL for in-app sharing
+  // Get sanitized base URL ensuring /multan-clinics/ is always present for GitHub Pages
+  const getSanitizedBaseUrl = () => {
+    if (window.location.hostname.includes('github.io')) {
+      const pathname = window.location.pathname;
+      let cleanPath = pathname.endsWith('/') ? pathname : pathname + '/';
+      if (!cleanPath.includes('multan-clinics')) {
+        cleanPath = '/multan-clinics/';
+      }
+      return `${window.location.origin}${cleanPath}`;
+    }
+
+    let base = githubPagesBaseUrl.trim();
+    if (!base) {
+      base = 'https://attiqbaig1.github.io/multan-clinics/';
+    }
+    if (!base.startsWith('http://') && !base.startsWith('https://')) {
+      base = 'https://' + base;
+    }
+    if (base.includes('github.io') && !base.includes('multan-clinics')) {
+      base = base.replace(/\/$/, '') + '/multan-clinics/';
+    }
+    if (!base.endsWith('/')) {
+      base += '/';
+    }
+    return base;
+  };
+
+  // Generate Dynamic Query or Hash URL for clean sharing
   const generateDynamicUrl = () => {
+    const baseUrl = getSanitizedBaseUrl();
+
+    const defaultPreset = MULTAN_PRESETS.find(p => p.niche === formData.niche);
+    const isExactPreset = defaultPreset && (
+      formData.businessName === defaultPreset.businessName &&
+      formData.doctorName === defaultPreset.doctorName &&
+      formData.phone === defaultPreset.phone
+    );
+
+    // If exact preset, use clean hash e.g. https://attiqbaig1.github.io/multan-clinics/#skin
+    if (isExactPreset) {
+      return `${baseUrl}#${formData.niche}`;
+    }
+
+    // For customized inputs, use full query string on /multan-clinics/
     const params = new URLSearchParams();
     params.set('demo', 'true');
     params.set('niche', formData.niche);
@@ -98,8 +141,8 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
     params.set('city', formData.city);
     params.set('timings', formData.timings);
     params.set('fee', formData.consultationFee);
-    
-    return `${window.location.origin}/?${params.toString()}`;
+
+    return `${baseUrl}?${params.toString()}`;
   };
 
   const dynamicUrl = generateDynamicUrl();
@@ -260,7 +303,7 @@ WhatsApp: ${formData.phone}`;
   </div>
 
   <!-- Header -->
-  <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold text-xl flex items-center justify-center">
@@ -657,29 +700,117 @@ WhatsApp: ${formData.phone}`;
                     <Globe className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">Clean Dynamic Demo URL</h3>
+                    <h3 className="font-bold text-lg text-white">Clean Demo Links (WhatsApp-Ready)</h3>
                     <p className="text-xs text-slate-400">
-                      Send this link directly to clients or doctors. When they open it in any browser, it renders their personalized website demo dynamically!
+                      Short, clean & professional links. When clients open these, it directly opens their specific clinic website without showing the studio editor!
                     </p>
                   </div>
                 </div>
 
+                {/* GitHub Pages Base URL config */}
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <label className="block text-xs font-bold text-slate-300">Your GitHub Pages Repo Domain / URL</label>
+                  <p className="text-[11px] text-slate-400">
+                    Must include your repo name <code className="text-amber-400 font-bold">/multan-clinics/</code> at the end (e.g. <code className="text-amber-300">https://attiqbaig1.github.io/multan-clinics/</code>):
+                  </p>
+                  <input
+                    type="text"
+                    value={githubPagesBaseUrl}
+                    onChange={(e) => setGithubPagesBaseUrl(e.target.value)}
+                    placeholder="https://attiqbaig1.github.io/multan-clinics/"
+                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                {/* Active Selected Clinic Link */}
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                  <label className="block text-xs font-bold text-slate-300">Generated Demo URL</label>
-                  <div className="flex gap-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-300">
+                      ⚡ Your Generated Live URL ({formData.businessName})
+                    </label>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">
+                      Auto-Updated Live
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       readOnly
                       value={dynamicUrl}
                       className="w-full bg-slate-900 border border-slate-700 text-amber-300 px-3 py-2.5 rounded-lg text-xs font-mono select-all focus:outline-none"
                     />
-                    <button
-                      onClick={() => handleCopy(dynamicUrl, 'link')}
-                      className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
-                    >
-                      {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-                    </button>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => handleCopy(dynamicUrl, 'link')}
+                        className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
+                      >
+                        {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                      <a
+                        href={dynamicUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Test Live Site</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 italic">
+                    💡 <strong>Yeh Link Aapka Live Website Hai!</strong> Form me jaise hi aap text change karte hain, yeh URL automatic update ho jata hai. Kisi deployment ya code save karne ki zaroorat nahi hoti!
+                  </p>
+                </div>
+
+                {/* Quick Clean Preset Links List */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">All Clinic Clean Preset Links</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {MULTAN_PRESETS.map((preset, idx) => {
+                      const rootUrl = window.location.hostname.includes('github.io')
+                        ? `${window.location.origin}${window.location.pathname.replace(/\/$/, '')}/`
+                        : githubPagesBaseUrl.trim().replace(/\/$/, '') + '/';
+                      const cleanUrl = `${rootUrl}#${preset.niche}`;
+                      return (
+                        <div key={idx} className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+                          <div className="overflow-hidden">
+                            <p className="font-bold text-xs text-white truncate">{preset.nicheTitle}</p>
+                            <p className="font-mono text-[10px] text-amber-400/90 truncate">{cleanUrl}</p>
+                          </div>
+                          <button
+                            onClick={() => handleCopy(cleanUrl, 'link')}
+                            className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-amber-400 font-bold rounded-lg shrink-0 flex items-center space-x-1"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Bulk Campaign Guide for 200 Dentists */}
+                <div className="bg-gradient-to-r from-amber-950/50 via-slate-900 to-slate-900 border border-amber-500/30 p-5 rounded-xl space-y-3">
+                  <div className="flex items-center space-x-2 text-amber-400 font-bold text-sm">
+                    <Zap className="w-5 h-5 text-amber-400" />
+                    <span>How to Send Personalized Demos to 200 Dentists (1-Click Method)</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    You do <strong className="text-white">NOT</strong> need 200 separate GitHub repos or code files! Your single live website link (<code className="text-amber-300 font-bold">https://attiqbaig1.github.io/multan-clinics/</code>) dynamically renders all 200 clinics automatically based on URL parameters!
+                  </p>
+
+                  <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-2 text-xs">
+                    <div className="font-bold text-slate-200">📊 Google Sheets / Excel Formula (Auto-generate 200 Links in 5 seconds):</div>
+                    <p className="text-slate-400 text-[11px]">
+                      Put Clinic Name in Column A (e.g. <code className="text-emerald-400">Al-Rahman Dental</code>), Doctor Name in Column B (e.g. <code className="text-emerald-400">Dr. Ali Ahmad</code>), and paste this Excel formula in Column C:
+                    </p>
+                    <div className="bg-slate-900 p-2.5 rounded border border-slate-700 text-amber-300 font-mono text-[11px] overflow-x-auto select-all">
+                      {`="https://attiqbaig1.github.io/multan-clinics/?demo=true&niche=dental&name=" & ENCODEURL(A2) & "&doctor=" & ENCODEURL(B2)`}
+                    </div>
                   </div>
                 </div>
 
@@ -687,10 +818,10 @@ WhatsApp: ${formData.phone}`;
                 <div className="bg-emerald-950/40 border border-emerald-500/30 p-4 rounded-xl space-y-2 text-xs">
                   <h4 className="font-bold text-emerald-300 flex items-center space-x-1">
                     <Sparkles className="w-4 h-4" />
-                    <span>Pro Tip: Create a 5-Second Short URL</span>
+                    <span>Want Short Branded Links for WhatsApp?</span>
                   </h4>
                   <p className="text-slate-300">
-                    To make the WhatsApp link look short and trustworthy (e.g. <span className="font-mono text-amber-300">tinyurl.com/alshafi-dental</span>), paste the above URL into <a href="https://tinyurl.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">TinyURL.com</a> or <a href="https://bitly.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">Bitly</a>!
+                    You can paste any clean preset link above into <a href="https://tinyurl.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">TinyURL.com</a> or <a href="https://bitly.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">Bitly</a> to make custom names like <span className="font-mono text-amber-300">tinyurl.com/alshafi-dental</span>!
                   </p>
                 </div>
               </div>
