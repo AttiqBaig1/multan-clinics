@@ -120,25 +120,51 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
     const isExactPreset = defaultPreset && (
       formData.businessName === defaultPreset.businessName &&
       formData.doctorName === defaultPreset.doctorName &&
-      formData.phone === defaultPreset.phone
+      formData.phone === defaultPreset.phone &&
+      formData.whatsApp === defaultPreset.whatsApp &&
+      formData.address === defaultPreset.address &&
+      formData.tagline === defaultPreset.tagline &&
+      formData.doctorTitle === defaultPreset.doctorTitle &&
+      formData.timings === defaultPreset.timings &&
+      formData.consultationFee === defaultPreset.consultationFee
     );
 
-    // 1. If exact preset, use clean short hash e.g. https://websitedemos.space/#skin
+    // 1. If exact unmodified preset, use clean short hash e.g. https://websitedemos.space/#skin
     if (isExactPreset) {
       return `${baseUrl}#${formData.niche}`;
     }
 
-    // 2. For customized clinic details, build a short, clean query (b = businessName, d = doctorName, p = phone, n = niche)
+    // 2. For customized clinic details, build a short, clean query
     const params = new URLSearchParams();
-    if (formData.niche && formData.niche !== 'dental') {
+    if (formData.niche) {
       params.set('n', formData.niche);
     }
-    params.set('b', formData.businessName);
-    if (formData.doctorName && formData.doctorName !== defaultPreset?.doctorName) {
+    if (formData.businessName) {
+      params.set('b', formData.businessName);
+    }
+    if (formData.tagline) {
+      params.set('hl', formData.tagline);
+    }
+    if (formData.doctorName) {
       params.set('d', formData.doctorName);
     }
-    if (formData.phone && formData.phone !== defaultPreset?.phone) {
+    if (formData.doctorTitle) {
+      params.set('dt', formData.doctorTitle);
+    }
+    if (formData.phone) {
       params.set('p', formData.phone);
+    }
+    if (formData.whatsApp) {
+      params.set('w', formData.whatsApp);
+    }
+    if (formData.address) {
+      params.set('a', formData.address);
+    }
+    if (formData.timings) {
+      params.set('tm', formData.timings);
+    }
+    if (formData.consultationFee) {
+      params.set('f', formData.consultationFee);
     }
 
     return `${baseUrl}?${params.toString()}`;

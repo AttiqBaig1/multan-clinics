@@ -72,12 +72,19 @@ export default function App() {
         return;
       }
 
-      // 3. Short & Clean Query parameters parsing e.g. ?name=Al-Shafi+Dental&doctor=Dr.+Ashfaq
+      // 3. Short & Clean Query parameters parsing e.g. ?b=Physio+Rehab&hl=Headline...
       const nameParam = params.get('name') || params.get('b') || params.get('businessName');
       const doctorParam = params.get('doctor') || params.get('d') || params.get('doc');
       const nicheParam = params.get('niche') || params.get('n');
+      const taglineParam = params.get('tagline') || params.get('hl') || params.get('heading') || params.get('h') || params.get('t');
+      const addressParam = params.get('address') || params.get('addr') || params.get('a');
+      const phoneParam = params.get('phone') || params.get('p');
+      const whatsAppParam = params.get('whatsApp') || params.get('wa') || params.get('w');
+      const doctorTitleParam = params.get('degree') || params.get('dt') || params.get('deg');
+      const timingsParam = params.get('timings') || params.get('tm');
+      const feeParam = params.get('fee') || params.get('f') || params.get('consultationFee');
 
-      if (nameParam || doctorParam || nicheParam || params.get('demo') === 'true') {
+      if (nameParam || doctorParam || nicheParam || taglineParam || addressParam || phoneParam || whatsAppParam || doctorTitleParam || params.get('demo') === 'true') {
         let detectedNiche: ClinicTemplateData['niche'] = (nicheParam as ClinicTemplateData['niche']) || 'dental';
         if (!nicheParam && nameParam) {
           const lowerName = nameParam.toLowerCase();
@@ -86,6 +93,7 @@ export default function App() {
           else if (lowerName.includes('ortho') || lowerName.includes('bone') || lowerName.includes('joint')) detectedNiche = 'ortho';
           else if (lowerName.includes('cardio') || lowerName.includes('heart')) detectedNiche = 'cardio';
           else if (lowerName.includes('vet') || lowerName.includes('pet') || lowerName.includes('animal')) detectedNiche = 'pet';
+          else if (lowerName.includes('physio') || lowerName.includes('rehab') || lowerName.includes('spine')) detectedNiche = 'physio';
         }
 
         const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
@@ -94,15 +102,15 @@ export default function App() {
           ...matchedPreset,
           niche: detectedNiche,
           businessName: nameParam || matchedPreset.businessName,
-          tagline: params.get('tagline') || params.get('t') || matchedPreset.tagline,
+          tagline: taglineParam || matchedPreset.tagline,
           doctorName: doctorParam || matchedPreset.doctorName,
-          doctorTitle: params.get('degree') || params.get('dt') || matchedPreset.doctorTitle,
-          phone: params.get('phone') || params.get('p') || matchedPreset.phone,
-          whatsApp: params.get('wa') || params.get('w') || matchedPreset.whatsApp,
-          address: params.get('address') || params.get('a') || matchedPreset.address,
+          doctorTitle: doctorTitleParam || matchedPreset.doctorTitle,
+          phone: phoneParam || matchedPreset.phone,
+          whatsApp: whatsAppParam || matchedPreset.whatsApp,
+          address: addressParam || matchedPreset.address,
           city: params.get('city') || params.get('c') || matchedPreset.city,
-          timings: params.get('timings') || params.get('tm') || matchedPreset.timings,
-          consultationFee: params.get('fee') || params.get('f') || matchedPreset.consultationFee
+          timings: timingsParam || matchedPreset.timings,
+          consultationFee: feeParam || matchedPreset.consultationFee
         };
 
         setActiveData(customData);
