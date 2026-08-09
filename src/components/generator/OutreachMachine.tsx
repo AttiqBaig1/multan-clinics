@@ -39,10 +39,10 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
   const [copiedPitch, setCopiedPitch] = useState(false);
   const [copiedShortLink, setCopiedShortLink] = useState(false);
   const [customDomainName, setCustomDomainName] = useState('alshafi-dental-multan');
-  const [githubPagesBaseUrl, setGithubPagesBaseUrl] = useState<string>('https://attiqbaig1.github.io/multan-clinics/');
+  const [githubPagesBaseUrl, setGithubPagesBaseUrl] = useState<string>('https://websitedemos.space/');
   const [shortUrl, setShortUrl] = useState<string>('');
   const [isShortening, setIsShortening] = useState<boolean>(false);
-  const [useShortLinkInPitch, setUseShortLinkInPitch] = useState<boolean>(true);
+  const [useShortLinkInPitch, setUseShortLinkInPitch] = useState<boolean>(false);
 
   // Handle selecting a preset
   const handleSelectPreset = (index: number) => {
@@ -88,26 +88,23 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
     }));
   };
 
-  // Get sanitized base URL ensuring /multan-clinics/ is always present for GitHub Pages
+  // Get sanitized base URL for custom domain or GitHub Pages
   const getSanitizedBaseUrl = () => {
-    if (window.location.hostname.includes('github.io')) {
+    if (typeof window !== 'undefined' && window.location.hostname.includes('websitedemos.space')) {
+      return `${window.location.origin}/`;
+    }
+    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
       const pathname = window.location.pathname;
       let cleanPath = pathname.endsWith('/') ? pathname : pathname + '/';
-      if (!cleanPath.includes('multan-clinics')) {
-        cleanPath = '/multan-clinics/';
-      }
       return `${window.location.origin}${cleanPath}`;
     }
 
     let base = githubPagesBaseUrl.trim();
     if (!base) {
-      base = 'https://attiqbaig1.github.io/multan-clinics/';
+      base = 'https://websitedemos.space/';
     }
     if (!base.startsWith('http://') && !base.startsWith('https://')) {
       base = 'https://' + base;
-    }
-    if (base.includes('github.io') && !base.includes('multan-clinics')) {
-      base = base.replace(/\/$/, '') + '/multan-clinics/';
     }
     if (!base.endsWith('/')) {
       base += '/';
@@ -126,25 +123,23 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
       formData.phone === defaultPreset.phone
     );
 
-    // If exact preset, use clean hash e.g. https://attiqbaig1.github.io/multan-clinics/#skin
+    // 1. If exact preset, use clean short hash e.g. https://websitedemos.space/#skin
     if (isExactPreset) {
       return `${baseUrl}#${formData.niche}`;
     }
 
-    // For customized inputs, use full query string on /multan-clinics/
+    // 2. For customized clinic details, build a short, clean query (b = businessName, d = doctorName, p = phone, n = niche)
     const params = new URLSearchParams();
-    params.set('demo', 'true');
-    params.set('niche', formData.niche);
-    params.set('name', formData.businessName);
-    params.set('tagline', formData.tagline);
-    params.set('doctor', formData.doctorName);
-    params.set('degree', formData.doctorTitle);
-    params.set('phone', formData.phone);
-    params.set('wa', formData.whatsApp);
-    params.set('address', formData.address);
-    params.set('city', formData.city);
-    params.set('timings', formData.timings);
-    params.set('fee', formData.consultationFee);
+    if (formData.niche && formData.niche !== 'dental') {
+      params.set('n', formData.niche);
+    }
+    params.set('b', formData.businessName);
+    if (formData.doctorName && formData.doctorName !== defaultPreset?.doctorName) {
+      params.set('d', formData.doctorName);
+    }
+    if (formData.phone && formData.phone !== defaultPreset?.phone) {
+      params.set('p', formData.phone);
+    }
 
     return `${baseUrl}?${params.toString()}`;
   };
@@ -756,17 +751,17 @@ WhatsApp: ${formData.phone}`;
                   </div>
                 </div>
 
-                {/* GitHub Pages Base URL config */}
+                {/* Custom Domain / GitHub Pages Base URL config */}
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <label className="block text-xs font-bold text-slate-300">Your GitHub Pages Repo Domain / URL</label>
+                  <label className="block text-xs font-bold text-slate-300">Your Live Domain URL</label>
                   <p className="text-[11px] text-slate-400">
-                    Must include your repo name <code className="text-amber-400 font-bold">/multan-clinics/</code> at the end (e.g. <code className="text-amber-300">https://attiqbaig1.github.io/multan-clinics/</code>):
+                    Custom domain or GitHub Pages link (e.g. <code className="text-amber-300">https://websitedemos.space/</code>):
                   </p>
                   <input
                     type="text"
                     value={githubPagesBaseUrl}
                     onChange={(e) => setGithubPagesBaseUrl(e.target.value)}
-                    placeholder="https://attiqbaig1.github.io/multan-clinics/"
+                    placeholder="https://websitedemos.space/"
                     className="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-amber-400"
                   />
                 </div>
@@ -775,10 +770,10 @@ WhatsApp: ${formData.phone}`;
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-slate-300">
-                      ⚡ Your Generated Live URL ({formData.businessName})
+                      ⚡ Your Custom Domain Live Link ({formData.businessName})
                     </label>
                     <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">
-                      Auto-Updated Live
+                      Custom Domain Active
                     </span>
                   </div>
                   
@@ -810,19 +805,22 @@ WhatsApp: ${formData.phone}`;
                   </div>
 
                   <p className="text-[11px] text-slate-400 italic">
-                    💡 <strong>Yeh Link Aapka Live Website Hai!</strong> Form me jaise hi aap text change karte hain, yeh URL automatic update ho jata hai. Kisi deployment ya code save karne ki zaroorat nahi hoti!
+                    💡 <strong>Authentic & Trusted:</strong> Sharing <code className="text-emerald-400 font-bold">websitedemos.space</code> directly builds 100% trust with clients on WhatsApp compared to generic URL shorteners!
+                  </p>
+                  <p className="text-[11px] text-amber-300 bg-amber-500/10 p-2 rounded border border-amber-500/20">
+                    🔑 <strong>How to re-open Generator Studio on Live Domain:</strong> Public visitors will ONLY see the clean clinic website. To open this Studio again on your site, visit <code className="text-white font-bold font-mono">websitedemos.space/?studio=true</code>!
                   </p>
                 </div>
 
-                {/* Auto-Shortened TinyURL Link Box */}
-                <div className="bg-gradient-to-r from-amber-950/40 via-slate-950 to-slate-950 p-4 rounded-xl border border-amber-500/30 space-y-3">
+                {/* Optional TinyURL Link Box */}
+                <div className="bg-gradient-to-r from-slate-950 via-slate-950 to-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-amber-300 flex items-center space-x-1.5">
+                    <label className="block text-xs font-bold text-slate-300 flex items-center space-x-1.5">
                       <Sparkles className="w-4 h-4 text-amber-400" />
-                      <span>✨ Instant Short Link (TinyURL)</span>
+                      <span>✨ Optional TinyURL Generator</span>
                     </label>
-                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold">
-                      WhatsApp Ready
+                    <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-bold">
+                      Optional Shortener
                     </span>
                   </div>
 
@@ -830,8 +828,8 @@ WhatsApp: ${formData.phone}`;
                     <input
                       type="text"
                       readOnly
-                      value={isShortening ? 'Auto-generating short link...' : (shortUrl || 'Click shorten to create TinyURL')}
-                      className="w-full bg-slate-900 border border-amber-500/40 text-emerald-400 px-3 py-2.5 rounded-lg text-xs font-mono font-bold select-all focus:outline-none"
+                      value={isShortening ? 'Auto-generating short link...' : (shortUrl || 'Click shorten if you need a tiny url')}
+                      className="w-full bg-slate-900 border border-slate-700 text-emerald-400 px-3 py-2.5 rounded-lg text-xs font-mono font-bold select-all focus:outline-none"
                     />
                     <div className="flex gap-2 shrink-0">
                       {shortUrl ? (
@@ -857,7 +855,7 @@ WhatsApp: ${formData.phone}`;
                         <button
                           onClick={() => shortenToTinyUrl(dynamicUrl)}
                           disabled={isShortening}
-                          className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 disabled:opacity-50"
+                          className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 disabled:opacity-50"
                         >
                           <Sparkles className="w-4 h-4" />
                           <span>{isShortening ? 'Shortening...' : 'Generate TinyURL'}</span>
@@ -865,30 +863,15 @@ WhatsApp: ${formData.phone}`;
                       )}
                     </div>
                   </div>
-
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-[11px] text-slate-400 gap-2 pt-1 border-t border-slate-800/80">
-                    <p>
-                      ⚡ <strong>Automatic TinyURL Generator:</strong> TinyURL pe jaa kar manually paste karne ki bilkul zaroorat nahi hai!
-                    </p>
-                    <a
-                      href={`https://tinyurl.com/cut-urls?url=${encodeURIComponent(dynamicUrl)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-amber-400 underline font-bold hover:text-amber-300 text-xs shrink-0 flex items-center space-x-1"
-                    >
-                      <span>Custom Name Alias (e.g. tinyurl.com/dr-ashfaq)</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
                 </div>
 
                 {/* Quick Clean Preset Links List */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">All Clinic Clean Preset Links</h4>
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">All Clean Custom Domain Presets</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {MULTAN_PRESETS.map((preset, idx) => {
-                      const rootUrl = window.location.hostname.includes('github.io')
-                        ? `${window.location.origin}${window.location.pathname.replace(/\/$/, '')}/`
+                      const rootUrl = typeof window !== 'undefined' && window.location.hostname.includes('websitedemos.space')
+                        ? `${window.location.origin}/`
                         : githubPagesBaseUrl.trim().replace(/\/$/, '') + '/';
                       const cleanUrl = `${rootUrl}#${preset.niche}`;
                       return (
@@ -917,16 +900,16 @@ WhatsApp: ${formData.phone}`;
                     <span>How to Send Personalized Demos to 200 Dentists (1-Click Method)</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    You do <strong className="text-white">NOT</strong> need 200 separate GitHub repos or code files! Your single live website link (<code className="text-amber-300 font-bold">https://attiqbaig1.github.io/multan-clinics/</code>) dynamically renders all 200 clinics automatically based on URL parameters!
+                    You do <strong className="text-white">NOT</strong> need 200 separate GitHub repos or code files! Your single custom domain (<code className="text-amber-300 font-bold">https://websitedemos.space/</code>) dynamically renders all 200 clinics automatically based on URL parameters!
                   </p>
 
                   <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-2 text-xs">
-                    <div className="font-bold text-slate-200">📊 Google Sheets / Excel Formula (Auto-generate 200 Links in 5 seconds):</div>
+                    <div className="font-bold text-slate-200">📊 Google Sheets / Excel Formula (Auto-generate 200 Custom Domain Links):</div>
                     <p className="text-slate-400 text-[11px]">
                       Put Clinic Name in Column A (e.g. <code className="text-emerald-400">Al-Rahman Dental</code>), Doctor Name in Column B (e.g. <code className="text-emerald-400">Dr. Ali Ahmad</code>), and paste this Excel formula in Column C:
                     </p>
                     <div className="bg-slate-900 p-2.5 rounded border border-slate-700 text-amber-300 font-mono text-[11px] overflow-x-auto select-all">
-                      {`="https://attiqbaig1.github.io/multan-clinics/?demo=true&niche=dental&name=" & ENCODEURL(A2) & "&doctor=" & ENCODEURL(B2)`}
+                      {`="https://websitedemos.space/?demo=true&niche=dental&name=" & ENCODEURL(A2) & "&doctor=" & ENCODEURL(B2)`}
                     </div>
                   </div>
                 </div>

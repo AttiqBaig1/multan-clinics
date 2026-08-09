@@ -8,14 +8,32 @@ import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle }
 export default function App() {
   const [activeData, setActiveData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]); // Default: Multan Dental Clinic
   const [isGeneratorMode, setIsGeneratorMode] = useState<boolean>(false);
-  const [showStudioNav, setShowStudioNav] = useState<boolean>(true);
+  const [showStudioNav, setShowStudioNav] = useState<boolean>(false);
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
 
   useEffect(() => {
     const parseUrl = () => {
       const hash = window.location.hash.replace('#', '').replace('/', '').trim();
       const params = new URLSearchParams(window.location.search);
-      const isGithubPages = window.location.hostname.includes('github.io');
-      const forceStudio = params.get('studio') === 'true' || params.get('admin') === 'true';
+      const isDevEnv = window.location.hostname.includes('localhost') || 
+                        window.location.hostname.includes('run.app') || 
+                        window.location.hostname.includes('ais-');
+      
+      const forceStudio = params.get('studio') === 'true' || 
+                          params.get('admin') === 'true' || 
+                          hash === 'studio' || 
+                          hash === 'admin';
+
+      // Studio Mode ONLY opens when explicitly requested via ?studio=true (or ?admin=true / #studio / #admin)
+      if (forceStudio) {
+        setShowStudioNav(true);
+        setIsGeneratorMode(true);
+        setIsAdminUnlocked(true);
+      } else {
+        setShowStudioNav(false);
+        setIsGeneratorMode(false);
+        setIsAdminUnlocked(false);
+      }
 
       // 1. Compact custom clinic hash parsing e.g. #c=...
       if (hash.startsWith('c=')) {
@@ -40,7 +58,6 @@ export default function App() {
             consultationFee: parsed.f || matchedPreset.consultationFee
           };
           setActiveData(customData);
-          if (!forceStudio) setShowStudioNav(false);
           return;
         } catch (e) {
           console.error("Failed to parse compact hash", e);
@@ -52,35 +69,40 @@ export default function App() {
 
       if (matchedPresetByHash) {
         setActiveData(matchedPresetByHash);
-        if (!forceStudio) setShowStudioNav(false);
         return;
       }
 
-      // 3. Fallback for query parameters or default GitHub Pages landing
-      const isDemo = params.get('demo') === 'true';
-      if ((isDemo || isGithubPages) && !forceStudio) {
-        setShowStudioNav(false);
-      } else if (forceStudio) {
-        setShowStudioNav(true);
-        setIsGeneratorMode(true);
-      }
+      // 3. Short & Clean Query parameters parsing e.g. ?name=Al-Shafi+Dental&doctor=Dr.+Ashfaq
+      const nameParam = params.get('name') || params.get('b') || params.get('businessName');
+      const doctorParam = params.get('doctor') || params.get('d') || params.get('doc');
+      const nicheParam = params.get('niche') || params.get('n');
 
-      if (isDemo || params.has('niche')) {
-        const niche = (params.get('niche') || 'dental') as ClinicTemplateData['niche'];
-        const matchedPreset = MULTAN_PRESETS.find(p => p.niche === niche) || MULTAN_PRESETS[0];
+      if (nameParam || doctorParam || nicheParam || params.get('demo') === 'true') {
+        let detectedNiche: ClinicTemplateData['niche'] = (nicheParam as ClinicTemplateData['niche']) || 'dental';
+        if (!nicheParam && nameParam) {
+          const lowerName = nameParam.toLowerCase();
+          if (lowerName.includes('skin') || lowerName.includes('aesthetic') || lowerName.includes('laser')) detectedNiche = 'skin';
+          else if (lowerName.includes('eye') || lowerName.includes('vision') || lowerName.includes('lasik')) detectedNiche = 'eye';
+          else if (lowerName.includes('ortho') || lowerName.includes('bone') || lowerName.includes('joint')) detectedNiche = 'ortho';
+          else if (lowerName.includes('cardio') || lowerName.includes('heart')) detectedNiche = 'cardio';
+          else if (lowerName.includes('vet') || lowerName.includes('pet') || lowerName.includes('animal')) detectedNiche = 'pet';
+        }
+
+        const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
 
         const customData: ClinicTemplateData = {
           ...matchedPreset,
-          businessName: params.get('name') || matchedPreset.businessName,
-          tagline: params.get('tagline') || matchedPreset.tagline,
-          doctorName: params.get('doctor') || matchedPreset.doctorName,
-          doctorTitle: params.get('degree') || matchedPreset.doctorTitle,
-          phone: params.get('phone') || matchedPreset.phone,
-          whatsApp: params.get('wa') || matchedPreset.whatsApp,
-          address: params.get('address') || matchedPreset.address,
-          city: params.get('city') || matchedPreset.city,
-          timings: params.get('timings') || matchedPreset.timings,
-          consultationFee: params.get('fee') || matchedPreset.consultationFee
+          niche: detectedNiche,
+          businessName: nameParam || matchedPreset.businessName,
+          tagline: params.get('tagline') || params.get('t') || matchedPreset.tagline,
+          doctorName: doctorParam || matchedPreset.doctorName,
+          doctorTitle: params.get('degree') || params.get('dt') || matchedPreset.doctorTitle,
+          phone: params.get('phone') || params.get('p') || matchedPreset.phone,
+          whatsApp: params.get('wa') || params.get('w') || matchedPreset.whatsApp,
+          address: params.get('address') || params.get('a') || matchedPreset.address,
+          city: params.get('city') || params.get('c') || matchedPreset.city,
+          timings: params.get('timings') || params.get('tm') || matchedPreset.timings,
+          consultationFee: params.get('fee') || params.get('f') || matchedPreset.consultationFee
         };
 
         setActiveData(customData);
@@ -89,7 +111,10 @@ export default function App() {
 
     parseUrl();
     window.addEventListener('hashchange', parseUrl);
-    return () => window.removeEventListener('hashchange', parseUrl);
+
+    return () => {
+      window.removeEventListener('hashchange', parseUrl);
+    };
   }, []);
 
   return (
@@ -151,14 +176,14 @@ export default function App() {
         </nav>
       )}
 
-      {/* Floating Studio Button when Nav is hidden */}
-      {!showStudioNav && (
+      {/* Floating Studio Button (ONLY shown if Admin mode is unlocked) */}
+      {!showStudioNav && isAdminUnlocked && (
         <button
           onClick={() => {
             setShowStudioNav(true);
             setIsGeneratorMode(true);
           }}
-          className="fixed bottom-5 right-5 z-50 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-slate-900 transition transform hover:scale-105 active:scale-95 text-xs"
+          className="fixed bottom-5 right-5 z-50 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-slate-900 transition transform hover:scale-105 active:scale-95 text-xs opacity-90 hover:opacity-100"
           title="Open Clinic Generator Studio"
         >
           <Sliders className="w-4 h-4 text-slate-950" />
