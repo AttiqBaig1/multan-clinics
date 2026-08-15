@@ -58,13 +58,54 @@ export default function App() {
         setIsAdminUnlocked(false);
       }
 
-      // 1. Check if slug matches a saved client in localStorage registry
-      if (activeSlug) {
-        const savedProfile = findClientBySlug(activeSlug);
-        if (savedProfile) {
-          setActiveData(savedProfile.data);
-          return;
+      // 1. Direct Query parameters parsing (Highest Priority - 100% guarantees custom edits are loaded)
+      const nameParam = params.get('name') || params.get('b') || params.get('businessName');
+      const doctorParam = params.get('doctor') || params.get('d') || params.get('doc');
+      const nicheParam = params.get('niche') || params.get('n');
+      const taglineParam = params.get('tagline') || params.get('hl') || params.get('heading') || params.get('h') || params.get('t');
+      const addressParam = params.get('address') || params.get('addr') || params.get('a');
+      const phoneParam = params.get('phone') || params.get('p');
+      const whatsAppParam = params.get('whatsApp') || params.get('wa') || params.get('w');
+      const doctorTitleParam = params.get('degree') || params.get('dt') || params.get('deg');
+      const timingsParam = params.get('timings') || params.get('tm');
+      const feeParam = params.get('fee') || params.get('f') || params.get('consultationFee');
+
+      if (nameParam || doctorParam || phoneParam || addressParam || nicheParam || taglineParam || doctorTitleParam || params.get('demo') === 'true') {
+        let detectedNiche: ClinicTemplateData['niche'] = (nicheParam as ClinicTemplateData['niche']) || 'dental';
+        if (!nicheParam && nameParam) {
+          const lowerName = nameParam.toLowerCase();
+          if (lowerName.includes('skin') || lowerName.includes('aesthetic') || lowerName.includes('laser')) detectedNiche = 'skin';
+          else if (lowerName.includes('eye') || lowerName.includes('vision') || lowerName.includes('lasik')) detectedNiche = 'eye';
+          else if (lowerName.includes('ortho') || lowerName.includes('bone') || lowerName.includes('joint')) detectedNiche = 'ortho';
+          else if (lowerName.includes('cardio') || lowerName.includes('heart')) detectedNiche = 'cardio';
+          else if (lowerName.includes('vet') || lowerName.includes('pet') || lowerName.includes('animal')) detectedNiche = 'pet';
+          else if (lowerName.includes('physio') || lowerName.includes('rehab') || lowerName.includes('spine')) detectedNiche = 'physio';
         }
+
+        // Find best matching base preset for images, services & badges
+        let basePreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
+        if (activeSlug) {
+          const registered = findClientBySlug(activeSlug);
+          if (registered) basePreset = registered.data;
+        }
+
+        const customData: ClinicTemplateData = {
+          ...basePreset,
+          niche: detectedNiche,
+          businessName: nameParam || basePreset.businessName,
+          tagline: taglineParam || basePreset.tagline,
+          doctorName: doctorParam || basePreset.doctorName,
+          doctorTitle: doctorTitleParam || basePreset.doctorTitle,
+          phone: phoneParam || basePreset.phone,
+          whatsApp: whatsAppParam || (phoneParam ? (phoneParam.startsWith('0') ? `92${phoneParam.slice(1)}` : phoneParam) : basePreset.whatsApp),
+          address: addressParam || basePreset.address,
+          city: params.get('city') || params.get('c') || basePreset.city,
+          timings: timingsParam || basePreset.timings,
+          consultationFee: feeParam || basePreset.consultationFee
+        };
+
+        setActiveData(customData);
+        return;
       }
 
       // 2. Compact base64 hash parsing e.g. #c=... or ?c=...
@@ -83,7 +124,7 @@ export default function App() {
             doctorName: parsed.d || matchedPreset.doctorName,
             doctorTitle: parsed.dt || matchedPreset.doctorTitle,
             phone: parsed.p || matchedPreset.phone,
-            whatsApp: parsed.w || matchedPreset.whatsApp,
+            whatsApp: parsed.w || (parsed.p ? (parsed.p.startsWith('0') ? `92${parsed.p.slice(1)}` : parsed.p) : matchedPreset.whatsApp),
             address: parsed.a || matchedPreset.address,
             city: parsed.c || matchedPreset.city,
             timings: parsed.tm || matchedPreset.timings,
@@ -96,64 +137,32 @@ export default function App() {
         }
       }
 
-      // 3. Preset niche match by slug/hash (e.g. /physio, #dental, /skin)
+      // 3. Check if slug matches a saved client in registry or INITIAL_REGISTERED_CLIENTS
       if (activeSlug) {
-        const matchedPresetBySlug = MULTAN_PRESETS.find(p => p.niche.toLowerCase() === activeSlug.toLowerCase());
+        const savedProfile = findClientBySlug(activeSlug);
+        if (savedProfile) {
+          setActiveData(savedProfile.data);
+          return;
+        }
+      }
+
+      // 4. Preset niche match by slug/hash (e.g. /physio, #dental, /skin, /ortho)
+      if (activeSlug) {
+        const matchedPresetBySlug = MULTAN_PRESETS.find(p => 
+          p.niche.toLowerCase() === activeSlug.toLowerCase() ||
+          activeSlug.toLowerCase().includes(p.niche.toLowerCase())
+        );
         if (matchedPresetBySlug) {
           setActiveData(matchedPresetBySlug);
           return;
         }
       }
 
-      // 4. Short & Clean Query parameters parsing e.g. ?b=Physio+Rehab&hl=Headline...
-      const nameParam = params.get('name') || params.get('b') || params.get('businessName');
-      const doctorParam = params.get('doctor') || params.get('d') || params.get('doc');
-      const nicheParam = params.get('niche') || params.get('n');
-      const taglineParam = params.get('tagline') || params.get('hl') || params.get('heading') || params.get('h') || params.get('t');
-      const addressParam = params.get('address') || params.get('addr') || params.get('a');
-      const phoneParam = params.get('phone') || params.get('p');
-      const whatsAppParam = params.get('whatsApp') || params.get('wa') || params.get('w');
-      const doctorTitleParam = params.get('degree') || params.get('dt') || params.get('deg');
-      const timingsParam = params.get('timings') || params.get('tm');
-      const feeParam = params.get('fee') || params.get('f') || params.get('consultationFee');
-
-      if (nameParam || doctorParam || nicheParam || taglineParam || addressParam || phoneParam || whatsAppParam || doctorTitleParam || params.get('demo') === 'true') {
-        let detectedNiche: ClinicTemplateData['niche'] = (nicheParam as ClinicTemplateData['niche']) || 'dental';
-        if (!nicheParam && nameParam) {
-          const lowerName = nameParam.toLowerCase();
-          if (lowerName.includes('skin') || lowerName.includes('aesthetic') || lowerName.includes('laser')) detectedNiche = 'skin';
-          else if (lowerName.includes('eye') || lowerName.includes('vision') || lowerName.includes('lasik')) detectedNiche = 'eye';
-          else if (lowerName.includes('ortho') || lowerName.includes('bone') || lowerName.includes('joint')) detectedNiche = 'ortho';
-          else if (lowerName.includes('cardio') || lowerName.includes('heart')) detectedNiche = 'cardio';
-          else if (lowerName.includes('vet') || lowerName.includes('pet') || lowerName.includes('animal')) detectedNiche = 'pet';
-          else if (lowerName.includes('physio') || lowerName.includes('rehab') || lowerName.includes('spine')) detectedNiche = 'physio';
-        }
-
-        const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
-
-        const customData: ClinicTemplateData = {
-          ...matchedPreset,
-          niche: detectedNiche,
-          businessName: nameParam || matchedPreset.businessName,
-          tagline: taglineParam || matchedPreset.tagline,
-          doctorName: doctorParam || matchedPreset.doctorName,
-          doctorTitle: doctorTitleParam || matchedPreset.doctorTitle,
-          phone: phoneParam || matchedPreset.phone,
-          whatsApp: whatsAppParam || matchedPreset.whatsApp,
-          address: addressParam || matchedPreset.address,
-          city: params.get('city') || params.get('c') || matchedPreset.city,
-          timings: timingsParam || matchedPreset.timings,
-          consultationFee: feeParam || matchedPreset.consultationFee
-        };
-
-        setActiveData(customData);
-        return;
-      }
-
       // 5. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan or /al-attiq-dental)
       if (activeSlug && activeSlug.length > 2 && !activeSlug.includes('.')) {
         const derived = deriveClinicFromSlug(activeSlug);
         setActiveData(derived);
+        return;
       }
     };
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multan Health & Clinic Demos</title>
     <script type="text/javascript">
-      // GitHub Pages SPA Redirect Handler
+      // GitHub Pages SPA Redirect Handler with 100% Parameter Preservation
       (function() {
         var l = window.location;
         var pathname = l.pathname;
@@ -18,13 +18,19 @@
         var basePath = '/' + segments.join('/');
         if (basePath === '/') basePath = '';
         
-        // Redirect to index with client query parameter
+        // Preserve all existing query parameters
+        var search = l.search ? l.search.replace(/^\?/, '') : '';
+        var searchParams = new URLSearchParams(search);
+        
         if (slug && slug !== 'index.html' && slug !== '404.html') {
-          var targetUrl = l.protocol + '//' + l.host + basePath + '/?client=' + encodeURIComponent(slug) + (l.hash ? l.hash : '');
-          window.location.replace(targetUrl);
-        } else {
-          window.location.replace(l.protocol + '//' + l.host + basePath + '/');
+          if (!searchParams.has('client')) {
+            searchParams.set('client', slug);
+          }
         }
+        
+        var queryStr = searchParams.toString();
+        var targetUrl = l.protocol + '//' + l.host + basePath + '/' + (queryStr ? '?' + queryStr : '') + (l.hash ? l.hash : '');
+        window.location.replace(targetUrl);
       })();
     </script>
     <style>

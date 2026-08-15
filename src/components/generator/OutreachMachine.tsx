@@ -834,15 +834,43 @@ WhatsApp: ${formData.phone}`;
 
                 {/* Custom Domain Input */}
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                  <label className="block text-xs font-bold text-slate-300">Your Custom Domain</label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-300">Your Base / Custom Domain</label>
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleDomainChange('websitedemos.space')}
+                        className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold transition ${
+                          customDomain === 'websitedemos.space'
+                            ? 'bg-amber-500 text-slate-950'
+                            : 'bg-slate-800 text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        websitedemos.space
+                      </button>
+                      {typeof window !== 'undefined' && window.location.host && window.location.host !== 'websitedemos.space' && (
+                        <button
+                          type="button"
+                          onClick={() => handleDomainChange(window.location.host)}
+                          className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold transition ${
+                            customDomain === window.location.host
+                              ? 'bg-amber-500 text-slate-950'
+                              : 'bg-slate-800 text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          Live App Host
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <p className="text-[11px] text-slate-400">
-                    Enter your custom domain or base URL (e.g. <code className="text-amber-300">websitedemos.space</code> or <code className="text-amber-300">ashfaqdundal.website.com</code>):
+                    Target domain for generating client URLs (e.g. <code className="text-amber-300">websitedemos.space</code>):
                   </p>
                   <input
                     type="text"
                     value={customDomain}
                     onChange={(e) => handleDomainChange(e.target.value)}
-                    placeholder="e.g. websitedemos.space or customdomain.com"
+                    placeholder="e.g. websitedemos.space or yourdomain.com"
                     className="w-full bg-slate-900 border border-slate-700 text-amber-300 font-mono font-bold px-3 py-2.5 rounded-lg text-xs focus:outline-none focus:border-amber-400"
                   />
                 </div>
@@ -851,44 +879,12 @@ WhatsApp: ${formData.phone}`;
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-slate-300">Select URL Format for WhatsApp / Client Sharing</label>
-                    <span className="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                      Clean & Short
+                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      100% Cross-Device
                     </span>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button
-                      onClick={() => handleFormatChange('path')}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        urlFormat === 'path'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🚀 Clean Short Path (Default)</span>
-                        {urlFormat === 'path' && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/al-attiq-dental-implant-studio</div>
-                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Short, attractive, branded URL</div>
-                    </button>
-
-                    <button
-                      onClick={() => handleFormatChange('query')}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        urlFormat === 'query'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🔗 Short Client Query</span>
-                        {urlFormat === 'query' && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?client=al-attiq-dental-implant-studio</div>
-                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Clean query slug format</div>
-                    </button>
-
                     <button
                       onClick={() => handleFormatChange('smart_params')}
                       className={`p-3 rounded-xl border text-left transition ${
@@ -898,11 +894,27 @@ WhatsApp: ${formData.phone}`;
                       }`}
                     >
                       <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🌟 Full Data Encoded</span>
+                        <span>🌟 Full Data Params (Recommended)</span>
                         {urlFormat === 'smart_params' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?b=Clinic&d=Dr+Attiq...</div>
-                      <div className="text-[9px] text-slate-500 font-normal mt-1">Encodes all data parameters in link</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/?b=Clinic&d=Dr...</div>
+                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Works on 100% devices, WhatsApp & mobile</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('path')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'path'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🚀 Clean Path + Param Fallback</span>
+                        {urlFormat === 'path' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/al-attiq-dental</div>
+                      <div className="text-[9px] text-slate-400 font-normal mt-1">Short path with automatic parameter fallback</div>
                     </button>
 
                     <button
@@ -918,7 +930,23 @@ WhatsApp: ${formData.phone}`;
                         {urlFormat === 'base64' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
                       <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/#c=eyJuYW1lI...</div>
-                      <div className="text-[9px] text-slate-500 font-normal mt-1">Short hash string</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Compact hash string representation</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('query')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'query'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🔗 Short Client Query</span>
+                        {urlFormat === 'query' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?client=slug&b=...</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Standard query format</div>
                     </button>
                   </div>
                 </div>
@@ -944,7 +972,7 @@ WhatsApp: ${formData.phone}`;
                     <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => handleCopy(dynamicUrl, 'link')}
-                        className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
+                        className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 shadow-md"
                       >
                         {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
@@ -963,7 +991,7 @@ WhatsApp: ${formData.phone}`;
                         href={dynamicUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
+                        className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 shadow-md"
                       >
                         <ExternalLink className="w-4 h-4" />
                         <span>Open URL Link</span>
@@ -971,8 +999,40 @@ WhatsApp: ${formData.phone}`;
                     </div>
                   </div>
 
+                  {/* TinyURL Auto-Shortener Card */}
+                  {shortUrl && (
+                    <div className="pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-slate-900/60 p-2.5 rounded-lg">
+                      <div className="flex items-center space-x-2 overflow-hidden">
+                        <span className="text-[10px] bg-amber-400/20 text-amber-300 font-bold px-1.5 py-0.5 rounded shrink-0">
+                          Short URL
+                        </span>
+                        <code className="text-xs text-amber-300 font-mono font-bold truncate">
+                          {shortUrl}
+                        </code>
+                      </div>
+                      <div className="flex items-center space-x-1.5 shrink-0">
+                        <button
+                          onClick={() => handleCopy(shortUrl, 'short')}
+                          className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-bold rounded flex items-center space-x-1"
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>{copiedShortLink ? 'Copied!' : 'Copy Short'}</span>
+                        </button>
+                        <a
+                          href={shortUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded flex items-center space-x-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>Open</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
                   <p className="text-[11px] text-slate-400 italic">
-                    💡 <strong>White-labeled & Private:</strong> Clients who open this link will see only their tailored landing page without agency controls!
+                    💡 <strong>White-labeled & Private:</strong> Clients who open this link will see only their tailored landing page with all Doctor, Phone, Timings & Services intact!
                   </p>
                 </div>
 

@@ -222,12 +222,12 @@ export function setCustomDomainSetting(domain: string): void {
 export type UrlFormatType = 'path' | 'query' | 'smart_params' | 'base64' | 'hash';
 
 export function getUrlFormatSetting(): UrlFormatType {
-  if (typeof window === 'undefined') return 'path';
+  if (typeof window === 'undefined') return 'smart_params';
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.URL_FORMAT) as UrlFormatType;
     if (saved && ['path', 'query', 'smart_params', 'base64', 'hash'].includes(saved)) return saved;
   } catch (e) {}
-  return 'path';
+  return 'smart_params';
 }
 
 export function setUrlFormatSetting(format: UrlFormatType): void {
@@ -265,8 +265,18 @@ export function generateClientUrl(
   const cleanSlug = customSlug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '') ||
                     data.businessName.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
 
-  // 1. Smart Parameters format (Default - 100% Guaranteed to carry all Doctor, Phone, Address across all devices & WhatsApp)
-  if (format === 'smart_params') {
+  // Auto-persist in local registry so active device can resolve clean slug directly
+  try {
+    if (cleanSlug && typeof window !== 'undefined') {
+      const existing = getSavedClients();
+      if (!existing.some(c => c.slug === cleanSlug && c.data.businessName === data.businessName && c.data.doctorName === data.doctorName)) {
+        saveClientProfile(cleanSlug, data, 'Auto-persisted via URL generator');
+      }
+    }
+  } catch (e) {}
+
+  // Common complete query params payload
+  const buildAllParams = () => {
     const params = new URLSearchParams();
     if (data.niche) params.set('n', data.niche);
     if (data.businessName) params.set('b', data.businessName);
@@ -279,21 +289,22 @@ export function generateClientUrl(
     if (data.timings) params.set('tm', data.timings);
     if (data.consultationFee) params.set('f', data.consultationFee);
     if (cleanSlug) params.set('client', cleanSlug);
+    return params.toString();
+  };
 
-    return `${baseUrl}/?${params.toString()}`;
+  // 1. Smart Parameters format (Default - 100% Guaranteed to carry all Doctor, Phone, Address across all devices & WhatsApp)
+  if (format === 'smart_params') {
+    return `${baseUrl}/?${buildAllParams()}`;
   }
 
-  // 2. Clean Path format (Short & Beautiful): https://websitedemos.space/al-attiq-dental-implant-studio
+  // 2. Clean Path format with attached query fallback (Guaranteed on GitHub Pages & custom domains)
   if (format === 'path') {
-    if (domain.includes('github.io')) {
-      return `${baseUrl}/?client=${cleanSlug}&b=${encodeURIComponent(data.businessName)}&d=${encodeURIComponent(data.doctorName)}`;
-    }
-    return `${baseUrl}/${cleanSlug}`;
+    return `${baseUrl}/${cleanSlug}?${buildAllParams()}`;
   }
 
-  // 3. Query Slug format: https://websitedemos.space/?client=al-attiq-dental-implant-studio
+  // 3. Query Slug format: https://websitedemos.space/?client=...&b=...
   if (format === 'query') {
-    return `${baseUrl}/?client=${cleanSlug}&b=${encodeURIComponent(data.businessName)}&d=${encodeURIComponent(data.doctorName)}`;
+    return `${baseUrl}/?${buildAllParams()}`;
   }
 
   // 4. Smart Base64 compact format: https://websitedemos.space/#c=...
@@ -308,22 +319,23 @@ export function generateClientUrl(
       w: data.whatsApp,
       a: data.address,
       tm: data.timings,
-      f: data.consultationFee
+      f: data.consultationFee,
+      client: cleanSlug
     };
     try {
       const b64 = btoa(encodeURIComponent(JSON.stringify(compactObj)));
       return `${baseUrl}/#c=${b64}`;
     } catch (e) {
-      return `${baseUrl}/?b=${encodeURIComponent(data.businessName)}&d=${encodeURIComponent(data.doctorName)}`;
+      return `${baseUrl}/?${buildAllParams()}`;
     }
   }
 
-  // 5. Hash Slug format: https://websitedemos.space/#al-attiq-dental-implant-studio
+  // 5. Hash Slug format
   if (format === 'hash') {
     return `${baseUrl}/#${cleanSlug}`;
   }
 
-  return `${baseUrl}/?client=${cleanSlug}`;
+  return `${baseUrl}/?${buildAllParams()}`;
 }
 
 export function createCleanShortUrl(
