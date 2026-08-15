@@ -3,7 +3,7 @@ import { OutreachMachine } from './components/generator/OutreachMachine';
 import { DynamicClinicPage } from './components/generator/DynamicClinicPage';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
-import { findClientBySlug, slugToTitleCase, STORAGE_KEYS } from './utils/slugRegistry';
+import { findClientBySlug, slugToTitleCase, deriveClinicFromSlug, STORAGE_KEYS } from './utils/slugRegistry';
 import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle, Lock, ShieldCheck, Key } from 'lucide-react';
 
 export default function App() {
@@ -150,24 +150,10 @@ export default function App() {
         return;
       }
 
-      // 5. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan)
+      // 5. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan or /al-attiq-dental)
       if (activeSlug && activeSlug.length > 2 && !activeSlug.includes('.')) {
-        const formattedTitle = slugToTitleCase(activeSlug);
-        let detectedNiche: ClinicTemplateData['niche'] = 'dental';
-        const lowerSlug = activeSlug.toLowerCase();
-        
-        if (lowerSlug.includes('skin') || lowerSlug.includes('aesthetic') || lowerSlug.includes('laser')) detectedNiche = 'skin';
-        else if (lowerSlug.includes('eye') || lowerSlug.includes('vision') || lowerSlug.includes('lasik')) detectedNiche = 'eye';
-        else if (lowerSlug.includes('ortho') || lowerSlug.includes('bone') || lowerSlug.includes('joint')) detectedNiche = 'ortho';
-        else if (lowerSlug.includes('cardio') || lowerSlug.includes('heart')) detectedNiche = 'cardio';
-        else if (lowerSlug.includes('vet') || lowerSlug.includes('pet') || lowerSlug.includes('animal')) detectedNiche = 'pet';
-        else if (lowerSlug.includes('physio') || lowerSlug.includes('rehab') || lowerSlug.includes('spine')) detectedNiche = 'physio';
-
-        const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
-        setActiveData({
-          ...matchedPreset,
-          businessName: formattedTitle
-        });
+        const derived = deriveClinicFromSlug(activeSlug);
+        setActiveData(derived);
       }
     };
 
@@ -347,6 +333,10 @@ export default function App() {
       {isGeneratorMode ? (
         <div className="max-w-7xl mx-auto px-4 py-6">
           <OutreachMachine
+            initialData={activeData}
+            onDataChange={(customData) => {
+              setActiveData(customData);
+            }}
             onOpenLiveDemo={(customData) => {
               setActiveData(customData);
               setIsGeneratorMode(false);

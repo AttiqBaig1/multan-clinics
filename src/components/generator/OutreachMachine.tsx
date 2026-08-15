@@ -45,12 +45,14 @@ import {
 } from '../../utils/slugRegistry';
 
 interface OutreachMachineProps {
+  initialData?: ClinicTemplateData;
+  onDataChange?: (data: ClinicTemplateData) => void;
   onOpenLiveDemo?: (data: ClinicTemplateData) => void;
 }
 
-export const OutreachMachine: React.FC<OutreachMachineProps> = ({ onOpenLiveDemo }) => {
+export const OutreachMachine: React.FC<OutreachMachineProps> = ({ initialData, onDataChange, onOpenLiveDemo }) => {
   const [selectedPresetIndex, setSelectedPresetIndex] = useState<number>(0);
-  const [formData, setFormData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]);
+  const [formData, setFormData] = useState<ClinicTemplateData>(initialData || MULTAN_PRESETS[0]);
   const [activeTab, setActiveTab] = useState<'preview' | 'url' | 'pitch' | 'saved' | 'github'>('preview');
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
@@ -61,7 +63,7 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = ({ onOpenLiveDemo
   const [customDomain, setCustomDomain] = useState<string>(getCustomDomainSetting());
   const [urlFormat, setUrlFormat] = useState<UrlFormatType>(getUrlFormatSetting());
   const [clientSlug, setClientSlug] = useState<string>(
-    MULTAN_PRESETS[0].businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    (initialData?.businessName || MULTAN_PRESETS[0].businessName).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   );
   const [clientNotes, setClientNotes] = useState<string>('');
   const [savedClientsList, setSavedClientsList] = useState<SavedClientProfile[]>(getSavedClients());
@@ -70,6 +72,10 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = ({ onOpenLiveDemo
   const [shortUrl, setShortUrl] = useState<string>('');
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [useShortLinkInPitch, setUseShortLinkInPitch] = useState<boolean>(false);
+
+  useEffect(() => {
+    onDataChange?.(formData);
+  }, [formData]);
 
   // Handle selecting a preset
   const handleSelectPreset = (index: number) => {
@@ -843,66 +849,76 @@ WhatsApp: ${formData.phone}`;
 
                 {/* URL Structure Selector */}
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                  <label className="block text-xs font-bold text-slate-300">Select Clean URL Format</label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-300">Select URL Format for WhatsApp / Client Sharing</label>
+                    <span className="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                      Clean & Short
+                    </span>
+                  </div>
+                  
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button
                       onClick={() => handleFormatChange('path')}
                       className={`p-3 rounded-xl border text-left transition ${
                         urlFormat === 'path'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
                           : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                       }`}
                     >
                       <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🚀 Clean Path (Recommended)</span>
+                        <span>🚀 Clean Short Path (Default)</span>
                         {urlFormat === 'path' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/client-slug</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/al-attiq-dental-implant-studio</div>
+                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Short, attractive, branded URL</div>
                     </button>
 
                     <button
                       onClick={() => handleFormatChange('query')}
                       className={`p-3 rounded-xl border text-left transition ${
                         urlFormat === 'query'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
                           : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                       }`}
                     >
                       <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🔗 Query Parameter Slug</span>
+                        <span>🔗 Short Client Query</span>
                         {urlFormat === 'query' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/?client=client-slug</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?client=al-attiq-dental-implant-studio</div>
+                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Clean query slug format</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('smart_params')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'smart_params'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🌟 Full Data Encoded</span>
+                        {urlFormat === 'smart_params' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?b=Clinic&d=Dr+Attiq...</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Encodes all data parameters in link</div>
                     </button>
 
                     <button
                       onClick={() => handleFormatChange('base64')}
                       className={`p-3 rounded-xl border text-left transition ${
                         urlFormat === 'base64'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
                           : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                       }`}
                     >
                       <div className="text-xs font-bold flex items-center justify-between">
-                        <span>⚡ Base64 Compact Hash</span>
+                        <span>⚡ Compact Hash (#c=)</span>
                         {urlFormat === 'base64' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/#c=eyJuYW1lI...</div>
-                    </button>
-
-                    <button
-                      onClick={() => handleFormatChange('hash')}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        urlFormat === 'hash'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="text-xs font-bold flex items-center justify-between">
-                        <span># Hash Anchor Slug</span>
-                        {urlFormat === 'hash' && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/#client-slug</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/#c=eyJuYW1lI...</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Short hash string</div>
                     </button>
                   </div>
                 </div>
@@ -933,6 +949,16 @@ WhatsApp: ${formData.phone}`;
                         {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
                       </button>
+                      {onOpenLiveDemo && (
+                        <button
+                          onClick={() => onOpenLiveDemo(formData)}
+                          className="px-3.5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 shadow-md"
+                          title="View this customized clinic in full-screen website mode"
+                        >
+                          <Eye className="w-4 h-4" />
+                          <span>View Live In App</span>
+                        </button>
+                      )}
                       <a
                         href={dynamicUrl}
                         target="_blank"
@@ -940,7 +966,7 @@ WhatsApp: ${formData.phone}`;
                         className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Test Live Demo</span>
+                        <span>Open URL Link</span>
                       </a>
                     </div>
                   </div>
