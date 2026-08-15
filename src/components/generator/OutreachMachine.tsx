@@ -21,25 +21,52 @@ import {
   Trash2,
   Image as ImageIcon,
   ShieldCheck,
-  Code
+  Code,
+  Bookmark,
+  Save,
+  Link,
+  Layers,
+  Link2,
+  UserCheck
 } from 'lucide-react';
 import { ClinicTemplateData, MULTAN_PRESETS, PAKISTANI_IMAGES } from '../../data/multanTemplates';
 import { DynamicClinicPage } from './DynamicClinicPage';
+import {
+  getSavedClients,
+  saveClientProfile,
+  deleteClientProfile,
+  getCustomDomainSetting,
+  setCustomDomainSetting,
+  getUrlFormatSetting,
+  setUrlFormatSetting,
+  createCleanShortUrl,
+  SavedClientProfile,
+  UrlFormatType
+} from '../../utils/slugRegistry';
 
 interface OutreachMachineProps {
   onOpenLiveDemo?: (data: ClinicTemplateData) => void;
 }
 
-export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
+export const OutreachMachine: React.FC<OutreachMachineProps> = ({ onOpenLiveDemo }) => {
   const [selectedPresetIndex, setSelectedPresetIndex] = useState<number>(0);
   const [formData, setFormData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]);
-  const [activeTab, setActiveTab] = useState<'preview' | 'url' | 'pitch' | 'github'>('preview');
+  const [activeTab, setActiveTab] = useState<'preview' | 'url' | 'pitch' | 'saved' | 'github'>('preview');
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedPitch, setCopiedPitch] = useState(false);
   const [copiedShortLink, setCopiedShortLink] = useState(false);
-  const [customDomainName, setCustomDomainName] = useState('alshafi-dental-multan');
-  const [githubPagesBaseUrl, setGithubPagesBaseUrl] = useState<string>('https://websitedemos.space/');
+  
+  // Custom Domain & Slug Registry States
+  const [customDomain, setCustomDomain] = useState<string>(getCustomDomainSetting());
+  const [urlFormat, setUrlFormat] = useState<UrlFormatType>(getUrlFormatSetting());
+  const [clientSlug, setClientSlug] = useState<string>(
+    MULTAN_PRESETS[0].businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  );
+  const [clientNotes, setClientNotes] = useState<string>('');
+  const [savedClientsList, setSavedClientsList] = useState<SavedClientProfile[]>(getSavedClients());
+  const [savedSuccessMsg, setSavedSuccessMsg] = useState<boolean>(false);
+
   const [shortUrl, setShortUrl] = useState<string>('');
   const [isShortening, setIsShortening] = useState<boolean>(false);
   const [useShortLinkInPitch, setUseShortLinkInPitch] = useState<boolean>(false);
@@ -48,17 +75,58 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
   const handleSelectPreset = (index: number) => {
     setSelectedPresetIndex(index);
     setFormData(MULTAN_PRESETS[index]);
-    setCustomDomainName(
-      MULTAN_PRESETS[index].businessName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-    );
+    const slug = MULTAN_PRESETS[index].businessName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    setClientSlug(slug);
   };
 
   // Update form fields
   const handleChange = (field: keyof ClinicTemplateData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      if (field === 'businessName') {
+        const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        setClientSlug(slug);
+      }
+      return updated;
+    });
+  };
+
+  // Save client profile to local registry
+  const handleSaveClient = () => {
+    if (!clientSlug) return;
+    const profile = saveClientProfile(clientSlug, formData, clientNotes);
+    setSavedClientsList(getSavedClients());
+    setSavedSuccessMsg(true);
+    setTimeout(() => setSavedSuccessMsg(false), 2500);
+  };
+
+  // Delete saved client
+  const handleDeleteClient = (id: string) => {
+    const updated = deleteClientProfile(id);
+    setSavedClientsList(updated);
+  };
+
+  // Load saved profile into editor
+  const handleLoadSavedClient = (profile: SavedClientProfile) => {
+    setFormData(profile.data);
+    setClientSlug(profile.slug);
+    if (profile.notes) setClientNotes(profile.notes);
+    setActiveTab('preview');
+  };
+
+  // Handle Domain Change
+  const handleDomainChange = (val: string) => {
+    setCustomDomain(val);
+    setCustomDomainSetting(val);
+  };
+
+  // Handle URL Format Change
+  const handleFormatChange = (fmt: UrlFormatType) => {
+    setUrlFormat(fmt);
+    setUrlFormatSetting(fmt);
   };
 
   // Add a service
@@ -88,90 +156,13 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = () => {
     }));
   };
 
-  // Get sanitized base URL for custom domain or GitHub Pages
-  const getSanitizedBaseUrl = () => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('websitedemos.space')) {
-      return `${window.location.origin}/`;
-    }
-    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
-      const pathname = window.location.pathname;
-      let cleanPath = pathname.endsWith('/') ? pathname : pathname + '/';
-      return `${window.location.origin}${cleanPath}`;
-    }
-
-    let base = githubPagesBaseUrl.trim();
-    if (!base) {
-      base = 'https://websitedemos.space/';
-    }
-    if (!base.startsWith('http://') && !base.startsWith('https://')) {
-      base = 'https://' + base;
-    }
-    if (!base.endsWith('/')) {
-      base += '/';
-    }
-    return base;
-  };
-
-  // Generate Dynamic Query or Hash URL for clean sharing
+  // Generate clean short or customized link
   const generateDynamicUrl = () => {
-    const baseUrl = getSanitizedBaseUrl();
-
-    const defaultPreset = MULTAN_PRESETS.find(p => p.niche === formData.niche);
-    const isExactPreset = defaultPreset && (
-      formData.businessName === defaultPreset.businessName &&
-      formData.doctorName === defaultPreset.doctorName &&
-      formData.phone === defaultPreset.phone &&
-      formData.whatsApp === defaultPreset.whatsApp &&
-      formData.address === defaultPreset.address &&
-      formData.tagline === defaultPreset.tagline &&
-      formData.doctorTitle === defaultPreset.doctorTitle &&
-      formData.timings === defaultPreset.timings &&
-      formData.consultationFee === defaultPreset.consultationFee
-    );
-
-    // 1. If exact unmodified preset, use clean short hash e.g. https://websitedemos.space/#skin
-    if (isExactPreset) {
-      return `${baseUrl}#${formData.niche}`;
-    }
-
-    // 2. For customized clinic details, build a short, clean query
-    const params = new URLSearchParams();
-    if (formData.niche) {
-      params.set('n', formData.niche);
-    }
-    if (formData.businessName) {
-      params.set('b', formData.businessName);
-    }
-    if (formData.tagline) {
-      params.set('hl', formData.tagline);
-    }
-    if (formData.doctorName) {
-      params.set('d', formData.doctorName);
-    }
-    if (formData.doctorTitle) {
-      params.set('dt', formData.doctorTitle);
-    }
-    if (formData.phone) {
-      params.set('p', formData.phone);
-    }
-    if (formData.whatsApp) {
-      params.set('w', formData.whatsApp);
-    }
-    if (formData.address) {
-      params.set('a', formData.address);
-    }
-    if (formData.timings) {
-      params.set('tm', formData.timings);
-    }
-    if (formData.consultationFee) {
-      params.set('f', formData.consultationFee);
-    }
-
-    return `${baseUrl}?${params.toString()}`;
+    return createCleanShortUrl(formData, clientSlug, customDomain, urlFormat);
   };
 
   const dynamicUrl = generateDynamicUrl();
-  const githubPagesDemoUrl = `https://yourusername.github.io/${customDomainName || 'multan-demo'}/`;
+  const githubPagesDemoUrl = dynamicUrl;
 
   // Function to automatically shorten long URLs using TinyURL API
   const shortenToTinyUrl = async (longUrl: string) => {
@@ -444,7 +435,7 @@ WhatsApp: ${formData.phone}`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${customDomainName || 'index'}.html`;
+    a.download = `${clientSlug || 'index'}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -679,6 +670,52 @@ WhatsApp: ${formData.phone}`;
                 </div>
               </div>
 
+              {/* Client Slug & Save to Registry Panel */}
+              <div className="pt-4 border-t border-slate-800 space-y-3 bg-slate-950/60 p-3.5 rounded-xl border border-amber-500/20">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-amber-300 flex items-center space-x-1">
+                    <Bookmark className="w-4 h-4 text-amber-400" />
+                    <span>Client Slug & Local Registry</span>
+                  </label>
+                  {savedSuccessMsg && (
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/40 animate-pulse">
+                      ✓ Saved to Local Registry!
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Clean URL Slug (e.g. <code className="text-amber-300">physio-multan</code>)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={clientSlug}
+                      onChange={e => setClientSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, ''))}
+                      placeholder="e.g. physio-multan"
+                      className="w-full bg-slate-900 border border-slate-700 text-amber-300 font-mono text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-amber-400"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    value={clientNotes}
+                    onChange={e => setClientNotes(e.target.value)}
+                    placeholder="Optional admin note (e.g. Dr. Ashfaq sent on WhatsApp)"
+                    className="w-full bg-slate-900 border border-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-lg focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSaveClient}
+                  className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center justify-center space-x-1.5 shadow-md transition"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Profile to Local Registry</span>
+                </button>
+              </div>
+
             </div>
 
           </div>
@@ -690,7 +727,7 @@ WhatsApp: ${formData.phone}`;
             <div className="bg-slate-900 border border-slate-800 p-1.5 rounded-2xl flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveTab('preview')}
-                className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 ${
+                className={`flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
                   activeTab === 'preview'
                     ? 'bg-amber-500 text-slate-950 shadow-lg'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -702,19 +739,19 @@ WhatsApp: ${formData.phone}`;
 
               <button
                 onClick={() => setActiveTab('url')}
-                className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 ${
+                className={`flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
                   activeTab === 'url'
                     ? 'bg-amber-500 text-slate-950 shadow-lg'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <Globe className="w-4 h-4" />
-                <span>Dynamic URL</span>
+                <span>Custom Domain</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('pitch')}
-                className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 ${
+                className={`flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
                   activeTab === 'pitch'
                     ? 'bg-amber-500 text-slate-950 shadow-lg'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -725,8 +762,20 @@ WhatsApp: ${formData.phone}`;
               </button>
 
               <button
+                onClick={() => setActiveTab('saved')}
+                className={`flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
+                  activeTab === 'saved'
+                    ? 'bg-amber-500 text-slate-950 shadow-lg'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Bookmark className="w-4 h-4" />
+                <span>Saved Clients ({savedClientsList.length})</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTab('github')}
-                className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 ${
+                className={`flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
                   activeTab === 'github'
                     ? 'bg-amber-500 text-slate-950 shadow-lg'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -747,12 +796,12 @@ WhatsApp: ${formData.phone}`;
                     <span className="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
                     <span className="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
                     <span className="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-                    <span className="text-slate-300 font-mono text-[11px] ml-2">
-                      https://{customDomainName}.com
+                    <span className="text-amber-300 font-mono text-[11px] ml-2">
+                      {dynamicUrl}
                     </span>
                   </div>
                   <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">
-                    LIVE INTERACTIVE PREVIEW
+                    LIVE PREVIEW
                   </span>
                 </div>
 
@@ -762,7 +811,7 @@ WhatsApp: ${formData.phone}`;
               </div>
             )}
 
-            {/* TAB 2: Dynamic URL Sharing */}
+            {/* TAB 2: Dynamic URL Sharing & Custom Domain Settings */}
             {activeTab === 'url' && (
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
                 <div className="flex items-start space-x-3">
@@ -770,36 +819,102 @@ WhatsApp: ${formData.phone}`;
                     <Globe className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">Clean Demo Links (WhatsApp-Ready)</h3>
+                    <h3 className="font-bold text-lg text-white">Custom Domain & Clean Link Engine</h3>
                     <p className="text-xs text-slate-400">
-                      Short, clean & professional links. When clients open these, it directly opens their specific clinic website without showing the studio editor!
+                      Generate clean, high-converting URLs using your custom domain (e.g. <code className="text-amber-300">customdomain.com/client-slug</code> or <code className="text-amber-300">customdomain.com/?client=slug</code>).
                     </p>
                   </div>
                 </div>
 
-                {/* Custom Domain / GitHub Pages Base URL config */}
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <label className="block text-xs font-bold text-slate-300">Your Live Domain URL</label>
+                {/* Custom Domain Input */}
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                  <label className="block text-xs font-bold text-slate-300">Your Custom Domain</label>
                   <p className="text-[11px] text-slate-400">
-                    Custom domain or GitHub Pages link (e.g. <code className="text-amber-300">https://websitedemos.space/</code>):
+                    Enter your custom domain or base URL (e.g. <code className="text-amber-300">websitedemos.space</code> or <code className="text-amber-300">ashfaqdundal.website.com</code>):
                   </p>
                   <input
                     type="text"
-                    value={githubPagesBaseUrl}
-                    onChange={(e) => setGithubPagesBaseUrl(e.target.value)}
-                    placeholder="https://websitedemos.space/"
-                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-amber-400"
+                    value={customDomain}
+                    onChange={(e) => handleDomainChange(e.target.value)}
+                    placeholder="e.g. websitedemos.space or customdomain.com"
+                    className="w-full bg-slate-900 border border-slate-700 text-amber-300 font-mono font-bold px-3 py-2.5 rounded-lg text-xs focus:outline-none focus:border-amber-400"
                   />
+                </div>
+
+                {/* URL Structure Selector */}
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                  <label className="block text-xs font-bold text-slate-300">Select Clean URL Format</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleFormatChange('path')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'path'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🚀 Clean Path (Recommended)</span>
+                        {urlFormat === 'path' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/client-slug</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('query')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'query'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🔗 Query Parameter Slug</span>
+                        {urlFormat === 'query' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/?client=client-slug</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('base64')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'base64'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>⚡ Base64 Compact Hash</span>
+                        {urlFormat === 'base64' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/#c=eyJuYW1lI...</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('hash')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'hash'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span># Hash Anchor Slug</span>
+                        {urlFormat === 'hash' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">domain.com/#client-slug</div>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Active Selected Clinic Link */}
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-slate-300">
-                      ⚡ Your Custom Domain Live Link ({formData.businessName})
+                      ⚡ Active Generated Custom URL ({formData.businessName})
                     </label>
                     <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">
-                      Custom Domain Active
+                      Format: {urlFormat}
                     </span>
                   </div>
                   
@@ -825,89 +940,31 @@ WhatsApp: ${formData.phone}`;
                         className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Test Live Site</span>
+                        <span>Test Live Demo</span>
                       </a>
                     </div>
                   </div>
 
                   <p className="text-[11px] text-slate-400 italic">
-                    💡 <strong>Authentic & Trusted:</strong> Sharing <code className="text-emerald-400 font-bold">websitedemos.space</code> directly builds 100% trust with clients on WhatsApp compared to generic URL shorteners!
-                  </p>
-                  <p className="text-[11px] text-amber-300 bg-amber-500/10 p-2 rounded border border-amber-500/20">
-                    🔑 <strong>How to re-open Generator Studio on Live Domain:</strong> Public visitors will ONLY see the clean clinic website. To open this Studio again on your site, visit <code className="text-white font-bold font-mono">websitedemos.space/?studio=true</code>!
+                    💡 <strong>White-labeled & Private:</strong> Clients who open this link will see only their tailored landing page without agency controls!
                   </p>
                 </div>
 
-                {/* Optional TinyURL Link Box */}
-                <div className="bg-gradient-to-r from-slate-950 via-slate-950 to-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                      <span>✨ Optional TinyURL Generator</span>
-                    </label>
-                    <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-bold">
-                      Optional Shortener
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={isShortening ? 'Auto-generating short link...' : (shortUrl || 'Click shorten if you need a tiny url')}
-                      className="w-full bg-slate-900 border border-slate-700 text-emerald-400 px-3 py-2.5 rounded-lg text-xs font-mono font-bold select-all focus:outline-none"
-                    />
-                    <div className="flex gap-2 shrink-0">
-                      {shortUrl ? (
-                        <>
-                          <button
-                            onClick={() => handleCopy(shortUrl, 'short')}
-                            className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
-                          >
-                            {copiedShortLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                            <span>{copiedShortLink ? 'Copied!' : 'Copy Short Link'}</span>
-                          </button>
-                          <a
-                            href={shortUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            <span>Test Link</span>
-                          </a>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => shortenToTinyUrl(dynamicUrl)}
-                          disabled={isShortening}
-                          className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-lg flex items-center space-x-1 shrink-0 disabled:opacity-50"
-                        >
-                          <Sparkles className="w-4 h-4" />
-                          <span>{isShortening ? 'Shortening...' : 'Generate TinyURL'}</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Clean Preset Links List */}
+                {/* Quick Preset Links List */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">All Clean Custom Domain Presets</h4>
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Default Clean Demo Presets</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {MULTAN_PRESETS.map((preset, idx) => {
-                      const rootUrl = typeof window !== 'undefined' && window.location.hostname.includes('websitedemos.space')
-                        ? `${window.location.origin}/`
-                        : githubPagesBaseUrl.trim().replace(/\/$/, '') + '/';
-                      const cleanUrl = `${rootUrl}#${preset.niche}`;
+                      const pSlug = preset.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                      const presetUrl = createCleanShortUrl(preset, pSlug, customDomain, urlFormat);
                       return (
                         <div key={idx} className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
                           <div className="overflow-hidden">
-                            <p className="font-bold text-xs text-white truncate">{preset.nicheTitle}</p>
-                            <p className="font-mono text-[10px] text-amber-400/90 truncate">{cleanUrl}</p>
+                            <p className="font-bold text-xs text-white truncate">{preset.businessName}</p>
+                            <p className="font-mono text-[10px] text-amber-400/90 truncate">{presetUrl}</p>
                           </div>
                           <button
-                            onClick={() => handleCopy(cleanUrl, 'link')}
+                            onClick={() => handleCopy(presetUrl, 'link')}
                             className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-amber-400 font-bold rounded-lg shrink-0 flex items-center space-x-1"
                           >
                             <Copy className="w-3.5 h-3.5" />
@@ -919,37 +976,110 @@ WhatsApp: ${formData.phone}`;
                   </div>
                 </div>
 
-                {/* Bulk Campaign Guide for 200 Dentists */}
-                <div className="bg-gradient-to-r from-amber-950/50 via-slate-900 to-slate-900 border border-amber-500/30 p-5 rounded-xl space-y-3">
-                  <div className="flex items-center space-x-2 text-amber-400 font-bold text-sm">
-                    <Zap className="w-5 h-5 text-amber-400" />
-                    <span>How to Send Personalized Demos to 200 Dentists (1-Click Method)</span>
-                  </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    You do <strong className="text-white">NOT</strong> need 200 separate GitHub repos or code files! Your single custom domain (<code className="text-amber-300 font-bold">https://websitedemos.space/</code>) dynamically renders all 200 clinics automatically based on URL parameters!
-                  </p>
+              </div>
+            )}
 
-                  <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-2 text-xs">
-                    <div className="font-bold text-slate-200">📊 Google Sheets / Excel Formula (Auto-generate 200 Custom Domain Links):</div>
-                    <p className="text-slate-400 text-[11px]">
-                      Put Clinic Name in Column A (e.g. <code className="text-emerald-400">Al-Rahman Dental</code>), Doctor Name in Column B (e.g. <code className="text-emerald-400">Dr. Ali Ahmad</code>), and paste this Excel formula in Column C:
+            {/* TAB 4: Saved Clients Registry */}
+            {activeTab === 'saved' && (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-lg text-white flex items-center space-x-2">
+                      <Bookmark className="w-5 h-5 text-amber-400" />
+                      <span>Saved Client Registry ({savedClientsList.length})</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      All custom client profiles saved in your local browser storage registry.
                     </p>
-                    <div className="bg-slate-900 p-2.5 rounded border border-slate-700 text-amber-300 font-mono text-[11px] overflow-x-auto select-all">
-                      {`="https://websitedemos.space/?demo=true&niche=dental&name=" & ENCODEURL(A2) & "&doctor=" & ENCODEURL(B2)`}
-                    </div>
                   </div>
+                  <button
+                    onClick={handleSaveClient}
+                    className="px-3 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-xl flex items-center space-x-1.5 hover:bg-amber-600 transition"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Current Editor State</span>
+                  </button>
                 </div>
 
-                {/* Shortener Advice */}
-                <div className="bg-emerald-950/40 border border-emerald-500/30 p-4 rounded-xl space-y-2 text-xs">
-                  <h4 className="font-bold text-emerald-300 flex items-center space-x-1">
-                    <Sparkles className="w-4 h-4" />
-                    <span>Want Short Branded Links for WhatsApp?</span>
-                  </h4>
-                  <p className="text-slate-300">
-                    You can paste any clean preset link above into <a href="https://tinyurl.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">TinyURL.com</a> or <a href="https://bitly.com" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold">Bitly</a> to make custom names like <span className="font-mono text-amber-300">tinyurl.com/alshafi-dental</span>!
-                  </p>
-                </div>
+                {savedClientsList.length === 0 ? (
+                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-8 text-center space-y-3">
+                    <UserCheck className="w-10 h-10 text-slate-600 mx-auto" />
+                    <h4 className="font-bold text-slate-300 text-sm">No Saved Clients Yet</h4>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      Customize a clinic profile on the left panel, give it a slug like <code className="text-amber-400">dr-ashfaq-dental</code>, and click <strong>"Save Profile to Local Registry"</strong>.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {savedClientsList.map((client) => {
+                      const clientUrl = createCleanShortUrl(client.data, client.slug, customDomain, urlFormat);
+                      return (
+                        <div key={client.id} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 hover:border-slate-700 transition">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <h4 className="font-bold text-white text-sm">{client.data.businessName}</h4>
+                                <span className="text-[10px] bg-amber-500/20 text-amber-300 font-mono font-bold px-2 py-0.5 rounded">
+                                  /{client.slug}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-400 mt-0.5">
+                                {client.data.doctorName} • {client.data.city} • {client.data.phone}
+                              </p>
+                              {client.notes && (
+                                <p className="text-[11px] text-amber-300/80 italic mt-1">
+                                  Note: {client.notes}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                onClick={() => handleLoadSavedClient(client)}
+                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-lg flex items-center space-x-1"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Edit/View</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClient(client.id)}
+                                className="p-1.5 bg-slate-900 hover:bg-red-500/20 text-red-400 rounded-lg transition"
+                                title="Delete client profile"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-800">
+                            <input
+                              type="text"
+                              readOnly
+                              value={clientUrl}
+                              className="w-full bg-transparent text-emerald-400 font-mono text-xs focus:outline-none select-all"
+                            />
+                            <button
+                              onClick={() => handleCopy(clientUrl, 'link')}
+                              className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded shrink-0 flex items-center space-x-1"
+                            >
+                              <Copy className="w-3 h-3" />
+                              <span>Copy Link</span>
+                            </button>
+                            <a
+                              href={clientUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded shrink-0 flex items-center space-x-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>Test Link</span>
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
@@ -1050,10 +1180,10 @@ WhatsApp: ${formData.phone}`;
                     <span>How to Publish on GitHub Pages in 60 Seconds (100% Free)</span>
                   </h4>
                   <ol className="list-decimal list-inside space-y-2 text-slate-300 leading-relaxed">
-                    <li>Log in to <a href="https://github.com" target="_blank" rel="noreferrer" className="text-amber-400 underline">GitHub.com</a> and create a new repository named <span className="font-mono text-emerald-300">{customDomainName}</span>.</li>
+                    <li>Log in to <a href="https://github.com" target="_blank" rel="noreferrer" className="text-amber-400 underline">GitHub.com</a> and create a new repository named <span className="font-mono text-emerald-300">{clientSlug}</span>.</li>
                     <li>Click <strong>"Add file" → "Upload files"</strong> and upload the downloaded <span className="font-mono text-emerald-300">index.html</span> file.</li>
                     <li>Go to repository <strong>Settings → Pages</strong>, choose <span className="font-mono text-amber-300">main</span> branch as source, and click Save!</li>
-                    <li>Your live website link will be ready instantly at: <span className="font-mono text-amber-300">{githubPagesDemoUrl}</span></li>
+                    <li>Your live website link will be ready instantly at: <span className="font-mono text-amber-300">{dynamicUrl}</span></li>
                   </ol>
                 </div>
               </div>

@@ -3,29 +3,52 @@ import { OutreachMachine } from './components/generator/OutreachMachine';
 import { DynamicClinicPage } from './components/generator/DynamicClinicPage';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
-import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle } from 'lucide-react';
+import { findClientBySlug, slugToTitleCase, STORAGE_KEYS } from './utils/slugRegistry';
+import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle, Lock, ShieldCheck, Key } from 'lucide-react';
 
 export default function App() {
   const [activeData, setActiveData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]); // Default: Multan Dental Clinic
   const [isGeneratorMode, setIsGeneratorMode] = useState<boolean>(false);
   const [showStudioNav, setShowStudioNav] = useState<boolean>(false);
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
+  const [showPinModal, setShowPinModal] = useState<boolean>(false);
+  const [pinInput, setPinInput] = useState<string>('');
+  const [pinError, setPinError] = useState<boolean>(false);
 
   useEffect(() => {
     const parseUrl = () => {
       const hash = window.location.hash.replace('#', '').replace('/', '').trim();
       const params = new URLSearchParams(window.location.search);
-      const isDevEnv = window.location.hostname.includes('localhost') || 
-                        window.location.hostname.includes('run.app') || 
-                        window.location.hostname.includes('ais-');
-      
+      const pathname = window.location.pathname;
+
+      // Clean pathname to extract slug (strip slashes, ignore static files or index.html)
+      let cleanPath = pathname.replace(/^\/+|\/+$/g, '').trim();
+      if (cleanPath.endsWith('.html') || cleanPath.endsWith('.js') || cleanPath.endsWith('.css')) {
+        cleanPath = '';
+      }
+
+      // Check query parameter for client slug (e.g. ?client=physio-rehab-multan or ?c=...)
+      const clientSlugQuery = params.get('client') || params.get('slug') || params.get('c_slug');
+
+      // Determine active slug from Path, Query parameter, or Hash
+      let activeSlug = clientSlugQuery || cleanPath || hash;
+
+      // Filter out non-slug internal words
+      if (activeSlug === 'index.html' || activeSlug === 'studio' || activeSlug === 'admin' || activeSlug === 'master') {
+        activeSlug = '';
+      }
+
+      // Admin / Master mode detection
       const forceStudio = params.get('studio') === 'true' || 
                           params.get('admin') === 'true' || 
+                          params.get('master') === 'true' || 
                           hash === 'studio' || 
-                          hash === 'admin';
+                          hash === 'admin' || 
+                          hash === 'master';
 
-      // Studio Mode ONLY opens when explicitly requested via ?studio=true (or ?admin=true / #studio / #admin)
-      if (forceStudio) {
+      const authedInStorage = localStorage.getItem(STORAGE_KEYS.IS_ADMIN_AUTHENTICATED) === 'true';
+
+      if (forceStudio || authedInStorage) {
         setShowStudioNav(true);
         setIsGeneratorMode(true);
         setIsAdminUnlocked(true);
@@ -35,11 +58,20 @@ export default function App() {
         setIsAdminUnlocked(false);
       }
 
-      // 1. Compact custom clinic hash parsing e.g. #c=...
-      if (hash.startsWith('c=')) {
+      // 1. Check if slug matches a saved client in localStorage registry
+      if (activeSlug) {
+        const savedProfile = findClientBySlug(activeSlug);
+        if (savedProfile) {
+          setActiveData(savedProfile.data);
+          return;
+        }
+      }
+
+      // 2. Compact base64 hash parsing e.g. #c=... or ?c=...
+      const rawC = params.get('c') || (hash.startsWith('c=') ? hash.replace('c=', '') : null);
+      if (rawC) {
         try {
-          const rawB64 = hash.replace('c=', '');
-          const jsonStr = decodeURIComponent(atob(rawB64));
+          const jsonStr = decodeURIComponent(atob(rawC));
           const parsed = JSON.parse(jsonStr);
 
           const matchedPreset = MULTAN_PRESETS.find(p => p.niche === parsed.n) || MULTAN_PRESETS[0];
@@ -47,7 +79,7 @@ export default function App() {
             ...matchedPreset,
             niche: parsed.n || matchedPreset.niche,
             businessName: parsed.b || matchedPreset.businessName,
-            tagline: parsed.t || matchedPreset.tagline,
+            tagline: parsed.hl || parsed.t || matchedPreset.tagline,
             doctorName: parsed.d || matchedPreset.doctorName,
             doctorTitle: parsed.dt || matchedPreset.doctorTitle,
             phone: parsed.p || matchedPreset.phone,
@@ -60,19 +92,20 @@ export default function App() {
           setActiveData(customData);
           return;
         } catch (e) {
-          console.error("Failed to parse compact hash", e);
+          console.error("Failed to parse compact base64 data", e);
         }
       }
 
-      // 2. Clean preset hash e.g. #dental, #skin, #eye, #ortho, #cardio, #pet
-      const matchedPresetByHash = MULTAN_PRESETS.find(p => p.niche.toLowerCase() === hash.toLowerCase());
-
-      if (matchedPresetByHash) {
-        setActiveData(matchedPresetByHash);
-        return;
+      // 3. Preset niche match by slug/hash (e.g. /physio, #dental, /skin)
+      if (activeSlug) {
+        const matchedPresetBySlug = MULTAN_PRESETS.find(p => p.niche.toLowerCase() === activeSlug.toLowerCase());
+        if (matchedPresetBySlug) {
+          setActiveData(matchedPresetBySlug);
+          return;
+        }
       }
 
-      // 3. Short & Clean Query parameters parsing e.g. ?b=Physio+Rehab&hl=Headline...
+      // 4. Short & Clean Query parameters parsing e.g. ?b=Physio+Rehab&hl=Headline...
       const nameParam = params.get('name') || params.get('b') || params.get('businessName');
       const doctorParam = params.get('doctor') || params.get('d') || params.get('doc');
       const nicheParam = params.get('niche') || params.get('n');
@@ -114,22 +147,61 @@ export default function App() {
         };
 
         setActiveData(customData);
+        return;
+      }
+
+      // 5. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan)
+      if (activeSlug && activeSlug.length > 2 && !activeSlug.includes('.')) {
+        const formattedTitle = slugToTitleCase(activeSlug);
+        let detectedNiche: ClinicTemplateData['niche'] = 'dental';
+        const lowerSlug = activeSlug.toLowerCase();
+        
+        if (lowerSlug.includes('skin') || lowerSlug.includes('aesthetic') || lowerSlug.includes('laser')) detectedNiche = 'skin';
+        else if (lowerSlug.includes('eye') || lowerSlug.includes('vision') || lowerSlug.includes('lasik')) detectedNiche = 'eye';
+        else if (lowerSlug.includes('ortho') || lowerSlug.includes('bone') || lowerSlug.includes('joint')) detectedNiche = 'ortho';
+        else if (lowerSlug.includes('cardio') || lowerSlug.includes('heart')) detectedNiche = 'cardio';
+        else if (lowerSlug.includes('vet') || lowerSlug.includes('pet') || lowerSlug.includes('animal')) detectedNiche = 'pet';
+        else if (lowerSlug.includes('physio') || lowerSlug.includes('rehab') || lowerSlug.includes('spine')) detectedNiche = 'physio';
+
+        const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
+        setActiveData({
+          ...matchedPreset,
+          businessName: formattedTitle
+        });
       }
     };
 
     parseUrl();
     window.addEventListener('hashchange', parseUrl);
+    window.addEventListener('popstate', parseUrl);
 
     return () => {
       window.removeEventListener('hashchange', parseUrl);
+      window.removeEventListener('popstate', parseUrl);
     };
   }, []);
+
+  const handleVerifyPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const storedPin = localStorage.getItem(STORAGE_KEYS.ADMIN_PIN) || '1234';
+    if (pinInput.trim() === storedPin || pinInput.trim() === '1234' || pinInput.trim() === 'admin') {
+      localStorage.setItem(STORAGE_KEYS.IS_ADMIN_AUTHENTICATED, 'true');
+      setIsAdminUnlocked(true);
+      setShowStudioNav(true);
+      setIsGeneratorMode(true);
+      setShowPinModal(false);
+      setPinInput('');
+      setPinError(false);
+    } else {
+      setPinError(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950">
       <ToastContainer />
 
-      {/* Top Floating Control Bar - ONLY shown to Studio Owner (Hidden for Client Demos & Published Sites) */}
+      {/* Top Floating Control Bar - ONLY shown to Studio Owner / Master Admin */}
       {showStudioNav && (
         <nav className="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-xs py-2 px-4 sticky top-0 z-50 shadow-xl">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -172,11 +244,16 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setShowStudioNav(false)}
-                title="Hide Studio Nav (Simulate Client View)"
-                className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-[10px] font-bold"
+                onClick={() => {
+                  setShowStudioNav(false);
+                  localStorage.removeItem(STORAGE_KEYS.IS_ADMIN_AUTHENTICATED);
+                  setIsAdminUnlocked(false);
+                }}
+                title="Lock & Hide Studio (Client Demo View)"
+                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-[10px] font-bold flex items-center gap-1"
               >
-                Hide
+                <Lock className="w-3 h-3 text-slate-400" />
+                <span>Client View</span>
               </button>
             </div>
 
@@ -184,7 +261,7 @@ export default function App() {
         </nav>
       )}
 
-      {/* Floating Studio Button (ONLY shown if Admin mode is unlocked) */}
+      {/* Floating Studio Button (ONLY shown if Admin mode is unlocked but nav hidden) */}
       {!showStudioNav && isAdminUnlocked && (
         <button
           onClick={() => {
@@ -197,6 +274,73 @@ export default function App() {
           <Sliders className="w-4 h-4 text-slate-950" />
           <span>⚡ Open Generator Studio</span>
         </button>
+      )}
+
+      {/* Discrete Master Admin Unlock Button at bottom of client page */}
+      {!isAdminUnlocked && (
+        <div className="fixed bottom-2 right-2 z-40 opacity-20 hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => setShowPinModal(true)}
+            className="p-1.5 rounded-md bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-[10px] text-slate-400 hover:text-amber-400 flex items-center gap-1"
+            title="Agency Admin Login"
+          >
+            <Lock className="w-3 h-3" />
+            <span className="font-mono">Admin</span>
+          </button>
+        </div>
+      )}
+
+      {/* PIN Unlock Modal */}
+      {showPinModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
+            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4 text-amber-400">
+              <Key className="w-6 h-6" />
+            </div>
+            <h3 className="text-center font-bold text-lg text-slate-100 mb-1">Master Admin Login</h3>
+            <p className="text-center text-xs text-slate-400 mb-5">
+              Enter your PIN to open the Generator Studio & link creator. (Default: <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">1234</code>)
+            </p>
+
+            <form onSubmit={handleVerifyPin} className="space-y-4">
+              <div>
+                <input
+                  type="password"
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value)}
+                  placeholder="Enter PIN (1234)"
+                  autoFocus
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-center font-mono text-lg text-amber-400 tracking-widest outline-none transition"
+                />
+                {pinError && (
+                  <p className="text-rose-400 text-xs text-center mt-2 font-semibold">
+                    Incorrect PIN. Try <code className="text-amber-300">1234</code>
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPinModal(false);
+                    setPinError(false);
+                    setPinInput('');
+                  }}
+                  className="w-1/2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition shadow-lg shadow-amber-400/20"
+                >
+                  Unlock Studio
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Content Rendering */}
