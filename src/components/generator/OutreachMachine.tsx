@@ -209,8 +209,8 @@ export const OutreachMachine: React.FC<OutreachMachineProps> = ({ initialData, o
     return () => clearTimeout(timer);
   }, [dynamicUrl]);
 
-  // Active URL to embed in pitch script
-  const activePitchUrl = (useShortLinkInPitch && shortUrl) ? shortUrl : dynamicUrl;
+  // Active URL to embed in pitch script (Clean short custom domain link)
+  const activePitchUrl = dynamicUrl;
 
   // Generate WhatsApp Roman Urdu Pitch Script tailored per niche
   const generatePitchScript = () => {
@@ -886,22 +886,6 @@ WhatsApp: ${formData.phone}`;
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button
-                      onClick={() => handleFormatChange('smart_params')}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        urlFormat === 'smart_params'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🌟 Full Data Params (Recommended)</span>
-                        {urlFormat === 'smart_params' && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/?b=Clinic&d=Dr...</div>
-                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Works on 100% devices, WhatsApp & mobile</div>
-                    </button>
-
-                    <button
                       onClick={() => handleFormatChange('path')}
                       className={`p-3 rounded-xl border text-left transition ${
                         urlFormat === 'path'
@@ -910,27 +894,11 @@ WhatsApp: ${formData.phone}`;
                       }`}
                     >
                       <div className="text-xs font-bold flex items-center justify-between">
-                        <span>🚀 Clean Path + Param Fallback</span>
+                        <span>🚀 Clean Short Custom Domain (Default)</span>
                         {urlFormat === 'path' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/al-attiq-dental</div>
-                      <div className="text-[9px] text-slate-400 font-normal mt-1">Short path with automatic parameter fallback</div>
-                    </button>
-
-                    <button
-                      onClick={() => handleFormatChange('base64')}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        urlFormat === 'base64'
-                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="text-xs font-bold flex items-center justify-between">
-                        <span>⚡ Compact Hash (#c=)</span>
-                        {urlFormat === 'base64' && <Check className="w-3.5 h-3.5 text-amber-400" />}
-                      </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/#c=eyJuYW1lI...</div>
-                      <div className="text-[9px] text-slate-500 font-normal mt-1">Compact hash string representation</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-90 text-amber-300">websitedemos.space/attiq-vision-care-eye-hospital</div>
+                      <div className="text-[9px] text-emerald-400 font-normal mt-1">✓ Beautiful, clean branded short link</div>
                     </button>
 
                     <button
@@ -945,8 +913,40 @@ WhatsApp: ${formData.phone}`;
                         <span>🔗 Short Client Query</span>
                         {urlFormat === 'query' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                       </div>
-                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?client=slug&b=...</div>
-                      <div className="text-[9px] text-slate-500 font-normal mt-1">Standard query format</div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/?client=attiq-vision-care-eye-hospital</div>
+                      <div className="text-[9px] text-slate-400 font-normal mt-1">Clean query parameter format</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('smart_params')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'smart_params'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>🌟 Full Data Encoded (Debug)</span>
+                        {urlFormat === 'smart_params' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-90 text-slate-400">websitedemos.space/?b=Clinic&d=Dr...</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Encodes every single parameter in URL</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleFormatChange('base64')}
+                      className={`p-3 rounded-xl border text-left transition ${
+                        urlFormat === 'base64'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-300 font-bold shadow-lg'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="text-xs font-bold flex items-center justify-between">
+                        <span>⚡ Compact Base64 Hash</span>
+                        {urlFormat === 'base64' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <div className="text-[10px] font-mono mt-1 opacity-80">websitedemos.space/#c=eyJuYW1lI...</div>
+                      <div className="text-[9px] text-slate-500 font-normal mt-1">Compact hash string representation</div>
                     </button>
                   </div>
                 </div>
@@ -1197,20 +1197,13 @@ WhatsApp: ${formData.phone}`;
                 {/* Short Link Toggle Bar */}
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="useShortToggle"
-                      checked={useShortLinkInPitch}
-                      onChange={(e) => setUseShortLinkInPitch(e.target.checked)}
-                      className="w-4 h-4 accent-amber-500 rounded cursor-pointer"
-                    />
-                    <label htmlFor="useShortToggle" className="text-xs font-bold text-slate-200 cursor-pointer flex items-center space-x-1">
-                      <span>Use Short TinyURL Link in Pitch Message</span>
+                    <span className="text-xs font-bold text-slate-200 flex items-center space-x-1">
+                      <span>Live Custom Domain Link:</span>
                       <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    </label>
+                    </span>
                   </div>
-                  <span className="text-[11px] font-mono text-amber-300 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-800 truncate max-w-xs select-all">
-                    {activePitchUrl}
+                  <span className="text-[11px] font-mono text-amber-300 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-800 truncate max-w-sm select-all">
+                    {dynamicUrl}
                   </span>
                 </div>
 

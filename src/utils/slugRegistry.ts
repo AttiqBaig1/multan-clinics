@@ -222,12 +222,12 @@ export function setCustomDomainSetting(domain: string): void {
 export type UrlFormatType = 'path' | 'query' | 'smart_params' | 'base64' | 'hash';
 
 export function getUrlFormatSetting(): UrlFormatType {
-  if (typeof window === 'undefined') return 'smart_params';
+  if (typeof window === 'undefined') return 'path';
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.URL_FORMAT) as UrlFormatType;
     if (saved && ['path', 'query', 'smart_params', 'base64', 'hash'].includes(saved)) return saved;
   } catch (e) {}
-  return 'smart_params';
+  return 'path';
 }
 
 export function setUrlFormatSetting(format: UrlFormatType): void {
@@ -292,18 +292,18 @@ export function generateClientUrl(
     return params.toString();
   };
 
-  // 1. Smart Parameters format (Default - 100% Guaranteed to carry all Doctor, Phone, Address across all devices & WhatsApp)
-  if (format === 'smart_params') {
-    return `${baseUrl}/?${buildAllParams()}`;
-  }
-
-  // 2. Clean Path format with attached query fallback (Guaranteed on GitHub Pages & custom domains)
+  // 1. Clean Path format (e.g. https://websitedemos.space/attiq-vision-care-eye-hospital or https://websitedemos.space/al-attiq-dental)
   if (format === 'path') {
-    return `${baseUrl}/${cleanSlug}?${buildAllParams()}`;
+    return `${baseUrl}/${cleanSlug}`;
   }
 
-  // 3. Query Slug format: https://websitedemos.space/?client=...&b=...
+  // 2. Short Query Slug format: https://websitedemos.space/?client=slug
   if (format === 'query') {
+    return `${baseUrl}/?client=${cleanSlug}`;
+  }
+
+  // 3. Smart Full Parameters format (when user explicitly selects full parameters)
+  if (format === 'smart_params') {
     return `${baseUrl}/?${buildAllParams()}`;
   }
 

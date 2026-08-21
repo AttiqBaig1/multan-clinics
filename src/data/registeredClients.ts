@@ -2,6 +2,101 @@ import { ClinicTemplateData, MULTAN_PRESETS, PAKISTANI_IMAGES } from './multanTe
 
 // Pre-registered Multan Clients baked directly into code
 export const INITIAL_REGISTERED_CLIENTS: Record<string, ClinicTemplateData> = {
+  // Attiq Vision Care Eye Hospital
+  'attiq-vision-care-eye-hospital': {
+    niche: 'eye',
+    nicheTitle: 'Eye Hospital & Laser Vision Center',
+    businessName: 'Attiq Vision Care Eye Hospital',
+    tagline: '#1 Computer Eye Care in Multan',
+    doctorName: 'Prof. Dr. Attiq',
+    doctorTitle: 'MBBS, FCPS Ophthalmology, Vitreo-Retinal Surgeon',
+    doctorExperience: '16+ Years Experience in Advanced Eye Care & Phaco Surgery',
+    phone: '03006340991',
+    whatsApp: '923006340991',
+    address: 'Zakariya Town st #38',
+    city: 'Multan',
+    timings: '03:30 PM - 08:30 PM (Mon - Sat)',
+    consultationFee: 'Rs. 1,200 (Free for WhatsApp Booking)',
+    heroImage: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1600',
+    doctorImage: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=800',
+    services: [
+      { title: 'Blade-Free Customized LASIK', desc: 'Permanent freedom from glasses and contact lenses with FDA approved German laser.', icon: 'Eye', price: 'Rs. 50,000' },
+      { title: 'Micro-Incision Phaco Cataract', desc: '10-minute painless sutureless cataract surgery with premium foldable lenses.', icon: 'Shield', price: 'Rs. 30,000' },
+      { title: 'Diabetic Retinopathy & Laser', desc: 'Advanced retinal angiography and laser photocoagulation for diabetic eye patients.', icon: 'Sparkles', price: 'Rs. 12,000' },
+      { title: 'Computerized Glaucoma Testing', desc: 'Early detection of ocular pressure (Kala Motia) with computerized visual field analysis.', icon: 'Award', price: 'Book' }
+    ],
+    badges: ['FCPS Vitreo-Retinal Specialist', 'German Carl Zeiss Laser Technology', '100% Painless Phaco Cataract', 'Priority WhatsApp Token'],
+    testimonials: [
+      { name: 'Chaudhry Nadeem (Zakariya Town)', role: 'LASIK Patient', comment: 'Prof. Dr. Attiq performed my LASIK surgery. 6/6 vision restored in 24 hours without any pain!', rating: 5 },
+      { name: 'Haji Abdul Ghaffar (Bosan Road)', role: 'Cataract Patient', comment: 'Got my father cataract phaco surgery done at Attiq Vision Care. Outstanding cleanliness and care.', rating: 5 },
+      { name: 'Dr. Maria Bilal (Cantt Multan)', role: 'Glaucoma Patient', comment: 'Best eye hospital in Multan with state-of-the-art diagnostic equipment.', rating: 5 }
+    ],
+    faqs: [
+      { q: 'What are the clinic timings at Zakariya Town st #38?', a: 'We are open Monday to Saturday from 03:30 PM to 08:30 PM.' },
+      { q: 'Is LASIK eye surgery permanent and safe?', a: 'Yes, blade-free customized LASIK is 100% FDA approved, permanent and takes only 10 minutes.' },
+      { q: 'How can I book a VIP appointment with Prof. Dr. Attiq?', a: 'Click the green WhatsApp button or Call 03006340991 for instant token confirmation.' }
+    ]
+  },
+  'attiq-vision-care': {
+    niche: 'eye',
+    nicheTitle: 'Eye Hospital & Laser Vision Center',
+    businessName: 'Attiq Vision Care Eye Hospital',
+    tagline: '#1 Computer Eye Care in Multan',
+    doctorName: 'Prof. Dr. Attiq',
+    doctorTitle: 'MBBS, FCPS Ophthalmology, Vitreo-Retinal Surgeon',
+    doctorExperience: '16+ Years Experience in Advanced Eye Care & Phaco Surgery',
+    phone: '03006340991',
+    whatsApp: '923006340991',
+    address: 'Zakariya Town st #38',
+    city: 'Multan',
+    timings: '03:30 PM - 08:30 PM (Mon - Sat)',
+    consultationFee: 'Rs. 1,200 (Free for WhatsApp Booking)',
+    heroImage: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1600',
+    doctorImage: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=800',
+    services: [
+      { title: 'Blade-Free Customized LASIK', desc: 'Permanent freedom from glasses and contact lenses with FDA approved German laser.', icon: 'Eye', price: 'Rs. 50,000' },
+      { title: 'Micro-Incision Phaco Cataract', desc: '10-minute painless sutureless cataract surgery with premium foldable lenses.', icon: 'Shield', price: 'Rs. 30,000' },
+      { title: 'Diabetic Retinopathy & Laser', desc: 'Advanced retinal angiography and laser photocoagulation for diabetic eye patients.', icon: 'Sparkles', price: 'Rs. 12,000' },
+      { title: 'Computerized Glaucoma Testing', desc: 'Early detection of ocular pressure (Kala Motia) with computerized visual field analysis.', icon: 'Award', price: 'Book' }
+    ],
+    badges: ['FCPS Vitreo-Retinal Specialist', 'German Carl Zeiss Laser Technology', '100% Painless Phaco Cataract', 'Priority WhatsApp Token'],
+    testimonials: [
+      { name: 'Chaudhry Nadeem (Zakariya Town)', role: 'LASIK Patient', comment: 'Prof. Dr. Attiq performed my LASIK surgery. 6/6 vision restored in 24 hours without any pain!', rating: 5 }
+    ],
+    faqs: [
+      { q: 'What are the clinic timings at Zakariya Town st #38?', a: 'We are open Monday to Saturday from 03:30 PM to 08:30 PM.' }
+    ]
+  },
+  'vision-care-eye-hospital': {
+    niche: 'eye',
+    nicheTitle: 'Eye Hospital & Laser Vision Center',
+    businessName: 'Attiq Vision Care Eye Hospital',
+    tagline: '#1 Computer Eye Care in Multan',
+    doctorName: 'Prof. Dr. Attiq',
+    doctorTitle: 'MBBS, FCPS Ophthalmology, Vitreo-Retinal Surgeon',
+    doctorExperience: '16+ Years Experience in Advanced Eye Care & Phaco Surgery',
+    phone: '03006340991',
+    whatsApp: '923006340991',
+    address: 'Zakariya Town st #38',
+    city: 'Multan',
+    timings: '03:30 PM - 08:30 PM (Mon - Sat)',
+    consultationFee: 'Rs. 1,200 (Free for WhatsApp Booking)',
+    heroImage: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1600',
+    doctorImage: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=800',
+    services: [
+      { title: 'Blade-Free Customized LASIK', desc: 'Permanent freedom from glasses and contact lenses with FDA approved German laser.', icon: 'Eye', price: 'Rs. 50,000' },
+      { title: 'Micro-Incision Phaco Cataract', desc: '10-minute painless sutureless cataract surgery with premium foldable lenses.', icon: 'Shield', price: 'Rs. 30,000' },
+      { title: 'Diabetic Retinopathy & Laser', desc: 'Advanced retinal angiography and laser photocoagulation for diabetic eye patients.', icon: 'Sparkles', price: 'Rs. 12,000' },
+      { title: 'Computerized Glaucoma Testing', desc: 'Early detection of ocular pressure (Kala Motia) with computerized visual field analysis.', icon: 'Award', price: 'Book' }
+    ],
+    badges: ['FCPS Vitreo-Retinal Specialist', 'German Carl Zeiss Laser Technology', '100% Painless Phaco Cataract', 'Priority WhatsApp Token'],
+    testimonials: [
+      { name: 'Chaudhry Nadeem (Zakariya Town)', role: 'LASIK Patient', comment: 'Prof. Dr. Attiq performed my LASIK surgery. 6/6 vision restored in 24 hours without any pain!', rating: 5 }
+    ],
+    faqs: [
+      { q: 'What are the clinic timings at Zakariya Town st #38?', a: 'We are open Monday to Saturday from 03:30 PM to 08:30 PM.' }
+    ]
+  },
   'al-attiq-dental-implant-studio': {
     niche: 'dental',
     nicheTitle: 'Dental Clinic & Implant Center',
