@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { ClinicTemplateData, MULTAN_PRESETS, PAKISTANI_IMAGES } from '../../data/multanTemplates';
 import { DynamicClinicPage } from './DynamicClinicPage';
+import { BulkCSVGenerator } from './BulkCSVGenerator';
 import {
   getSavedClients,
   saveClientProfile,
@@ -51,6 +52,7 @@ interface OutreachMachineProps {
 }
 
 export const OutreachMachine: React.FC<OutreachMachineProps> = ({ initialData, onDataChange, onOpenLiveDemo }) => {
+  const [machineMode, setMachineMode] = useState<'bulk' | 'single'>('bulk');
   const [selectedPresetIndex, setSelectedPresetIndex] = useState<number>(0);
   const [formData, setFormData] = useState<ClinicTemplateData>(initialData || MULTAN_PRESETS[0]);
   const [activeTab, setActiveTab] = useState<'preview' | 'url' | 'pitch' | 'saved' | 'github'>('preview');
@@ -475,9 +477,12 @@ WhatsApp: ${formData.phone}`;
               {MULTAN_PRESETS.map((preset, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSelectPreset(idx)}
+                  onClick={() => {
+                    handleSelectPreset(idx);
+                    setMachineMode('single');
+                  }}
                   className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border ${
-                    selectedPresetIndex === idx
+                    selectedPresetIndex === idx && machineMode === 'single'
                       ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-lg shadow-amber-500/20 scale-105'
                       : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700'
                   }`}
@@ -490,8 +495,48 @@ WhatsApp: ${formData.phone}`;
           </div>
         </div>
 
-        {/* Main Grid: Controls + Preview Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Primary Studio Mode Selector (Bulk vs Single) */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-slate-900/80 p-2 rounded-2xl border border-slate-800">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setMachineMode('bulk')}
+              className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 transition cursor-pointer ${
+                machineMode === 'bulk'
+                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>🚀 Bulk CSV Outreach Engine (200+ Upload)</span>
+            </button>
+
+            <button
+              onClick={() => setMachineMode('single')}
+              className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 transition cursor-pointer ${
+                machineMode === 'single'
+                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              <span>⚡ Single Clinic Customizer & Pitch</span>
+            </button>
+          </div>
+
+          <div className="text-xs text-slate-400 font-medium px-3">
+            {machineMode === 'bulk' ? (
+              <span className="text-emerald-400">● Bulk Mode Active: Upload CSV & Export Enriched Demos</span>
+            ) : (
+              <span className="text-amber-400">● Single Studio Active: Live Edit & Test Pitch</span>
+            )}
+          </div>
+        </div>
+
+        {machineMode === 'bulk' ? (
+          <BulkCSVGenerator />
+        ) : (
+          /* Main Grid: Controls + Preview Panel */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Generator Form Controls */}
           <div className="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
@@ -1269,8 +1314,8 @@ WhatsApp: ${formData.phone}`;
             )}
 
           </div>
-
         </div>
+      )}
 
       </div>
     </div>
