@@ -3,10 +3,19 @@ import { OutreachMachine } from './components/generator/OutreachMachine';
 import { DynamicClinicPage } from './components/generator/DynamicClinicPage';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
+import { ClinicDashboard } from './components/dashboard/ClinicDashboard';
+import { fetchClient } from './utils/clientStore';
 import { findClientBySlug, slugToTitleCase, deriveClinicFromSlug, STORAGE_KEYS } from './utils/slugRegistry';
 import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle, Lock, ShieldCheck, Key } from 'lucide-react';
 
+const IS_DASHBOARD = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('dashboard');
+
 export default function App() {
+  if (IS_DASHBOARD) return <><ClinicDashboard /><ToastContainer /></>;
+  return <SiteApp />;
+}
+
+function SiteApp() {
   const [activeData, setActiveData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]); // Default: Multan Dental Clinic
   const [isGeneratorMode, setIsGeneratorMode] = useState<boolean>(false);
   const [showStudioNav, setShowStudioNav] = useState<boolean>(false);
@@ -14,6 +23,7 @@ export default function App() {
   const [showPinModal, setShowPinModal] = useState<boolean>(false);
   const [pinInput, setPinInput] = useState<string>('');
   const [pinError, setPinError] = useState<boolean>(false);
+  const [remoteLoading, setRemoteLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const parseUrl = () => {
@@ -146,7 +156,22 @@ export default function App() {
         }
       }
 
-      // 4. Preset niche match by slug/hash (e.g. /physio, #dental, /skin, /ortho)
+      // 4. Clean link saved from the dashboard: websitedemos.space/laser-eye-centre-multan
+      if (activeSlug && /^[a-z0-9-]{3,}$/i.test(activeSlug)) {
+        const slugNow = activeSlug;
+        setRemoteLoading(true);
+        fetchClient(slugNow).then(remote => {
+          if (remote) setActiveData(remote);
+          else fallbackFromSlug(slugNow);
+        }).finally(() => setRemoteLoading(false));
+        return;
+      }
+      fallbackFromSlug(activeSlug);
+    };
+
+    // Not saved anywhere: guess from the words in the slug
+    const fallbackFromSlug = (activeSlug: string) => {
+      // 5. Preset niche match by slug/hash (e.g. /physio, #dental, /skin, /ortho)
       if (activeSlug) {
         const matchedPresetBySlug = MULTAN_PRESETS.find(p => 
           p.niche.toLowerCase() === activeSlug.toLowerCase() ||
@@ -158,7 +183,7 @@ export default function App() {
         }
       }
 
-      // 5. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan or /al-attiq-dental)
+      // 6. Automatic Human-Readable Format from unsaved slug (e.g. /dr-ashfaq-physio-multan or /al-attiq-dental)
       if (activeSlug && activeSlug.length > 2 && !activeSlug.includes('.')) {
         const derived = deriveClinicFromSlug(activeSlug);
         setActiveData(derived);
@@ -353,7 +378,15 @@ export default function App() {
           />
         </div>
       ) : (
-        <DynamicClinicPage data={activeData} isStandalone />
+        remoteLoading ? (
+          <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', color: '#94a3b8', fontSize: 14 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ width: 36, height: 36, margin: '0 auto 14px', border: '3px solid rgba(245,158,11,.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'wds-spin .8s linear infinite' }} />
+              Loading…
+              <style>{'@keyframes wds-spin{to{transform:rotate(360deg)}}'}</style>
+            </div>
+          </div>
+        ) : <DynamicClinicPage data={activeData} isStandalone />
       )}
     </div>
   );
