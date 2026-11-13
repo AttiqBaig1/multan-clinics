@@ -23,6 +23,6 @@ View your app in AI Studio: https://ai.studio/apps/e72c8582-a8e6-4767-88fd-e3884
 
 - Dashboard: `websitedemos.space/?dashboard` (password-protected).
 - Save a clinic there and it opens at `websitedemos.space/<clinic-name-city>`, for example `websitedemos.space/laser-eye-centre-multan`.
-- Clinic details are stored as `c/<slug>.json` on the `clients` branch. The site reads them from raw.githubusercontent.com, so a new link works within seconds, with no redeploy.
+- Each clinic is saved as an is.gd short link named `w_<slug>`. It points to the full long link, so no account or token is needed. The site looks that name up when someone opens `websitedemos.space/<slug>`.
 - The same name used again gets `-2`, `-3`, … so old links never change. An identical clinic gets its existing link back.
 - Old long links (`?n=…&b=…`) still work, and the dashboard turns them into short ones.

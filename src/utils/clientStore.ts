@@ -1,11 +1,7 @@
 /**
  * Clean clinic links: websitedemos.space/<slug>
- *
- * Each clinic's details live as a small JSON file on the `clients` branch of
- * this repo (c/<slug>.json). The site reads it from raw.githubusercontent.com,
- * so a new link works within seconds and nothing has to be redeployed.
- * The dashboard (/?dashboard) writes those files with a GitHub token that the
- * owner pastes once; the token stays in that browser only.
+ * The dashboard saves each clinic (no account, no token) and the site reads it
+ * back from the slug. See "storage: is.gd" below.
  */
 import { ClinicTemplateData, MULTAN_PRESETS } from '../data/multanTemplates';
 
@@ -14,7 +10,6 @@ export const REPO = 'multan-clinics';
 export const DATA_BRANCH = 'clients';
 export const SITE_ORIGIN = 'https://websitedemos.space';
 const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${DATA_BRANCH}/c/`;
-const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
 
 export type Niche = ClinicTemplateData['niche'];
 export const NICHES: { id: Niche; label: string }[] = MULTAN_PRESETS.map(p => ({ id: p.niche, label: p.nicheTitle }));
@@ -120,93 +115,98 @@ export function slugFor(o: CompactClinic): string {
   return city && !name.split('-').join('-').includes(city) ? `${name}-${city}` : name;
 }
 
-// ------------------------------------------------------------------ read (public)
-export async function fetchClient(slug: string): Promise<ClinicTemplateData | null> {
-  const s = slugify(slug);
-  if (!s) return null;
-  try {
-    const r = await fetch(`${RAW}${s}.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (!r.ok) return null;
-    return fromCompact(await r.json());
-  } catch {
-    return null;
-  }
-}
+// ------------------------------------------------------------------ storage: is.gd
+// No account or token needed. Each clinic is an is.gd short link with a fixed
+// name (w_<slug>) that points to the full old-style link with all details.
+// websitedemos.space/<slug> looks that name up and builds the page from it.
+const KEY_MAX = 30;                 // is.gd custom name limit
+export const SLUG_MAX = KEY_MAX - 2; // "w_" prefix
+const keyFor = (slug: string) => 'w_' + slug.replace(/-/g, '_');
 
-// ------------------------------------------------------------------ write (dashboard)
-const TOKEN_KEY = 'wds_github_token';
-export const loadToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; } };
-export const saveToken = (t: string) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } };
+const jsonp = (url: string, timeout = 12000): Promise<any> => new Promise(resolve => {
+  const cb = 'wds' + Math.random().toString(36).slice(2);
+  const s = document.createElement('script');
+  const done = (v: any) => { try { delete (window as any)[cb]; } catch { /* */ } s.remove(); resolve(v); };
+  (window as any)[cb] = done;
+  s.src = `${url}&callback=${cb}`;
+  s.onerror = () => done({ errorcode: -1, errormessage: 'network' });
+  document.head.appendChild(s);
+  setTimeout(() => done({ errorcode: -2, errormessage: 'timeout' }), timeout);
+});
 
-async function gh(token: string, path: string, init: RequestInit = {}) {
-  const r = await fetch(path.startsWith('http') ? path : API + path, {
-    ...init,
-    headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(init.body ? { 'Content-Type': 'application/json' } : {}) },
-  });
-  const body = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const msg = (body && body.message) || r.statusText;
-    if (r.status === 401) throw new Error('Token sahi nahi hai ya expire ho gaya hai. Naya token bana kar paste karein.');
-    if (r.status === 403 || r.status === 404) throw new Error(`Token ko is repo (${REPO}) par "Contents: Read and write" ki ijazat nahi hai. (${msg})`);
-    throw new Error(`GitHub: ${msg}`);
-  }
-  return body;
-}
+const PARAM_ORDER: (keyof CompactClinic)[] = ['n', 'b', 'd', 'dt', 'hl', 'p', 'w', 'a', 'c', 'tm', 'f'];
+export const longLinkFor = (o: CompactClinic) => {
+  const q = new URLSearchParams();
+  for (const k of PARAM_ORDER) { const v = o[k]; if (v && String(v).trim()) q.set(k === 'c' ? 'city' : k, String(v).trim()); }
+  return `${SITE_ORIGIN}/?${q.toString()}`;
+};
+const compactFromStored = (url: string) => compactFromLongLink(url.replace(/&amp;/g, '&'));
 
-/** Checks the token can write to the repo. */
-export async function verifyToken(token: string): Promise<string> {
-  const user = await gh(token, 'https://api.github.com/user').catch(() => null);
-  const repo = await gh(token, '');
-  if (repo.permissions && repo.permissions.push === false) throw new Error(`Token ko ${REPO} par likhne ki ijazat nahi hai.`);
-  return (user && user.login) || OWNER;
-}
-
-/** All saved slugs on the data branch. */
-export async function listSlugs(token: string): Promise<string[]> {
-  const ref = await gh(token, `/git/ref/heads/${DATA_BRANCH}`);
-  const tree = await gh(token, `/git/trees/${ref.object.sha}?recursive=1`);
-  return (tree.tree as { path: string }[])
-    .map(t => t.path).filter(p => p.startsWith('c/') && p.endsWith('.json'))
-    .map(p => p.slice(2, -5));
-}
-
-/** Saves many clinics in ONE commit. */
-export async function saveClients(token: string, items: { slug: string; data: CompactClinic }[]): Promise<void> {
-  if (!items.length) return;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const ref = await gh(token, `/git/ref/heads/${DATA_BRANCH}`);
-      const commit = await gh(token, `/git/commits/${ref.object.sha}`);
-      const tree = await gh(token, '/git/trees', {
-        method: 'POST',
-        body: JSON.stringify({
-          base_tree: commit.tree.sha,
-          tree: items.map(i => ({ path: `c/${i.slug}.json`, mode: '100644', type: 'blob', content: JSON.stringify(clean(i.data)) + '\n' })),
-        }),
-      });
-      const next = await gh(token, '/git/commits', {
-        method: 'POST',
-        body: JSON.stringify({ message: `Demo links: ${items.map(i => i.slug).slice(0, 5).join(', ')}${items.length > 5 ? ` +${items.length - 5} more` : ''}`, tree: tree.sha, parents: [ref.object.sha] }),
-      });
-      await gh(token, `/git/refs/heads/${DATA_BRANCH}`, { method: 'PATCH', body: JSON.stringify({ sha: next.sha }) });
-      return;
-    } catch (e: any) {
-      // someone else saved at the same moment -> try again on top of it
-      if (attempt < 2 && /fast forward|Update is not a fast/i.test(String(e?.message))) continue;
-      throw e;
-    }
-  }
-}
-
-/** Raw saved short keys for a slug (or null). */
+/** Short keys saved under a slug (is.gd), or null. */
 export async function fetchCompact(slug: string): Promise<CompactClinic | null> {
+  const s = slugify(slug);
+  if (!s || s.length > SLUG_MAX) return null;
+  const r = await jsonp(`https://is.gd/forward.php?format=json&shorturl=${keyFor(s)}`);
+  if (r && typeof r.url === 'string') {
+    const o = compactFromStored(r.url);
+    if (o) { const c = new URL(r.url.replace(/&amp;/g, '&')).searchParams.get('city'); if (c) o.c = c; }
+    return o;
+  }
+  // older demos saved on the repo's `clients` branch
   try {
-    const r = await fetch(`${RAW}${slug}.json?t=${Date.now()}`, { cache: 'no-store' });
-    return r.ok ? await r.json() : null;
+    const g = await fetch(`${RAW}${s}.json?t=${Date.now()}`, { cache: 'no-store' });
+    return g.ok ? await g.json() : null;
   } catch { return null; }
 }
+
+export async function fetchClient(slug: string): Promise<ClinicTemplateData | null> {
+  const o = await fetchCompact(slug);
+  return o ? fromCompact(o) : null;
+}
+
 export const sameClinic = (a: CompactClinic, b: CompactClinic) =>
   JSON.stringify(Object.entries(clean(a)).sort()) === JSON.stringify(Object.entries(clean(b)).sort());
+
+/** Cuts a slug to the is.gd length limit at a word boundary. */
+export function fitSlug(slug: string, room = 0): string {
+  const max = SLUG_MAX - room;
+  if (slug.length <= max) return slug;
+  const cut = slug.slice(0, max);
+  return cut.includes('-') ? cut.slice(0, cut.lastIndexOf('-')) : cut;
+}
+
+export type SaveResult = { slug: string; status: 'new' | 'same' | 'renamed' } | { slug: ''; status: 'error'; error: string };
+
+/**
+ * Saves one clinic and returns its slug. Same name already used for a
+ * different clinic -> "-2", "-3" ... An identical clinic gets its old link.
+ */
+export async function saveClinic(data: CompactClinic): Promise<SaveResult> {
+  const base = fitSlug(slugFor(data), 3);
+  const long = longLinkFor(data);
+  for (let i = 1; i <= 30; i++) {
+    const slug = i === 1 ? base : `${base}-${i}`;
+    const r = await jsonp(`https://is.gd/create.php?format=json&url=${encodeURIComponent(long)}&shorturl=${keyFor(slug)}`);
+    if (r && r.shorturl) return { slug, status: i === 1 ? 'new' : 'renamed' };
+    if (r && r.errorcode === 2) {                      // name taken: same clinic?
+      const old = await fetchCompact(slug);
+      if (old && sameClinic(old, data)) return { slug, status: 'same' };
+      continue;
+    }
+    if (r && r.errorcode === 3) { await new Promise(t => setTimeout(t, 4000)); i--; continue; } // rate limit
+    return { slug: '', status: 'error', error: (r && r.errormessage) || 'Save nahi hua' };
+  }
+  return { slug: '', status: 'error', error: 'Is naam ke bohat saare link pehle se bane hue hain' };
+}
+
+// links made from this browser (for the "saved" list)
+const HIST = 'wds_saved_links';
+export const loadHistory = (): { slug: string; name: string; at: number }[] => { try { return JSON.parse(localStorage.getItem(HIST) || '[]'); } catch { return []; } };
+export const addHistory = (items: { slug: string; name: string }[]) => {
+  const map = new Map(loadHistory().map(h => [h.slug, h]));
+  for (const i of items) map.set(i.slug, { ...i, at: Date.now() });
+  try { localStorage.setItem(HIST, JSON.stringify([...map.values()].sort((a, b) => b.at - a.at).slice(0, 500))); } catch { /* */ }
+};
 
 const clean = (o: CompactClinic) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && String(v).trim() !== '')) as CompactClinic;
 
