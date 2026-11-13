@@ -82,6 +82,7 @@ export const DynamicClinicPage: React.FC<DynamicClinicPageProps> = ({ data, isSt
 
   // Niche-specific clinical procedure & high-tech facility showcase data
   const getClinicalProcedures = () => {
+    if (data.procedures && data.procedures.length) return data.procedures;
     if (data.niche === 'dental') {
       return [
         {

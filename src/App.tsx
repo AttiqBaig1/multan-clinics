@@ -4,7 +4,7 @@ import { DynamicClinicPage } from './components/generator/DynamicClinicPage';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
 import { ClinicDashboard } from './components/dashboard/ClinicDashboard';
-import { fetchClient } from './utils/clientStore';
+import { detectNiche, fetchClient } from './utils/clientStore';
 import { findClientBySlug, slugToTitleCase, deriveClinicFromSlug, STORAGE_KEYS } from './utils/slugRegistry';
 import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle, Lock, ShieldCheck, Key } from 'lucide-react';
 
@@ -82,15 +82,7 @@ function SiteApp() {
 
       if (nameParam || doctorParam || phoneParam || addressParam || nicheParam || taglineParam || doctorTitleParam || params.get('demo') === 'true') {
         let detectedNiche: ClinicTemplateData['niche'] = (nicheParam as ClinicTemplateData['niche']) || 'dental';
-        if (!nicheParam && nameParam) {
-          const lowerName = nameParam.toLowerCase();
-          if (lowerName.includes('skin') || lowerName.includes('aesthetic') || lowerName.includes('laser')) detectedNiche = 'skin';
-          else if (lowerName.includes('eye') || lowerName.includes('vision') || lowerName.includes('lasik')) detectedNiche = 'eye';
-          else if (lowerName.includes('ortho') || lowerName.includes('bone') || lowerName.includes('joint')) detectedNiche = 'ortho';
-          else if (lowerName.includes('cardio') || lowerName.includes('heart')) detectedNiche = 'cardio';
-          else if (lowerName.includes('vet') || lowerName.includes('pet') || lowerName.includes('animal')) detectedNiche = 'pet';
-          else if (lowerName.includes('physio') || lowerName.includes('rehab') || lowerName.includes('spine')) detectedNiche = 'physio';
-        }
+        if (!nicheParam && nameParam) detectedNiche = detectNiche(nameParam);
 
         // Find best matching base preset for images, services & badges
         let basePreset = MULTAN_PRESETS.find(p => p.niche === detectedNiche) || MULTAN_PRESETS[0];
@@ -175,7 +167,7 @@ function SiteApp() {
       if (activeSlug) {
         const matchedPresetBySlug = MULTAN_PRESETS.find(p => 
           p.niche.toLowerCase() === activeSlug.toLowerCase() ||
-          activeSlug.toLowerCase().includes(p.niche.toLowerCase())
+          activeSlug.toLowerCase().split('-').includes(p.niche.toLowerCase())
         );
         if (matchedPresetBySlug) {
           setActiveData(matchedPresetBySlug);

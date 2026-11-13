@@ -18,7 +18,7 @@ export interface ClinicFAQ {
 }
 
 export interface ClinicData {
-  niche: 'dental' | 'skin' | 'eye' | 'ortho' | 'cardio' | 'peds' | 'gynae' | 'pet' | 'general' | 'physio';
+  niche: import('./data/multanTemplates').ClinicTemplateData['niche'];
   nicheTitle: string;
   businessName: string;
   tagline: string;

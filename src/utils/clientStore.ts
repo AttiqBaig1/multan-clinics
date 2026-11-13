@@ -37,18 +37,45 @@ export const toWhatsApp = (phone: string) => {
   return d;
 };
 
+const NICHE_WORDS: [Niche, RegExp][] = [
+  ['ivf', /\bivf\b|test ?tube|infertil|fertility/],
+  ['hair', /hair ?transplant|\bfue\b|\bprp\b|hair ?loss|hair ?fall|baldness/],
+  ['plastic', /plastic|cosmetic surg|rhinoplast|liposuc|tummy tuck/],
+  ['onco', /cancer|onco|tumou?r|chemo/],
+  ['nephro', /dialysis|nephro|kidney (care|specialist|center|centre|hospital)|creatinine/],
+  ['uro', /urolog|stone|prostate|\buro\b/],
+  ['gastro', /gastro|liver|hepat|endoscop|stomach/],
+  ['pulmo', /chest|asthma|pulmo|\btb\b|lung|respirat/],
+  ['psych', /psychiatr|mental|mind ?care|counsel|psycholog|depress|anxiety|rehab(ilitation)? center for addiction|addiction/],
+  ['endo', /endocrin|thyroid|hormone|diabet/],
+  ['neuro', /neuro|brain|epilep|stroke|migraine/],
+  ['ent', /\bent\b|\bears?\b|\bnose\b|throat|hearing|sinus/],
+  ['radiology', /ultrasound|x-?ray|radiolog|imaging|\bct\b|\bmri\b|doppler|scan cent/],
+  ['lab', /\blab\b|laborator|diagnostic|collection cent|patholog|blood test/],
+  ['pharmacy', /pharma|medical store|chemist|drug store|medicos?\b/],
+  ['homeo', /homeo|homoeo/],
+  ['nutrition', /diet|nutrition|weight loss|slimming/],
+  ['homecare', /home ?(care|nursing)|nursing|elderly|attendant/],
+  ['hospital', /hospital|medical complex|emergency/],
+  ['skin', /skin|aesthetic|derma|cosmetic|laser clinic/],
+  ['eye', /\beye|vision|lasik|optic|ophthal/],
+  ['ortho', /ortho(?!dont)|bone|joint|fracture/],
+  ['cardio', /cardi|heart/],
+  ['pet', /\bvet|\bpet\b|animal/],
+  ['physio', /physio|rehab|spine/],
+  ['gynae', /gyn|maternity|women|mother/],
+  ['peds', /child|peds|paed|pediatric|kids|baby/],
+  ['dental', /dent|teeth|tooth|smile|orthodont/],
+  ['surgery', /laparoscop|general surg|surgical|hernia|gall ?bladder|piles/],
+  ['general', /general|family|clinic|medical|health|physician/],
+];
+
 export function detectNiche(text: string): Niche {
-  const t = (text || '').toLowerCase();
-  if (/skin|aesthetic|derma|cosmetic|hair/.test(t)) return 'skin';
-  if (/eye|vision|lasik|optic|ophthal/.test(t)) return 'eye';
-  if (/ortho|bone|joint|fracture/.test(t)) return 'ortho';
-  if (/cardi|heart/.test(t)) return 'cardio';
-  if (/vet|pet|animal/.test(t)) return 'pet';
-  if (/physio|rehab|spine/.test(t)) return 'physio';
-  if (/gyn|maternity|fertility|women/.test(t)) return 'gynae';
-  if (/child|peds|paed|pediatric|kids/.test(t)) return 'peds';
-  if (/dent|teeth|tooth|smile|orthodont/.test(t)) return 'dental';
-  if (/general|family|diabet|medical|health/.test(t)) return 'general';
+  const t = ` ${(text || '').toLowerCase().replace(/[-_]+/g, ' ')} `;
+  // "eye hospital" is eye, not a general hospital: check specialties before 'hospital'
+  const order = NICHE_WORDS.filter(([id]) => id !== 'hospital');
+  for (const [id, re] of order) if (re.test(t)) return id;
+  if (NICHE_WORDS.find(([id]) => id === 'hospital')![1].test(t)) return 'hospital';
   return 'dental';
 }
 

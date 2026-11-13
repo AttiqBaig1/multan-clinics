@@ -1,5 +1,7 @@
+import { EXTRA_NICHE_IDS, EXTRA_PRESETS } from './extraNiches';
+
 export interface ClinicTemplateData {
-  niche: 'dental' | 'skin' | 'eye' | 'ortho' | 'cardio' | 'peds' | 'gynae' | 'pet' | 'general' | 'physio';
+  niche: 'dental' | 'skin' | 'eye' | 'ortho' | 'cardio' | 'peds' | 'gynae' | 'pet' | 'general' | 'physio' | (typeof EXTRA_NICHE_IDS)[number];
   nicheTitle: string;
   businessName: string;
   tagline: string;
@@ -18,6 +20,8 @@ export interface ClinicTemplateData {
   badges: string[];
   testimonials: { name: string; role: string; comment: string; rating: number }[];
   faqs: { q: string; a: string }[];
+  /** Optional procedure / facility showcase (3 cards). */
+  procedures?: { title: string; desc: string; img: string; badge: string; stats: string }[];
 }
 
 export const PAKISTANI_IMAGES = {
@@ -471,3 +475,6 @@ export const MULTAN_PRESETS: ClinicTemplateData[] = [
     ]
   }
 ];
+
+// 20 more doctor niches (ENT, neuro, urology, kidney, gastro, chest, psychiatry, ...)
+MULTAN_PRESETS.push(...EXTRA_PRESETS);

@@ -1,5 +1,6 @@
 import { ClinicTemplateData, MULTAN_PRESETS } from '../data/multanTemplates';
 import { INITIAL_REGISTERED_CLIENTS } from '../data/registeredClients';
+import { detectNiche } from './clientStore';
 
 export interface SavedClientProfile {
   id: string;
@@ -149,25 +150,8 @@ export function findClientBySlug(slug: string): SavedClientProfile | undefined {
 export function deriveClinicFromSlug(slug: string): ClinicTemplateData {
   const clean = slug.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   
-  // Detect niche
-  let matchedPreset = MULTAN_PRESETS[0]; // Dental default
-  if (clean.includes('skin') || clean.includes('derma') || clean.includes('aesthetic') || clean.includes('laser')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'skin') || MULTAN_PRESETS[1];
-  } else if (clean.includes('eye') || clean.includes('vision') || clean.includes('lasik')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'eye') || MULTAN_PRESETS[2];
-  } else if (clean.includes('physio') || clean.includes('rehab')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'physio') || MULTAN_PRESETS[0];
-  } else if (clean.includes('ortho') || clean.includes('bone') || clean.includes('joint')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'ortho') || MULTAN_PRESETS[3];
-  } else if (clean.includes('cardio') || clean.includes('heart')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'cardio') || MULTAN_PRESETS[4];
-  } else if (clean.includes('child') || clean.includes('peds') || clean.includes('baby')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'peds') || MULTAN_PRESETS[5];
-  } else if (clean.includes('gynae') || clean.includes('mother')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'gynae') || MULTAN_PRESETS[6];
-  } else if (clean.includes('pet') || clean.includes('vet')) {
-    matchedPreset = MULTAN_PRESETS.find(p => p.niche === 'pet') || MULTAN_PRESETS[7];
-  }
+  // Detect niche (30 niches)
+  const matchedPreset = MULTAN_PRESETS.find(p => p.niche === detectNiche(clean)) || MULTAN_PRESETS[0];
 
   // Derive business name & doctor name
   const formattedTitle = slugToTitleCase(slug);
