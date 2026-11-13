@@ -1,7 +1,7 @@
 /**
  * Clean clinic links: websitedemos.space/<slug>
  * The dashboard saves each clinic (no account, no token) and the site reads it
- * back from the slug. See "storage: is.gd" below.
+ * back from the slug. See "storage" below.
  */
 import { ClinicTemplateData, MULTAN_PRESETS } from '../data/multanTemplates';
 
@@ -115,24 +115,32 @@ export function slugFor(o: CompactClinic): string {
   return city && !name.split('-').join('-').includes(city) ? `${name}-${city}` : name;
 }
 
-// ------------------------------------------------------------------ storage: is.gd
-// No account or token needed. Each clinic is an is.gd short link with a fixed
-// name (w_<slug>) that points to the full old-style link with all details.
-// websitedemos.space/<slug> looks that name up and builds the page from it.
-const KEY_MAX = 30;                 // is.gd custom name limit
+// ------------------------------------------------------------------ storage (no account, no token)
+// Every clinic is saved in up to three free services, so one being blocked or
+// down never breaks a link:
+//   1. textdb.online  key  wds_<slug>  -> the short keys as JSON
+//   2. v.gd           name w_<slug>    -> the full old-style long link
+//   3. is.gd          name w_<slug>    -> same (older demos)
+// websitedemos.space/<slug> asks all of them at once and uses the first answer.
+const KEY_MAX = 30;                 // v.gd / is.gd custom name limit
 export const SLUG_MAX = KEY_MAX - 2; // "w_" prefix
-const keyFor = (slug: string) => 'w_' + slug.replace(/-/g, '_');
+const shortKey = (slug: string) => 'w_' + slug.replace(/-/g, '_');
+const tdbKey = (slug: string) => 'wds_' + slug.replace(/-/g, '_');
+const TDB_READ = 'https://textdb.online/';
+const TDB_WRITE = 'https://api.textdb.online/update/';
 
-const jsonp = (url: string, timeout = 12000): Promise<any> => new Promise(resolve => {
+const jsonp = (url: string, timeout = 8000): Promise<any> => new Promise(resolve => {
   const cb = 'wds' + Math.random().toString(36).slice(2);
   const s = document.createElement('script');
-  const done = (v: any) => { try { delete (window as any)[cb]; } catch { /* */ } s.remove(); resolve(v); };
+  let fin = false;
+  const done = (v: any) => { if (fin) return; fin = true; try { delete (window as any)[cb]; } catch { /* */ } s.remove(); resolve(v); };
   (window as any)[cb] = done;
   s.src = `${url}&callback=${cb}`;
   s.onerror = () => done({ errorcode: -1, errormessage: 'network' });
   document.head.appendChild(s);
   setTimeout(() => done({ errorcode: -2, errormessage: 'timeout' }), timeout);
 });
+const withTimeout = <T,>(p: Promise<T>, ms: number, fallback: T) => Promise.race([p, new Promise<T>(r => setTimeout(() => r(fallback), ms))]);
 
 const PARAM_ORDER: (keyof CompactClinic)[] = ['n', 'b', 'd', 'dt', 'hl', 'p', 'w', 'a', 'c', 'tm', 'f'];
 export const longLinkFor = (o: CompactClinic) => {
@@ -140,23 +148,47 @@ export const longLinkFor = (o: CompactClinic) => {
   for (const k of PARAM_ORDER) { const v = o[k]; if (v && String(v).trim()) q.set(k === 'c' ? 'city' : k, String(v).trim()); }
   return `${SITE_ORIGIN}/?${q.toString()}`;
 };
-const compactFromStored = (url: string) => compactFromLongLink(url.replace(/&amp;/g, '&'));
+const fromStoredUrl = (url: string): CompactClinic | null => {
+  const u = url.replace(/&amp;/g, '&');
+  const o = compactFromLongLink(u);
+  if (o) { try { const c = new URL(u).searchParams.get('city'); if (c) o.c = c; } catch { /* */ } }
+  return o;
+};
 
-/** Short keys saved under a slug (is.gd), or null. */
+// --- readers (each returns null when it has nothing / cannot be reached)
+async function readTextDb(slug: string): Promise<CompactClinic | null> {
+  try {
+    const r = await withTimeout(fetch(`${TDB_READ}${tdbKey(slug)}?t=${Date.now()}`, { cache: 'no-store' }), 8000, null as any);
+    if (!r || !r.ok) return null;
+    const t = (await r.text()).trim();
+    if (!t.startsWith('{')) return null;
+    const o = JSON.parse(t);
+    return o && (o.b || o.d) ? o : null;
+  } catch { return null; }
+}
+async function readShort(host: 'v.gd' | 'is.gd', slug: string): Promise<CompactClinic | null> {
+  const r = await jsonp(`https://${host}/forward.php?format=json&shorturl=${shortKey(slug)}`);
+  return r && typeof r.url === 'string' ? fromStoredUrl(r.url) : null;
+}
+async function readGithub(slug: string): Promise<CompactClinic | null> {
+  try {
+    const g = await withTimeout(fetch(`${RAW}${slug}.json?t=${Date.now()}`, { cache: 'no-store' }), 8000, null as any);
+    return g && g.ok ? await g.json() : null;
+  } catch { return null; }
+}
+/** First answer from any store wins. */
+const firstHit = (ps: Promise<CompactClinic | null>[]) => new Promise<CompactClinic | null>(resolve => {
+  let left = ps.length;
+  ps.forEach(p => p.then(v => { if (v) resolve(v); else if (--left === 0) resolve(null); }).catch(() => { if (--left === 0) resolve(null); }));
+});
+
+/** Short keys saved under a slug, or null. */
 export async function fetchCompact(slug: string): Promise<CompactClinic | null> {
   const s = slugify(slug);
-  if (!s || s.length > SLUG_MAX) return null;
-  const r = await jsonp(`https://is.gd/forward.php?format=json&shorturl=${keyFor(s)}`);
-  if (r && typeof r.url === 'string') {
-    const o = compactFromStored(r.url);
-    if (o) { const c = new URL(r.url.replace(/&amp;/g, '&')).searchParams.get('city'); if (c) o.c = c; }
-    return o;
-  }
-  // older demos saved on the repo's `clients` branch
-  try {
-    const g = await fetch(`${RAW}${s}.json?t=${Date.now()}`, { cache: 'no-store' });
-    return g.ok ? await g.json() : null;
-  } catch { return null; }
+  if (!s) return null;
+  const tries = [readTextDb(s), readGithub(s)];
+  if (s.length <= SLUG_MAX) tries.push(readShort('v.gd', s), readShort('is.gd', s));
+  return firstHit(tries);
 }
 
 export async function fetchClient(slug: string): Promise<ClinicTemplateData | null> {
@@ -167,7 +199,7 @@ export async function fetchClient(slug: string): Promise<ClinicTemplateData | nu
 export const sameClinic = (a: CompactClinic, b: CompactClinic) =>
   JSON.stringify(Object.entries(clean(a)).sort()) === JSON.stringify(Object.entries(clean(b)).sort());
 
-/** Cuts a slug to the is.gd length limit at a word boundary. */
+/** Cuts a slug to the short-link name limit at a word boundary. */
 export function fitSlug(slug: string, room = 0): string {
   const max = SLUG_MAX - room;
   if (slug.length <= max) return slug;
@@ -176,6 +208,26 @@ export function fitSlug(slug: string, room = 0): string {
 }
 
 export type SaveResult = { slug: string; status: 'new' | 'same' | 'renamed' } | { slug: ''; status: 'error'; error: string };
+
+async function writeTextDb(slug: string, data: CompactClinic): Promise<boolean> {
+  try {
+    const r = await withTimeout(fetch(`${TDB_WRITE}?key=${tdbKey(slug)}&value=${encodeURIComponent(JSON.stringify(clean(data)))}`), 10000, null as any);
+    if (!r || !r.ok) return false;
+    const j = await r.json().catch(() => null);
+    return !!(j && j.status === 1);
+  } catch { return false; }
+}
+/** 'ok' | 'taken' | 'down' */
+async function createShort(host: 'v.gd' | 'is.gd', slug: string, long: string): Promise<'ok' | 'taken' | 'down'> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const r = await jsonp(`https://${host}/create.php?format=json&url=${encodeURIComponent(long)}&shorturl=${shortKey(slug)}`);
+    if (r && r.shorturl) return 'ok';
+    if (r && r.errorcode === 2) return 'taken';
+    if (r && r.errorcode === 3) { await new Promise(t => setTimeout(t, 4000)); continue; } // rate limit
+    return 'down';
+  }
+  return 'down';
+}
 
 /**
  * Saves one clinic and returns its slug. Same name already used for a
@@ -186,15 +238,17 @@ export async function saveClinic(data: CompactClinic): Promise<SaveResult> {
   const long = longLinkFor(data);
   for (let i = 1; i <= 30; i++) {
     const slug = i === 1 ? base : `${base}-${i}`;
-    const r = await jsonp(`https://is.gd/create.php?format=json&url=${encodeURIComponent(long)}&shorturl=${keyFor(slug)}`);
-    if (r && r.shorturl) return { slug, status: i === 1 ? 'new' : 'renamed' };
-    if (r && r.errorcode === 2) {                      // name taken: same clinic?
-      const old = await fetchCompact(slug);
-      if (old && sameClinic(old, data)) return { slug, status: 'same' };
+    // already used? (any store)
+    const existing = await fetchCompact(slug);
+    if (existing) {
+      if (sameClinic(existing, data)) return { slug, status: 'same' };
       continue;
     }
-    if (r && r.errorcode === 3) { await new Promise(t => setTimeout(t, 4000)); i--; continue; } // rate limit
-    return { slug: '', status: 'error', error: (r && r.errormessage) || 'Save nahi hua' };
+    const [vgd, tdb] = await Promise.all([createShort('v.gd', slug, long), writeTextDb(slug, data)]);
+    if (vgd === 'taken') continue;             // name used on v.gd by something else
+    createShort('is.gd', slug, long).catch(() => {}); // extra copy, best effort
+    if (vgd === 'ok' || tdb) return { slug, status: i === 1 ? 'new' : 'renamed' };
+    return { slug: '', status: 'error', error: 'Internet ya save service se rabta nahi ho saka. Thori der baad dobara try karein.' };
   }
   return { slug: '', status: 'error', error: 'Is naam ke bohat saare link pehle se bane hue hain' };
 }
