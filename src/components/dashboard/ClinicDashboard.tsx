@@ -93,6 +93,18 @@ export const ClinicDashboard: React.FC = () => {
   const [ok, setOk] = useState(() => { try { return sessionStorage.getItem(AUTH_KEY) === PASSWORD_SHA256; } catch { return false; } });
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
+  // Inside the Control Room hub: it sends the password, so no second login.
+  useEffect(() => {
+    if (window.parent === window || ok) return;
+    const HUB = 'https://attiqbaig1.github.io';
+    const onMsg = async (e: MessageEvent) => {
+      if (e.origin !== HUB || !e.data || e.data.type !== 'wds-hub-login' || typeof e.data.password !== 'string') return;
+      if ((await sha256Hex(e.data.password)) === PASSWORD_SHA256) { try { sessionStorage.setItem(AUTH_KEY, PASSWORD_SHA256); } catch { /* */ } setOk(true); }
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: 'wds-hub-ready' }, HUB);
+    return () => window.removeEventListener('message', onMsg);
+  }, [ok]);
   if (ok) return <Dashboard />;
   return (
     <div className="rd"><div className="gate">
