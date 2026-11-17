@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { OutreachMachine } from './components/generator/OutreachMachine';
 import { DynamicClinicPage } from './components/generator/DynamicClinicPage';
+import { Design2 } from './components/designs/Design2';
+import { Design3 } from './components/designs/Design3';
+import { Design4 } from './components/designs/Design4';
+import { Design5 } from './components/designs/Design5';
+import { DesignOptions } from './components/designs/DesignOptions';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
 import { ClinicDashboard } from './components/dashboard/ClinicDashboard';
@@ -378,7 +383,16 @@ function SiteApp() {
               <style>{'@keyframes wds-spin{to{transform:rotate(360deg)}}'}</style>
             </div>
           </div>
-        ) : <DynamicClinicPage data={activeData} isStandalone />
+        ) : (() => {
+          // ?v=2..5 picks another design, ?v=options shows all 5. No ?v keeps the original page.
+          const v = new URLSearchParams(window.location.search).get('v');
+          if (v === 'options') return <DesignOptions d={activeData} slug={window.location.pathname.replace(/^\/+|\/+$/g, '')} />;
+          if (v === '2') return <Design2 d={activeData} />;
+          if (v === '3') return <Design3 d={activeData} />;
+          if (v === '4') return <Design4 d={activeData} />;
+          if (v === '5') return <Design5 d={activeData} />;
+          return <DynamicClinicPage data={activeData} isStandalone />;
+        })()
       )}
     </div>
   );
