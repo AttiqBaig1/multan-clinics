@@ -3,10 +3,10 @@ import { D, DESIGN_NAMES } from './shared';
 
 const NOTES: Record<number, string> = {
   1: 'Full-featured: calculator, booking form, gallery',
-  2: 'Light, clean and trustworthy',
-  3: 'Premium dark with gold, high-end feel',
-  4: 'Warm and friendly, doctor-first',
-  5: 'Bold, big type, mobile call bar',
+  2: 'Calm and trustworthy, prices laid out like a menu',
+  3: 'Premium dark with a glowing accent and booking panel',
+  4: 'Friendly, Urdu headings, 3-step first visit',
+  5: 'Bold poster-style, huge name, mobile call bar',
 };
 
 /** Options page: the clinic sees all 5 designs with its own details and picks one. */
