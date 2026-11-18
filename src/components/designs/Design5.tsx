@@ -4,7 +4,7 @@ import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from '.
 
 /** Design 5, Poster: huge name on a full accent field, photo-reveal treatment index, mosaic and outlined stats. */
 export const Design5: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700');
+  useFonts('family=Archivo:wdth,wght@100,500;100,700;100,800&family=Hanken+Grotesk:wght@400;500;600;700');
   const ref = useReveal();
   const [hov, setHov] = useState(0);
   const ph = pics(d, 1200); const stats = statsOf(d);
@@ -80,14 +80,14 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
 };
 
 const CSS = `
-.p5{--ink:#0d0d0d;--card:#fff;--line:#d9d9d9;--on:#fff;--r:6px;--hf:'Bricolage Grotesque',sans-serif;--fbg:#0d0d0d;min-height:100vh;background:#fff;color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;line-height:1.55;padding-bottom:62px;overflow-x:clip}
+.p5{--ink:#0d0d0d;--card:#fff;--line:#d9d9d9;--on:#fff;--r:6px;--hf:Archivo,sans-serif;--fbg:#0d0d0d;min-height:100vh;background:#fff;color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;line-height:1.55;padding-bottom:62px;overflow-x:clip}
 .p5 *{box-sizing:border-box}.p5 h1,.p5 h2,.p5 h3{font-family:var(--hf)}.p5 a{color:inherit}
 .p5 a:focus-visible,.p5 button:focus-visible,.p5 li:focus-visible{outline:3px solid #000;outline-offset:3px}
 .p5-hero{position:relative;background:var(--a);color:#fff;overflow:hidden;min-height:88vh;display:flex;align-items:flex-end}
 .p5-img{position:absolute;right:0;top:0;width:46%;height:100%;object-fit:cover;mix-blend-mode:multiply;opacity:.95}
 .p5-in{position:relative;padding:48px 32px 60px;max-width:1280px;margin:0 auto;width:100%}
 .p5-meta{display:flex;gap:6px;align-items:center;font-weight:600;margin:0 0 12px;font-size:17px}
-.p5 h1{font-weight:800;font-size:clamp(52px,12vw,176px);line-height:.88;letter-spacing:-.045em;margin:0;max-width:11ch;text-wrap:balance}
+.p5 h1{font-weight:800;font-size:clamp(52px,12vw,176px);line-height:.88;letter-spacing:-.04em;margin:0;max-width:11ch;text-wrap:balance}
 .p5-line{font-size:clamp(18px,2vw,24px);font-weight:500;max-width:34ch;margin:22px 0 0}
 .p5-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
 .p5-b{display:inline-flex;gap:8px;align-items:center;padding:17px 28px;background:#0d0d0d;color:#fff!important;font-weight:700;text-decoration:none;border-radius:6px}.p5-b.out{background:transparent;border:2px solid #fff}

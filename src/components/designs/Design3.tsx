@@ -4,7 +4,7 @@ import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from '.
 
 /** Design 3, Cinematic: full-screen photo with a huge headline, horizontal treatment reel, giant numbers, outlined doctor monogram. */
 export const Design3: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700');
+  useFonts('family=Manrope:wght@400;500;600;700;800');
   const ref = useReveal();
   const reel = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState(0);
@@ -84,7 +84,7 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
 };
 
 const CSS = `
-.c3{--ink:#eaf0f8;--card:#0e1829;--line:rgba(255,255,255,.14);--on:#fff;--r:24px;--hf:Syne,sans-serif;--fbg:#050a12;min-height:100vh;background:#070d18;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.65;overflow-x:clip}
+.c3{--ink:#eaf0f8;--card:#0e1829;--line:rgba(255,255,255,.14);--on:#fff;--r:24px;--hf:Manrope,sans-serif;--fbg:#050a12;min-height:100vh;background:#070d18;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.65;overflow-x:clip}
 .c3 *{box-sizing:border-box}.c3 h1,.c3 h2,.c3 h3{font-family:var(--hf)}.c3 a{color:inherit}
 .c3 a:focus-visible,.c3 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
 .c3-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 50%,#070d18),#070d18)}
@@ -94,7 +94,7 @@ const CSS = `
 .c3-nav b{font-family:var(--hf);font-size:18px}.c3-nav a{text-decoration:none;font-weight:700;font-size:14px;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);border:1px solid var(--line)}
 .c3-in{position:relative;padding:130px max(20px,calc((100vw - 1240px)/2)) 44px}
 .c3-tag{margin:0 0 14px;font-weight:700;font-size:14px;color:color-mix(in srgb,var(--a) 45%,#fff)}
-.c3 h1{font-size:clamp(40px,8vw,112px);line-height:1;font-weight:700;letter-spacing:-.03em;margin:0;max-width:13ch;text-wrap:balance}
+.c3 h1{font-size:clamp(40px,8vw,112px);line-height:1;font-weight:800;letter-spacing:-.035em;margin:0;max-width:14ch;text-wrap:balance}
 .c3-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .c3-b{display:inline-flex;gap:8px;align-items:center;padding:16px 28px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 14px 40px color-mix(in srgb,var(--a) 55%,transparent)}
 .c3-b.ghost{background:rgba(255,255,255,.1);border:1px solid var(--line);box-shadow:none;backdrop-filter:blur(8px)}
