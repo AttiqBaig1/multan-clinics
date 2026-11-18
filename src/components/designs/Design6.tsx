@@ -21,7 +21,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
 
       <section className="frame">
-        <div className="bg"><Img src={ph[0]} /></div>
+        <div className="bg"><Img src={ph[1] || ph[0]} /></div>
         <div className="shade" />
         <header className="hd6">
           <a className="lg" href="#top"><i><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={20} /></i><b>{d.businessName}</b></a>
@@ -57,7 +57,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
           <div className="rail" ref={rail}>
             {d.services.map((s, i) => (
               <a key={i} href={waUrl(d)} target="_blank" rel="noreferrer" className="sc">
-                <Img src={at(i + 1)} /><span className="ov" />
+                <Img src={at(i + 2)} /><span className="ov" />
                 <div className="tx"><i><ServiceIcon name={s.icon} size={18} /></i><b>{s.title}</b><em>{s.price || 'Ask at clinic'}</em></div>
                 <span className="go"><I.ArrowRight size={18} /></span>
               </a>))}
@@ -66,7 +66,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
       </section>
 
       <section className="sec about" id="ab">
-        <div className="ph" data-rv><Img src={at(2)} /><span>{d.city}</span></div>
+        <div className="ph" data-rv><Img src={at(3)} /><span>{d.city}</span></div>
         <div data-rv>
           <small>About the clinic</small>
           <h2>High standards of care and a personal approach</h2>
@@ -95,7 +95,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
         <div className="bn">
           <div><small>Ready for a healthier visit?</small><h2>Book your appointment today</h2><p>Message us on WhatsApp, get a fixed token and skip the waiting room.</p>
             <a className="b p" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp <I.ArrowRight size={16} /></a></div>
-          <div className="im"><Img src={at(3)} /></div>
+          <div className="im"><Img src={at(0)} /></div>
         </div>
       </section>
 
@@ -124,8 +124,8 @@ const CSS = `
 .t6 .sec h2{color:var(--ink)}
 .t6 small{font-size:13px;font-weight:700;color:var(--a)}
 .frame{position:relative;max-width:1240px;margin:14px auto 0;border-radius:30px;overflow:hidden;min-height:620px;background:linear-gradient(135deg,#0f3b46,#0b2430);color:#fff;display:flex;flex-direction:column;width:calc(100% - 28px)}
-.bg{position:absolute;inset:0}.bg img{width:100%;height:100%;object-fit:cover;object-position:70% 30%}
-.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,36,46,.94) 0%,rgba(9,36,46,.78) 40%,rgba(9,36,46,.2) 75%,rgba(9,36,46,.05) 100%),linear-gradient(0deg,rgba(9,36,46,.55),transparent 45%)}
+.bg{position:absolute;inset:0}.bg img{width:100%;height:100%;object-fit:cover;object-position:60% 22%}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,36,46,.92) 0%,rgba(9,36,46,.7) 34%,rgba(9,36,46,.12) 66%,rgba(9,36,46,0) 100%),linear-gradient(0deg,rgba(9,36,46,.55),transparent 45%)}
 .hd6{position:relative;z-index:2;display:flex;align-items:center;gap:28px;padding:22px 30px}
 .lg{display:flex;align-items:center;gap:10px;margin-right:auto;font-weight:800;font-size:17px;letter-spacing:-.01em}.lg i{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center;font-style:normal}
 .hd6 nav{display:flex;gap:28px;font-size:14.5px;font-weight:500;color:rgba(255,255,255,.88)}.hd6 nav a:hover{color:#fff}
@@ -145,8 +145,8 @@ const CSS = `
 .side p{margin:0;color:#52667a;font-size:14.5px}.arrows{display:flex;gap:10px}.arrows button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;color:var(--ink)}.arrows button:hover{background:var(--ink);color:#fff}
 .rail{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}.rail::-webkit-scrollbar{display:none}
 .sc{position:relative;flex:0 0 min(280px,78%);height:340px;border-radius:24px;overflow:hidden;scroll-snap-align:start;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 70%,#0b2430),#0b2430);color:#fff;display:block;transition:transform .25s}.sc:hover{transform:translateY(-4px)}
-.sc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,30,40,.88),rgba(8,30,40,.1) 62%)}
-.tx{position:absolute;left:20px;right:70px;bottom:20px;display:grid;gap:4px}.tx i{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);display:grid;place-items:center;margin-bottom:6px}.tx b{font-size:17px;line-height:1.25;font-weight:700}.tx em{font-style:normal;font-size:13.5px;font-weight:700;color:color-mix(in srgb,var(--a) 35%,#fff)}
+.sc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,30,40,.95) 0%,rgba(8,30,40,.78) 30%,rgba(8,30,40,.12) 62%)}
+.tx{position:absolute;left:20px;right:70px;bottom:20px;display:grid;gap:4px}.tx i{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);display:grid;place-items:center;margin-bottom:6px}.tx b{text-shadow:0 1px 10px rgba(0,0,0,.5);font-size:17px;line-height:1.25;font-weight:700}.tx em{font-style:normal;font-size:13.5px;font-weight:700;color:color-mix(in srgb,var(--a) 35%,#fff)}
 .go{position:absolute;right:18px;bottom:20px;width:42px;height:42px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center}
 .about{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
 .ph{position:relative;height:430px;border-radius:28px;overflow:hidden;background:linear-gradient(150deg,color-mix(in srgb,var(--a) 60%,#0b2430),#0b2430)}.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ph span{position:absolute;left:18px;bottom:18px;background:#fff;color:var(--ink);font-weight:700;font-size:13px;padding:8px 16px;border-radius:999px}
