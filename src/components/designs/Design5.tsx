@@ -4,7 +4,7 @@ import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 5, Vivid: full-colour gradient hero, white sheet rising over it, swipeable treatment cards, review slider. */
 export const Design5: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Manrope:wght@400;500;600;700;800');
+  useFonts('family=Inter:wght@900&family=Manrope:wght@400;500;600;700;800');
   const ref = useReveal();
   const rail = useRef<HTMLDivElement>(null);
   const [rv, setRv] = useState(0);
@@ -27,7 +27,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
         <section className="hero">
           <div className="l">
             <span className="pill"><I.Sparkles size={14} /> {d.nicheTitle} · {d.city}</span>
-            <h1>{d.tagline}</h1>
+            <h1>{d.tagline} with <span>{d.doctorName}</span></h1>
             <p className="lead">{d.doctorName} · {d.doctorTitle}. {d.doctorExperience.replace(/[.\s]+$/, '')}.</p>
             <div className="btns">
               <a className="b w" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={17} /> Book on WhatsApp</a>
@@ -115,7 +115,7 @@ const CSS = `
 .call{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff!important;padding:10px 20px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none;backdrop-filter:blur(8px)}
 .hero{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:50px 20px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
 .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);font-size:13px;font-weight:700}
-.t5 h1{font-size:clamp(40px,6vw,82px);line-height:1;font-weight:800;letter-spacing:-.045em;margin:24px 0 0;max-width:11em;text-wrap:balance}
+.t5 h1{font-family:Inter,Manrope,sans-serif;font-size:clamp(36px,5.4vw,72px);line-height:1.04;font-weight:900;letter-spacing:-.04em;margin:24px 0 0;max-width:14em;text-wrap:balance}.t5 h1 span{color:#fde047}
 .lead{font-size:18px;opacity:.9;max-width:34em;margin:22px 0 0}
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}.b{display:inline-flex;gap:9px;align-items:center;padding:16px 28px;border-radius:18px;font-weight:800;font-size:15px;text-decoration:none;transition:transform .2s}.b:hover{transform:translateY(-2px)}
 .b.w{background:#fff;color:var(--deep)!important;box-shadow:0 18px 36px rgba(0,0,0,.25)}.b.ol{border:1.5px solid rgba(255,255,255,.55);color:#fff!important}

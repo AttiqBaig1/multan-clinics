@@ -4,7 +4,7 @@ import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, Serv
 
 /** Design 3, Night Suite: dark, cinematic. Photo-led service tiles, glowing accent, glass booking card, big doctor feature. */
 export const Design3: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,400');
+  useFonts('family=Inter:wght@900&family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,400');
   const stats = statsOf(d); const gal = galleryOf(d);
   const pic = (i: number) => gal.length ? gal[i % gal.length].src : '';
   return (
@@ -17,7 +17,7 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
         <div className="n3-grid">
           <div>
             <span className="n3-tag"><I.BadgeCheck size={16} /> {d.nicheTitle}</span>
-            <h1>{d.tagline}</h1>
+            <h1>{d.tagline} with <span>{d.doctorName}</span></h1>
             <p className="n3-sub"><em>{d.doctorName}</em>, {d.doctorTitle}</p>
             <div className="n3-cta">
               <a className="n3-b" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> Book on WhatsApp</a>
@@ -98,7 +98,7 @@ const CSS = `
 .n3-top a{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:700;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:999px}
 .n3-grid{position:relative;max-width:1180px;margin:0 auto;padding:44px 24px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
 .n3-tag{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--a) 28%,transparent);border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}
-.n3 h1{font-size:clamp(34px,5vw,62px);line-height:1.05;letter-spacing:-.03em;font-weight:900;margin:20px 0 0;max-width:16ch}
+.n3 h1{font-family:Inter,Manrope,sans-serif;font-size:clamp(34px,5.2vw,66px);line-height:1.06;letter-spacing:-.035em;font-weight:900;margin:20px 0 0;max-width:15em;text-wrap:balance}.n3 h1 span{color:color-mix(in srgb,var(--a) 55%,#fff)}
 .n3-sub{font-size:17px;opacity:.9;margin:18px 0 0}.n3-sub em{font-family:Newsreader,serif;font-size:1.25em}
 .n3-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .n3-b{display:inline-flex;gap:8px;align-items:center;padding:15px 28px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 12px 34px color-mix(in srgb,var(--a) 55%,transparent)}

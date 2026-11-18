@@ -236,7 +236,7 @@ const Dashboard: React.FC = () => {
       <main className="main">
         <header className="hero">
           <h1>Lamba link nahi. <em>Sirf clinic ka naam.</em></h1>
-          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone aur address ek baar bharein, Generate dabayein — bas. Wahi data chhe designs mein khud bhar jata hai, aur har design ke neeche chhota 1 2 3 4 5 6 switcher aata hai taake client saare options dekh sake. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
+          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone, address aur headline ek baar bharein (headline sab designs ka bada, mota heading banti hai), Generate dabayein — bas. Wahi data chhe designs mein khud bhar jata hai, aur har design ke neeche chhota 1 2 3 4 5 6 switcher aata hai taake client saare options dekh sake. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
         </header>
 
         {/* ---------- 2. CLINICS ---------- */}
@@ -274,12 +274,12 @@ const Dashboard: React.FC = () => {
                       <label className="f" htmlFor={`rd-d${i}`}>Doctor ka naam<input id={`rd-d${i}`} value={e.d} onChange={x => upd(i, 'd', x.target.value)} placeholder="Dr. M. Safdar Iqbal Hashmi" /></label>
                       <label className="f" htmlFor={`rd-dt${i}`}>Qualification<input id={`rd-dt${i}`} value={e.dt} onChange={x => upd(i, 'dt', x.target.value)} placeholder="MBBS, FCPS (Eye), DOMS" /></label>
                       <label className="f" htmlFor={`rd-p${i}`}>Phone<input id={`rd-p${i}`} value={e.p} onChange={x => upd(i, 'p', x.target.value)} placeholder="03044485777" inputMode="tel" /></label>
+                      <label className="f cl-wide" htmlFor={`rd-hl${i}`}>Headline (H1) <span className="hint">(site ka sab se bada text: kya treatments, kaun sa speciality. Khaali = niche ka default)</span><input id={`rd-hl${i}`} value={e.hl} onChange={x => upd(i, 'hl', x.target.value)} placeholder="Nose, Liposuction, Tummy Tuck & Burn Scars: FCPS Plastic Surgeon" /></label>
                       <label className="f cl-wide" htmlFor={`rd-a${i}`}>Address<input id={`rd-a${i}`} value={e.a} onChange={x => upd(i, 'a', x.target.value)} placeholder="20-30, Zainab Arcade, Nishtar Rd, Multan" /></label>
                     </div>
-                    <button type="button" className="more-toggle" onClick={() => upd(i, 'open', !e.open)}>{e.open ? '− Kam details' : '+ Aur details (timings, fee, headline, city, WhatsApp) — optional'}</button>
+                    <button type="button" className="more-toggle" onClick={() => upd(i, 'open', !e.open)}>{e.open ? '− Kam details' : '+ Aur details (timings, fee, city, WhatsApp) — optional'}</button>
                     {e.open && (
                       <div className="biz-more">
-                        <label className="f" htmlFor={`rd-hl${i}`}>Headline (H1)<input id={`rd-hl${i}`} value={e.hl} onChange={x => upd(i, 'hl', x.target.value)} placeholder="#1 Eye Care in Multan" /></label>
                         <label className="f" htmlFor={`rd-c${i}`}>City<input id={`rd-c${i}`} value={e.c} onChange={x => upd(i, 'c', x.target.value)} /></label>
                         <label className="f" htmlFor={`rd-tm${i}`}>Timings<input id={`rd-tm${i}`} value={e.tm} onChange={x => upd(i, 'tm', x.target.value)} placeholder="03:30 PM - 08:30 PM (Mon - Sat)" /></label>
                         <label className="f" htmlFor={`rd-f${i}`}>Fee<input id={`rd-f${i}`} value={e.f} onChange={x => upd(i, 'f', x.target.value)} placeholder="Rs. 1,500" /></label>
