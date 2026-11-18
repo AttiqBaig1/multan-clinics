@@ -1,5 +1,47 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ClinicTemplateData } from '../../data/multanTemplates';
+import { ClinicTemplateData, PAKISTANI_IMAGES } from '../../data/multanTemplates';
+import { Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
+
+export const I = { Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
+const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = { Eye, Sparkles, Shield: ShieldCheck, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope };
+export const ServiceIcon: React.FC<{ name: string; size?: number }> = ({ name, size = 24 }) => {
+  const C = ICONS[name] || Stethoscope;
+  return <C size={size} strokeWidth={1.8} />;
+};
+
+/** Real numbers only, taken from the clinic's own data. */
+export const statsOf = (d: D) => {
+  const yrs = (d.doctorExperience.match(/(\d+)\s*\+?\s*(?:years|yrs)/i) || [])[1];
+  const avg = d.testimonials.length ? (d.testimonials.reduce((a, t) => a + t.rating, 0) / d.testimonials.length) : 0;
+  const out: { v: string; l: string }[] = [];
+  if (yrs) out.push({ v: `${yrs}+`, l: 'Years experience' });
+  if (avg) out.push({ v: avg.toFixed(1), l: `Patient rating (${d.testimonials.length} reviews)` });
+  out.push({ v: String(d.services.length), l: 'Treatments offered' });
+  out.push({ v: d.consultationFee.replace(/\s*\(.*\)/, ''), l: 'Consultation fee' });
+  return out.slice(0, 4);
+};
+
+/** Photos for galleries: the clinic's own pictures first, then the speciality's facility photo. */
+export const galleryOf = (d: D): { src: string; label: string }[] => {
+  const out: { src: string; label: string }[] = [];
+  (d.procedures || []).forEach(p => out.push({ src: p.img, label: p.title }));
+  const fac = PAKISTANI_IMAGES.facilities.find(f => f.id === `fac-${d.niche}`);
+  if (fac) out.push({ src: fac.url, label: fac.name });
+  if (d.heroImage && !out.some(o => o.src === d.heroImage)) out.push({ src: d.heroImage, label: d.nicheTitle });
+  return out.slice(0, 4);
+};
+
+export const FloatingWA: React.FC<{ d: D }> = ({ d }) => (
+  <a className="fwa" href={waUrl(d)} target="_blank" rel="noreferrer" aria-label="WhatsApp par appointment">
+    <MessageCircle size={26} />
+  </a>
+);
+export const FWA_CSS = `
+.fwa{position:fixed;right:18px;bottom:18px;z-index:50;width:58px;height:58px;border-radius:50%;background:#25d366;color:#fff!important;display:grid;place-items:center;box-shadow:0 8px 24px rgba(37,211,102,.5)}
+.fwa:after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #25d366;animation:fwa 2.2s ease-out infinite}
+@keyframes fwa{to{transform:scale(1.55);opacity:0}}
+@media(prefers-reduced-motion:reduce){.fwa:after{animation:none}}
+`;
 
 export type D = ClinicTemplateData;
 export const DESIGN_NAMES: Record<number, string> = {
