@@ -19,6 +19,19 @@ View your app in AI Studio: https://ai.studio/apps/e72c8582-a8e6-4767-88fd-e3884
 3. Run the app:
    `npm run dev`
 
+## Five designs per clinic
+
+Every saved clinic opens in five designs, all filled from the same saved details (name, doctor, qualification, phone, address, timings, fee). Change the details in the dashboard and all five update.
+
+- `websitedemos.space/<clinic>`: Design 1, Classic Pro (original page, unchanged)
+- `websitedemos.space/<clinic>?v=2`: Design 2, Fresh
+- `?v=3`: Design 3, Night Suite
+- `?v=4`: Design 4, Sehat
+- `?v=5`: Design 5, Poster
+- `?v=options`: page that shows all five side by side. Send this link to the clinic so they can choose.
+
+Designs 2 to 5 live in `src/components/designs/`. Each gets its accent colour from the clinic's speciality.
+
 ## Clean demo links (websitedemos.space)
 
 - Dashboard: `websitedemos.space/?dashboard` (password-protected).
