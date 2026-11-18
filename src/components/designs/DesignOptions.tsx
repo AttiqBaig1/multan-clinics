@@ -3,7 +3,7 @@ import { D, DESIGN_NAMES } from './shared';
 
 const NOTES: Record<number, string> = {
   1: 'Full-featured: calculator, booking form, gallery',
-  2: 'Sand and forest green, elegant serif, calm editorial',
+  2: 'Dark teal hero, 3-step visit, photo treatment cards, map',
   3: 'Premium dark, photo hero with booking panel',
   4: 'Soft cream and sage, arch photos, gentle wellness feel',
   5: 'Bold grid layout, huge type, black and white photos',

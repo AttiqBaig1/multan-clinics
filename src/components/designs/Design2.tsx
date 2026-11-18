@@ -1,149 +1,127 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, nextDays, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
-import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
-/** Design 2, Terra: sand and deep forest, light serif display, outlined icon trust row, calm editorial lists. */
+/** Design 2, Academy: dark teal hero with centred headline, glass stat chips, 3 steps, photo cards (locked from the Nishtar Academy page). */
 export const Design2: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=DM+Sans:wght@400;500;600;700');
+  useFonts('family=Inter:wght@400;500;600;700;800;900');
   const ref = useReveal();
-  const ph = pics(d, 1400); const stats = statsOf(d);
-  const trust = [
-    { i: <I.ShieldCheck size={34} strokeWidth={1.3} />, t: d.doctorTitle.split(',')[0] + ' specialist' },
-    { i: <I.CalendarCheck size={34} strokeWidth={1.3} />, t: 'Fixed tokens on WhatsApp' },
-    { i: <I.Award size={34} strokeWidth={1.3} />, t: stats[0]?.v + ' ' + (stats[0]?.l || '').toLowerCase() },
-    { i: <I.BadgeCheck size={34} strokeWidth={1.3} />, t: `${d.services.length} treatments, prices listed` },
-    { i: <I.Clock size={34} strokeWidth={1.3} />, t: d.timings.split('(')[0].trim() },
+  const ph = pics(d, 900); const stats = statsOf(d);
+  const embed = `https://maps.google.com/maps?q=${encodeURIComponent(d.businessName + ', ' + d.address + ', ' + d.city)}&output=embed`;
+  const steps = [
+    { t: 'Message us on WhatsApp', p: `Tell us the treatment and the day you prefer. ${d.doctorName} sees patients ${d.timings}.`, tag: d.phone },
+    { t: 'Get your fixed token', p: 'We confirm a time slot, usually within minutes, so you do not wait in a queue.', tag: 'Reply within minutes' },
+    { t: 'Walk in and be seen', p: `Come to ${d.address}. Your token is held for you and the doctor sees you on time.`, tag: d.city },
   ];
   return (
-    <div className="t2" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
+    <div className="t2" ref={ref}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
-      <div className="t2-ann">Appointments by WhatsApp token. {d.timings}. <a href={waUrl(d)} target="_blank" rel="noreferrer">Book now</a></div>
-      <header className="t2-nav">
-        <b>{d.businessName}</b>
-        <nav><a href="#care">Treatments</a><a href="#doctor">Doctor</a><a href="#reviews">Reviews</a><a href="#visit">Visit</a></nav>
-        <a className="t2-join" href={telUrl(d)}>{d.phone}</a>
-      </header>
-
-      <section className="t2-hero">
-        <div className="t2-copy">
-          <p className="t2-kick">{d.nicheTitle}, {d.city}</p>
-          <h1>{d.tagline}</h1>
-          <p className="t2-sub">{d.doctorName} sees you personally at {d.address}. Choose a day, receive a fixed token, and be seen without the long wait.</p>
-          <div className="t2-cta">
-            <a className="t2-b" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp <I.MessageCircle size={17} /></a>
-            <a className="t2-b out" href="#care">See treatments</a>
+      <section className="hero">
+        <div className="glow" />
+        <div className="in">
+          <span className="pill"><I.Sparkles size={15} /> {d.businessName} · {d.nicheTitle}, {d.city}</span>
+          <h1>{d.tagline} with <span className="grad">{d.doctorName}</span></h1>
+          <p className="lead">{d.doctorTitle}. {d.doctorExperience.replace(/[.\s]+$/, '')}. Book a fixed token on WhatsApp and skip the waiting room.</p>
+          <div className="btns">
+            <a className="b p" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp <I.ArrowRight size={16} /></a>
+            <a className="b g" href={telUrl(d)}><I.Phone size={16} /> Call {d.phone}</a>
+            <a className="b e" href={mapUrl(d)} target="_blank" rel="noreferrer"><I.MapPin size={16} /> Directions</a>
           </div>
-        </div>
-        <div className="t2-ph">
-          <div className="t2-big"><i className="r1" /><i className="r2" /><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={150} /></div>
-          <div className="t2-tok"><b>Next available tokens</b>
-            <div>{nextDays().slice(0, 3).map((x, i) => <a key={i} href={waUrl(d, `Day: ${x.label} (${x.sub}). Please confirm my token.`)} target="_blank" rel="noreferrer"><span>{x.label}</span>{x.sub}</a>)}</div>
-          </div>
-          <div className="t2-note"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>consultation</span></div>
+          <div className="chips">{stats.map((s, i) => <div key={i}><b>{s.v}</b><span>{s.l}</span></div>)}</div>
         </div>
       </section>
 
-      <section className="t2-trust">{trust.map((x, i) => <div key={i} data-rv>{x.i}<span>{x.t}</span></div>)}</section>
-
-      <section className="t2-say" data-rv>
-        <p>Care that starts with listening. {d.doctorName} takes the time to explain the problem, the options and the cost, before any treatment begins.</p>
+      <section className="sec">
+        <div className="hd" data-rv><small>Simple 3-step visit</small><h2>How your visit works</h2><p>No calls on hold. Everything is arranged on WhatsApp.</p></div>
+        <div className="g3">{steps.map((s, i) => (
+          <div className="card step" key={i} data-rv><div className={'num ' + (i === 1 ? 'em' : '')}>{i + 1}</div><h3>{i + 1}. {s.t}</h3><p>{s.p}</p><span className={'tg ' + (i === 1 ? 'em' : '')}>{s.tag}</span></div>))}</div>
       </section>
 
-      <section id="care" className="t2-care">
-        <div className="t2-cl" data-rv><h2>Treatments</h2><p>Every price is written next to the treatment. The final fee is confirmed by the doctor after examination.</p>
-          <a className="t2-b" href={waUrl(d)} target="_blank" rel="noreferrer">Book a visit</a></div>
-        <ul>
-          {d.services.map((s, i) => (
-            <li key={i} data-rv>
-              <div className="th"><Img src={ph[(i + 1) % ph.length]} /></div>
-              <div className="tx"><h3>{s.title}</h3><p>{s.desc}</p></div>
-              <b>{s.price || 'Ask at clinic'}</b>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section id="doctor" className="t2-doc">
-        <div className="t2-di">
-          <div data-rv>
-            <p className="t2-kick l">Your doctor</p>
-            <h2>{d.doctorName}</h2>
-            <p className="deg">{d.doctorTitle}</p>
-            <p>{d.doctorExperience}</p>
-            <ul>{d.badges.map((b, i) => <li key={i}>{b}</li>)}</ul>
-          </div>
-          <div className="t2-dp" data-rv><span>{initials(d.doctorName)}</span></div>
+      <section className="band" id="tr">
+        <div className="wrap">
+          <div className="hd l" data-rv><small>Treatments and prices</small><h2>What we treat</h2><p>Every price is listed. {d.consultationFee}</p></div>
+          <div className="g3">{d.services.map((s, i) => (
+            <div className="card course" key={i} data-rv>
+              <div className="th"><Img src={ph[(i + 1) % ph.length]} /><span className="cat">{d.nicheTitle}</span></div>
+              <div className="bd"><h3>{s.title}</h3><p>{s.desc}</p>
+                <div className="ft"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d)} target="_blank" rel="noreferrer">Book <I.ChevronRight size={14} /></a></div></div>
+            </div>))}</div>
         </div>
       </section>
 
-      <WhyUs d={d} title="Why patients choose us" />
+      <section className="sec"><div className="card fac" data-rv>
+        <div className="mono"><span>{initials(d.doctorName)}</span><b>{d.doctorName}</b><em>{d.doctorTitle}</em></div>
+        <div>
+          <small>Your doctor</small>
+          <h2>Care you can trust, from one doctor</h2>
+          <p>{d.doctorExperience}</p>
+          <ul>{d.badges.map((b, i) => <li key={i}><I.BadgeCheck size={16} /> {b}</li>)}</ul>
+        </div></div></section>
+
+      <section className="band alt">
+        <div className="wrap"><div className="hd" data-rv><small>Patient feedback</small><h2>Trusted by patients in {d.city}</h2></div>
+          <div className="g3">{d.testimonials.slice(0, 3).map((t, i) => (
+            <div className="card rv" key={i} data-rv><div className="st">{'★★★★★'}</div><p>“{t.comment}”</p><b>{t.name}</b><span>{t.role}</span></div>))}</div></div>
+      </section>
+
       <CostEstimator d={d} />
-      <Steps d={d} />
 
-      <section id="reviews" className="t2-rev">
-        <h2 className="x-h" data-rv>In patients' words</h2>
-        <div>{d.testimonials.slice(0, 3).map((t, i) => (
-          <figure key={i} data-rv><blockquote>“{t.comment}”</blockquote><figcaption><b>{t.name}</b><span>{t.role}</span></figcaption></figure>
-        ))}</div>
+      <section className="sec two" id="book">
+        <div><div className="hd l" data-rv><small>Questions</small><h2>Before you visit</h2></div><FaqList d={d} /></div>
+        <BookingCard d={d} title="Book your visit" />
       </section>
 
-      <div id="visit"><FindUs d={d} /></div>
-
-      <section className="t2-two">
-        <div><h2 className="x-h" data-rv>Book your token</h2><p className="t2-lead">Pick a treatment and a day. WhatsApp opens with your message ready to send.</p><FaqList d={d} /></div>
-        <BookingCard d={d} title="Request an appointment" />
+      <section className="sec visit" id="vs">
+        <div><div className="hd l" data-rv><small>{d.city} clinic</small><h2>Visit us</h2></div>
+          <div className="card info"><I.MapPin size={20} /><div><b>Address</b><span>{d.address}, {d.city}</span></div></div>
+          <div className="card info"><I.Clock size={20} /><div><b>Timings</b><span>{d.timings}</span></div></div>
+          <div className="card info"><I.Phone size={20} /><div><b>Phone and WhatsApp</b><span>{d.phone}</span></div></div>
+          <a className="b p" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={16} /> Message the clinic on WhatsApp</a></div>
+        <iframe title="Clinic map" src={embed} loading="lazy" />
       </section>
-      <FooterCols d={d} />
-      <FloatingWA d={d} />
+      <FooterCols d={d} /><FloatingWA d={d} />
     </div>
   );
 };
 
 const CSS = `
-.t2{--ink:#1c3a33;--card:#fbf7f1;--line:rgba(28,58,51,.18);--on:#fff;--r:6px;--hf:Fraunces,serif;--hw:300;--hw3:500;--hls:-.02em;--btn:#1c3a33;--btn-fg:#f3ebe1;--wi-bg:rgba(28,58,51,.08);--wi-fg:#1c3a33;--ico:#1c3a33;--est-bg:#1c3a33;--est-fg:#f3ebe1;--band-bg:#1c3a33;--band-fg:#f3ebe1;--fbg:#12261f;min-height:100vh;background:#f3ebe1;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.65;overflow-x:clip}
-.t2 *{box-sizing:border-box}.t2 h1,.t2 h2,.t2 h3{font-family:var(--hf);font-weight:var(--hw)}.t2 a{color:inherit}
-.t2 a:focus-visible,.t2 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
-.t2 .x-sec,.t2-care,.t2-rev,.t2-two{max-width:1240px}
-.t2-ann{background:#cfe3d6;text-align:center;font-size:14.5px;padding:10px 16px}.t2-ann a{font-weight:700;text-decoration:underline;margin-left:8px}
-.t2-nav{background:#12302a;color:#f3ebe1;display:flex;align-items:center;gap:28px;padding:16px max(20px,calc((100vw - 1240px)/2))}
-.t2-nav b{font-family:var(--hf);font-weight:400;font-size:21px;margin-right:auto}.t2-nav nav{display:flex;gap:28px;font-size:15px}.t2-nav nav a{text-decoration:none;opacity:.85}.t2-nav nav a:hover{opacity:1}
-.t2-join{border:1.5px solid #f3ebe1;border-radius:999px;padding:9px 22px;text-decoration:none;font-weight:500;font-size:15px}
-.t2-hero{max-width:1240px;margin:0 auto;padding:72px 20px 56px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-.t2-kick{font-size:15px;font-weight:500;margin:0 0 20px;color:var(--ink)}.t2-kick:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--a);margin-right:10px}
-.t2 h1{font-size:clamp(46px,6.6vw,96px);line-height:1;letter-spacing:-.025em;margin:0;max-width:12ch;font-variation-settings:"opsz" 144}
-.t2-sub{font-size:19px;max-width:44ch;margin:26px 0 0;opacity:.85}
-.t2-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-.t2-b{display:inline-flex;gap:10px;align-items:center;background:#1c3a33;color:#f3ebe1!important;padding:16px 28px;border-radius:999px;font-weight:500;text-decoration:none;transition:transform .2s}
-.t2-b:hover{transform:translateY(-2px)}.t2-b.out{background:transparent;color:#1c3a33!important;border:1.5px solid #1c3a33}
-.t2-ph{position:relative;height:600px}
-.t2-big{position:absolute;right:0;top:0;width:82%;height:92%;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--a) 45%,#1c3a33),#12302a 70%);border-radius:200px 200px 6px 6px}
-.t2-tok{position:absolute;left:0;bottom:6%;background:#fbf7f1;border-radius:14px;padding:18px 20px;box-shadow:0 18px 40px rgba(28,58,51,.18);max-width:300px}.t2-tok b{font-family:var(--hf);font-weight:400;font-size:20px;display:block;margin-bottom:12px}.t2-tok div{display:flex;gap:8px}.t2-tok a{text-decoration:none;border:1.5px solid rgba(28,58,51,.3);border-radius:10px;padding:8px 12px;font-size:13px;display:grid;text-align:center;line-height:1.25}.t2-tok a span{font-weight:700}.t2-tok a:hover{background:#1c3a33;color:#f3ebe1}.t2-big{display:grid;place-items:center;color:#f3ebe1}.t2-big svg{position:relative;z-index:1;stroke-width:.9}.t2-big .r1,.t2-big .r2{position:absolute;border:1px solid rgba(243,235,225,.25);border-radius:50%}.t2-big .r1{width:70%;aspect-ratio:1}.t2-big .r2{width:105%;aspect-ratio:1}
-.t2-small-unused{position:absolute;left:0;bottom:0;width:44%;height:36%;border-radius:6px;overflow:hidden;border:8px solid #f3ebe1;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 30%,#e8dccb),#2d5247)}
-.t2-big img,.t2-small img,.th img,.t2-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.t2-note{position:absolute;right:16px;bottom:8%;background:#f3ebe1;border-radius:6px;padding:12px 18px;display:grid}.t2-note b{font-family:var(--hf);font-weight:400;font-size:20px}.t2-note span{font-size:12.5px;opacity:.7}
-.t2-trust{max-width:1240px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-.t2-trust div{position:relative;border:1.5px solid rgba(28,58,51,.35);border-radius:14px;padding:44px 14px 22px;text-align:center;font-size:15px;line-height:1.35;margin-top:22px}
-.t2-trust svg{position:absolute;left:50%;top:-18px;transform:translateX(-50%);background:#f3ebe1;padding:0 8px;box-sizing:content-box}
-.t2-say{max-width:980px;margin:0 auto;padding:110px 20px 20px;text-align:center}
-.t2-say p{font-family:var(--hf);font-weight:300;font-size:clamp(26px,3.6vw,46px);line-height:1.2;letter-spacing:-.015em;margin:0}
-.t2-care{margin:0 auto;padding:90px 20px 0;display:grid;grid-template-columns:.7fr 1.3fr;gap:64px;align-items:start}
-.t2-cl{position:sticky;top:30px}.t2 h2{font-size:clamp(32px,4.2vw,58px);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px}.t2-cl p{opacity:.8;margin:0 0 26px;max-width:36ch}
-.t2-care ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.t2-care li{display:grid;grid-template-columns:110px 1fr auto;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
-.th{position:relative;width:110px;height:110px;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 35%,#e8dccb),#2d5247)}
-.t2-care h3{margin:0;font-size:26px;line-height:1.15;font-weight:400}.t2-care p{margin:6px 0 0;font-size:15px;opacity:.75;max-width:48ch}
-.t2-care b{font-family:var(--hf);font-weight:400;font-size:22px;color:var(--a);filter:brightness(.85);white-space:nowrap}
-.t2-doc{background:#1c3a33;color:#f3ebe1;margin-top:110px;padding:96px 20px}
-.t2-di{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1fr .85fr;gap:64px;align-items:center}
-.t2-doc h2{color:#f3ebe1}.t2-kick.l{color:#cfe3d6}.t2-doc .deg{font-family:var(--hf);font-size:24px;font-weight:300;margin:0 0 14px;color:#cfe3d6}
-.t2-doc ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid rgba(243,235,225,.25)}.t2-doc li{padding:14px 0;border-bottom:1px solid rgba(243,235,225,.25)}
-.t2-dp{position:relative;aspect-ratio:4/5;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 50%,#1c3a33),#12261f);display:grid;place-items:center;font-family:var(--hf);font-size:100px;font-weight:300;color:rgba(243,235,225,.9)}
-.t2-rev{margin:0 auto;padding:110px 20px 0}.t2-rev>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:34px}
-.t2-rev figure{margin:0;border-top:1px solid #1c3a33;padding-top:22px}.t2-rev blockquote{margin:0 0 20px;font-family:var(--hf);font-weight:300;font-size:23px;line-height:1.3}
-.t2-rev figcaption{display:grid;font-size:14px}.t2-rev figcaption span{opacity:.7}
-.t2-two{margin:0 auto;padding:100px 20px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start}.t2-lead{opacity:.8;margin:-6px 0 26px}
-.faq-i{border-top:1px solid var(--line)}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;font-family:var(--hf);font-size:21px}
-.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 20px;opacity:.8;max-width:60ch}
-.t2 .x-why article,.t2 .x-steps li,.t2 .x-fi{background:#fbf7f1;border-radius:14px}
-@media(max-width:900px){.t2-hero,.t2-care,.t2-di,.t2-two{grid-template-columns:1fr}.t2-ph{height:420px}.t2-trust{grid-template-columns:1fr 1fr}.t2-cl{position:static}.t2-care li{grid-template-columns:80px 1fr}.t2-care li b{grid-column:2}.th{width:80px;height:80px}.t2-nav nav{display:none}.t2-hero{padding-top:44px}.t2-say{padding-top:70px}.t2-doc{margin-top:70px;padding:64px 20px}}
+.t2{--a:#0d9488;--btn:#0d9488;--btn-fg:#fff;--ink:#0f172a;--card:#fff;--line:#e2e8f0;--on:#fff;--r:24px;--hf:Inter,sans-serif;--hw:800;--hw3:700;--hls:-.02em;--wi-bg:#f0fdfa;--wi-fg:#0f766e;--ico:#0f766e;--est-bg:#0f172a;--est-fg:#fff;--band-bg:#0f766e;--band-fg:#fff;--fbg:#0b1220;--fink:#e2e8f0;min-height:100vh;background:#f8fafc;color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.6;overflow-x:clip}
+.t2 *{box-sizing:border-box}.t2 h1,.t2 h2,.t2 h3{font-family:Inter,sans-serif}.t2 a{color:inherit}
+.t2 a:focus-visible,.t2 button:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#042f2e,#0f172a 55%,#020617);color:#fff;padding:84px 20px 90px;border-bottom:1px solid rgba(20,184,166,.25)}
+.glow{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:620px;height:300px;background:rgba(13,148,136,.2);border-radius:50%;filter:blur(70px);pointer-events:none}
+.in{position:relative;max-width:1100px;margin:0 auto;text-align:center}
+.pill{display:inline-flex;gap:8px;align-items:center;padding:7px 16px;border-radius:999px;background:rgba(20,184,166,.15);border:1px solid rgba(45,212,191,.3);color:#5eead4;font-size:13px;font-weight:600}
+.t2 h1{font-size:clamp(34px,5.6vw,66px);line-height:1.08;font-weight:900;letter-spacing:-.03em;margin:26px auto 0;max-width:15em}
+.grad{background:linear-gradient(90deg,#2dd4bf,#6ee7b7);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(16px,1.7vw,19px);color:#cbd5e1;max-width:40em;margin:22px auto 0}
+.btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:34px}
+.b{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:15px 28px;border-radius:16px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .2s,background .2s}
+.b:hover{transform:translateY(-2px)}.b.p{background:#0d9488;color:#fff!important;box-shadow:0 14px 30px rgba(13,148,136,.3)}.b.p:hover{background:#0f766e}
+.b.g{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff!important;backdrop-filter:blur(8px)}.b.e{background:rgba(5,150,105,.2);border:1px solid rgba(16,185,129,.3);color:#6ee7b7!important}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:880px;margin:54px auto 0;padding-top:34px;border-top:1px solid rgba(30,41,59,.9);text-align:left}
+.chips div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 18px;display:grid}.chips b{font-size:26px;font-weight:900;color:#5eead4;line-height:1.1}.chips span{font-size:12.5px;color:#94a3b8;margin-top:4px}
+.sec{max-width:1240px;margin:0 auto;padding:90px 20px 0}.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.hd{text-align:center;max-width:680px;margin:0 auto 46px}.hd.l{text-align:left;margin:0 0 30px}
+.hd small,.fac small{font-size:12px;font-weight:700;color:#0f766e;text-transform:uppercase;letter-spacing:.14em}.hd h2,.fac h2{font-size:clamp(28px,3.8vw,44px);line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:8px 0 10px}.hd p{margin:0;color:#64748b}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:box-shadow .25s,transform .25s}.card:hover{box-shadow:0 18px 40px rgba(15,23,42,.1)}
+.step{padding:32px}.num{width:48px;height:48px;border-radius:16px;background:#f0fdfa;color:#0f766e;font-weight:900;font-size:20px;display:grid;place-items:center;margin-bottom:16px}.num.em{background:#ecfdf5;color:#047857}
+.step h3{margin:0 0 10px;font-size:19px;font-weight:700}.step p{margin:0 0 16px;font-size:14.5px;color:#475569}
+.tg{font:600 12px/1 ui-monospace,monospace;background:#f1f5f9;color:#0f766e;padding:7px 11px;border-radius:10px;display:inline-block}.tg.em{background:#ecfdf5;color:#047857}
+.band{background:#f1f5f9;border-block:1px solid #e2e8f0;margin-top:90px;padding:80px 0}.band.alt{background:#f8fafc;border:0;margin-top:30px;padding-bottom:0}
+.course{overflow:hidden;display:flex;flex-direction:column}.th{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#0f766e,#0f172a)}.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cat{position:absolute;left:12px;top:12px;background:rgba(17,94,89,.92);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px}
+.bd{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1}.course h3{margin:0;font-size:18px;font-weight:700;line-height:1.3}.course p{margin:8px 0 18px;font-size:13.5px;color:#64748b}
+.ft{margin-top:auto;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}.ft b{font-weight:800;font-size:17px}.ft a{display:inline-flex;gap:4px;align-items:center;background:#0d9488;color:#fff!important;font-size:13px;font-weight:700;padding:9px 18px;border-radius:12px;text-decoration:none}
+.fac{display:grid;grid-template-columns:.7fr 1.3fr;gap:50px;padding:46px;align-items:center}
+.mono{text-align:center;display:grid;gap:6px;justify-items:center}.mono span{width:140px;height:140px;border-radius:30px;background:#0f766e;color:#fff;font-size:52px;font-weight:900;display:grid;place-items:center;box-shadow:0 18px 36px rgba(15,118,110,.3)}.mono b{font-size:19px;margin-top:12px}.mono em{font-style:normal;font-size:13.5px;color:#0f766e;font-weight:600;max-width:24ch}
+.fac p{color:#475569;margin:0 0 20px}.fac ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;font-size:14px}.fac li{display:flex;gap:8px;align-items:center}.fac li svg{color:#0d9488;flex:none}
+.rv{padding:28px}.st{color:#f59e0b;letter-spacing:2px;margin-bottom:14px}.rv p{margin:0 0 20px;font-size:14.5px;color:#475569}.rv b{display:block;font-size:14px}.rv span{font-size:12px;color:#94a3b8}
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start}
+.visit{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:stretch;padding-bottom:20px}.visit iframe{width:100%;min-height:420px;height:100%;border:0;border-radius:24px;box-shadow:0 18px 40px rgba(15,23,42,.1)}
+.info{display:flex;gap:14px;align-items:flex-start;padding:18px 22px;margin-bottom:12px}.info svg{color:#0d9488;margin-top:3px;flex:none}.info div{display:grid;font-size:14px}.info b{font-size:12px;color:#0f766e;text-transform:uppercase;letter-spacing:.08em}.info span{color:#475569}.visit .b{margin-top:10px}
+.faq-i{border-top:1px solid #e2e8f0}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:18px 0;cursor:pointer;font-weight:700}.faq-q:focus-visible{outline:3px solid #14b8a6}.faq-a{margin:0 0 18px;color:#475569}
+.t2 .x-sec{max-width:1240px}
+@media(max-width:900px){.chips{grid-template-columns:1fr 1fr}.fac,.two,.visit{grid-template-columns:1fr}.fac{padding:28px}.fac ul{grid-template-columns:1fr}.hero{padding:56px 20px 64px}.sec{padding-top:64px}.band{margin-top:64px;padding:56px 0}.b{width:100%}}
 `;

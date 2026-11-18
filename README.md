@@ -24,7 +24,7 @@ View your app in AI Studio: https://ai.studio/apps/e72c8582-a8e6-4767-88fd-e3884
 Every saved clinic opens in five designs, all filled from the same saved details (name, doctor, qualification, phone, address, timings, fee). Change the details in the dashboard and all five update.
 
 - `websitedemos.space/<clinic>`: Design 1, Classic Pro (original page, unchanged)
-- `websitedemos.space/<clinic>?v=2`: Design 2, Terra
+- `websitedemos.space/<clinic>?v=2`: Design 2, Academy
 - `?v=3`: Design 3, Night Suite
 - `?v=4`: Design 4, Bloom
 - `?v=5`: Design 5, Grid
