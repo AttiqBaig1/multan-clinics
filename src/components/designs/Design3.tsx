@@ -1,109 +1,141 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, nextDays, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
-import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
+import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, accentOf, galleryOf, initials, mapUrl, shortName, statsOf, telUrl, useFonts, waUrl } from './shared';
 
-/** Design 3, Ink: deep navy and ivory, large editorial serif, split-screen hero, glowing accent. */
+/** Design 3, Night Suite: dark, cinematic. Photo-led service tiles, glowing accent, glass booking card, big doctor feature. */
 export const Design3: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700');
-  const ref = useReveal();
-  const ph = pics(d, 1400); const stats = statsOf(d);
+  useFonts('family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,400');
+  const stats = statsOf(d); const gal = galleryOf(d);
+  const pic = (i: number) => gal.length ? gal[i % gal.length].src : '';
   return (
-    <div className="t3" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
-      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
-      <header className="t3-nav"><b>{d.businessName}</b>
-        <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
-        <a className="t3-cta" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp</a></header>
-
-      <section className="t3-hero">
-        <div className="t3-l">
-          <p className="t3-k">{d.nicheTitle} in {d.city}</p>
-          <h1>{d.tagline}</h1>
-          <p className="t3-s">{d.doctorName}, {d.doctorTitle}. {d.address}.</p>
-          <div className="t3-row">
-            <a className="t3-btn" href={waUrl(d)} target="_blank" rel="noreferrer">Book your token <I.MessageCircle size={17} /></a>
-            <a className="t3-btn g" href={telUrl(d)}><I.Phone size={16} /> {d.phone}</a>
+    <div className="n3" style={{ ['--a' as string]: accentOf(d) }}>
+      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
+      <section className="n3-hero">
+        <Img src={d.heroImage} className="n3-bg" />
+        <div className="n3-shade" />
+        <header className="n3-top"><b>{d.businessName}</b><a href={telUrl(d)}><I.Phone size={15} /> {d.phone}</a></header>
+        <div className="n3-grid">
+          <div>
+            <span className="n3-tag"><I.BadgeCheck size={16} /> {d.nicheTitle}</span>
+            <h1>{d.tagline}</h1>
+            <p className="n3-sub"><em>{d.doctorName}</em>, {d.doctorTitle}</p>
+            <div className="n3-cta">
+              <a className="n3-b" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> Book on WhatsApp</a>
+              <a className="n3-b ghost" href={mapUrl(d)} target="_blank" rel="noreferrer"><I.MapPin size={18} /> Directions</a>
+            </div>
+            <div className="n3-stats">{stats.map((s, i) => <div key={i}><b>{s.v}</b><span>{s.l}</span></div>)}</div>
           </div>
-          <dl className="t3-st">{stats.slice(0, 3).map((s, i) => <div key={i}><dt><CountUp value={s.v} /></dt><dd>{s.l}</dd></div>)}</dl>
+          <BookingCard d={d} title="Book your visit" />
         </div>
-        <div className="t3-r"><i className="o1" /><i className="o2" /><i className="o3" /><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={170} />
-          <div className="gl g1"><b>{stats[1]?.v || stats[0]?.v}</b><span>{stats[1]?.l || stats[0]?.l}</span></div>
-          <div className="gl g2"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>Consultation</span></div>
-          <div className="gl g3"><I.CalendarCheck size={18} /><span>Next token: {nextDays()[0].label}</span></div></div>
       </section>
 
-      <section id="tr" className="t3-tr">
-        <div className="t3-hd" data-rv><h2>Treatments and prices</h2><p>Everything is priced up front. {d.consultationFee}</p></div>
-        <div className="t3-g">
+      <WhyUs d={d} />
+
+      <section className="n3-sec">
+        <h2>Treatments</h2>
+        <div className="n3-tiles">
           {d.services.map((s, i) => (
-            <article key={i} data-rv>
-              <div className="im"><Img src={ph[(i + 1) % ph.length]} /></div>
-              <div className="bd"><h3>{s.title}</h3><p>{s.desc}</p><div className="ft"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d)} target="_blank" rel="noreferrer">Book</a></div></div>
+            <article key={i} className="n3-tile">
+              <div className="n3-tph"><Img src={pic(i)} /><span className="n3-ti"><ServiceIcon name={s.icon} /></span></div>
+              <div className="n3-tb"><h3>{s.title}</h3><p>{s.desc}</p>
+                <div className="n3-row"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer">Enquire</a></div></div>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="dr" className="t3-dr">
-        <div className="t3-dp" data-rv><span>{initials(d.doctorName)}</span></div>
-        <div data-rv>
-          <p className="t3-k">Meet your doctor</p>
+      <CostEstimator d={d} />
+
+      <section className="n3-sec n3-doc">
+        <div className="n3-dph"><Img src={d.doctorImage} /><span>{initials(d.doctorName)}</span></div>
+        <div>
+          <p className="n3-kicker">Your specialist</p>
           <h2>{d.doctorName}</h2>
-          <p className="q">“{d.testimonials[0]?.comment}”</p>
-          <p className="by">{d.testimonials[0]?.name}, {d.testimonials[0]?.role}</p>
-          <p className="ex">{d.doctorTitle}. {d.doctorExperience}</p>
-          <ul>{d.badges.map((b, i) => <li key={i}><I.Check size={16} /> {b}</li>)}</ul>
+          <p className="n3-deg">{d.doctorTitle}</p>
+          <p>{d.doctorExperience}</p>
+          <ul>{d.badges.map((b, i) => <li key={i}><I.ShieldCheck size={18} /> {b}</li>)}</ul>
         </div>
       </section>
 
-      <WhyUs d={d} title="Why patients choose us" />
-      <CostEstimator d={d} />
       <Steps d={d} />
 
-      <section id="rv" className="t3-rv"><h2 className="x-h" data-rv>What patients say</h2>
-        <div>{d.testimonials.slice(0, 3).map((t, i) => <figure key={i} data-rv><blockquote>“{t.comment}”</blockquote><figcaption><b>{t.name}</b> {t.role}</figcaption></figure>)}</div></section>
-      <div id="vs"><FindUs d={d} /></div>
-      <section className="t3-two"><div><h2 className="x-h" data-rv>Questions</h2><FaqList d={d} /></div><BookingCard d={d} title="Request an appointment" /></section>
-      <FooterCols d={d} /><FloatingWA d={d} />
+      <section className="n3-sec">
+        <h2>Patient stories</h2>
+        <div className="n3-rev">
+          {d.testimonials.slice(0, 3).map((t, i) => (
+            <figure key={i}>
+              <div className="n3-st">{Array.from({ length: Math.round(t.rating) }).map((_, k) => <I.Star key={k} size={15} fill="#f5b301" stroke="#f5b301" />)}</div>
+              <blockquote>“{t.comment}”</blockquote>
+              <figcaption>{t.name}, {t.role}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <FindUs d={d} />
+
+      <section className="n3-sec n3-faqw"><h2>Questions</h2><FaqList d={d} /></section>
+
+      <section className="n3-end">
+        <h2>{shortName(d.businessName)}</h2>
+        <p>{d.address}, {d.city} · {d.timings}</p>
+        <div className="n3-cta"><a className="n3-b" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> WhatsApp</a><a className="n3-b ghost" href={telUrl(d)}><I.Phone size={18} /> {d.phone}</a></div>
+      </section>
+      <FooterCols d={d} />
+      <FloatingWA d={d} />
     </div>
   );
 };
 
 const CSS = `
-.t3{--ink:#f4efe6;--card:#121f3a;--line:rgba(244,239,230,.16);--on:#0b1426;--r:14px;--hf:'Instrument Serif',serif;--hw:400;--hw3:400;--hls:-.015em;--btn:var(--a);--btn-fg:#0b1426;--wi-bg:rgba(244,239,230,.08);--wi-fg:var(--a);--ico:var(--a);--est-bg:#121f3a;--est-fg:#f4efe6;--band-bg:var(--a);--band-fg:#0b1426;--fbg:#070e1c;--fink:#f4efe6;min-height:100vh;background:#0b1426;color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:17px;line-height:1.65;overflow-x:clip}
-.t3 *{box-sizing:border-box}.t3 h1,.t3 h2,.t3 h3{font-family:var(--hf);font-weight:400}.t3 a{color:inherit}
-.t3 a:focus-visible,.t3 button:focus-visible,.t3 select:focus-visible,.t3 input:focus-visible{outline:3px solid var(--a);outline-offset:3px}
-.t3-nav{position:absolute;z-index:5;left:0;right:0;display:flex;align-items:center;gap:28px;padding:22px max(20px,calc((100vw - 1280px)/2))}
-.t3-nav b{font-family:var(--hf);font-size:24px;font-weight:400;margin-right:auto}.t3-nav nav{display:flex;gap:28px;font-size:15px}.t3-nav nav a{text-decoration:none;opacity:.8}
-.t3-cta{background:var(--a);color:#0b1426!important;padding:11px 22px;border-radius:999px;font-weight:600;text-decoration:none;font-size:15px}
-.t3-hero{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;position:relative}
-.t3-l{padding:150px max(20px,calc((100vw - 1280px)/2)) 70px max(20px,calc((100vw - 1280px)/2));display:flex;flex-direction:column;justify-content:center;background:radial-gradient(600px 400px at 0% 100%,color-mix(in srgb,var(--a) 22%,transparent),transparent)}
-.t3-k{margin:0 0 20px;font-size:15px;color:var(--a);font-weight:600}
-.t3 h1{font-size:clamp(52px,7vw,112px);line-height:.96;letter-spacing:-.02em;margin:0;max-width:11ch}
-.t3-s{margin:26px 0 0;max-width:42ch;opacity:.8;font-size:18px}
-.t3-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
-.t3-btn{display:inline-flex;gap:10px;align-items:center;background:var(--a);color:#0b1426!important;padding:16px 28px;border-radius:999px;font-weight:600;text-decoration:none}
-.t3-btn.g{background:transparent;color:#f4efe6!important;border:1.5px solid var(--line)}
-.t3-st{display:flex;gap:44px;margin:52px 0 0;padding-top:28px;border-top:1px solid var(--line)}.t3-st div{display:grid}
-.t3-st dt{font-family:var(--hf);font-size:44px;line-height:1}.t3-st dt>span{font:inherit}.t3-st dd{margin:6px 0 0;font-size:14px;opacity:.7}
-.t3-r{position:relative;min-height:420px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#0b1426),#0b1426)}
-.t3-r{display:grid;place-items:center;overflow:hidden;color:var(--a)}.t3-r svg.lucide{position:relative;z-index:1;stroke-width:.8;filter:drop-shadow(0 0 30px color-mix(in srgb,var(--a) 60%,transparent))}.t3-r i{position:absolute;border-radius:50%;border:1px solid color-mix(in srgb,var(--a) 35%,transparent)}.o1{width:46%;aspect-ratio:1}.o2{width:72%;aspect-ratio:1;border-color:color-mix(in srgb,var(--a) 22%,transparent)!important}.o3{width:100%;aspect-ratio:1;border-color:color-mix(in srgb,var(--a) 12%,transparent)!important}.gl{position:absolute;z-index:2;background:rgba(244,239,230,.07);border:1px solid rgba(244,239,230,.18);backdrop-filter:blur(10px);border-radius:16px;padding:14px 20px;display:grid;color:#f4efe6}.gl b{font-family:var(--hf);font-weight:400;font-size:32px;line-height:1}.gl span{font-size:13px;opacity:.75;margin-top:4px}.g1{top:22%;right:8%}.g2{bottom:22%;left:10%}.g3{bottom:9%;right:10%;display:flex;gap:10px;align-items:center;padding:12px 18px;color:var(--a)}.g3 span{margin:0;color:#f4efe6;opacity:1}
-.t3-r img,.t3 .im img,.t3-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.t3-fade{position:absolute;inset:0;display:none}
-.t3-tr{max-width:1280px;margin:0 auto;padding:130px 20px 0}
-.t3-hd{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap;margin-bottom:44px}.t3 h2{font-size:clamp(36px,4.8vw,68px);line-height:1;letter-spacing:-.015em;margin:0}.t3-hd p{margin:0;opacity:.75;max-width:36ch}
-.t3-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-.t3-g article{background:#121f3a;border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line);transition:border-color .25s}.t3-g article:hover{border-color:var(--a)}
-.t3 .im{position:relative;aspect-ratio:16/10;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#121f3a),#0b1426)}
-.bd{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1}.t3-g h3{margin:0;font-size:28px;line-height:1.1}.t3-g p{margin:8px 0 18px;font-size:15px;opacity:.72}
-.ft{margin-top:auto;display:flex;justify-content:space-between;align-items:center}.ft b{font-weight:600;color:var(--a)}.ft a{font-size:14px;text-decoration:none;border:1px solid var(--line);padding:7px 16px;border-radius:999px}.ft a:hover{background:var(--a);color:#0b1426}
-.t3-dr{max-width:1280px;margin:0 auto;padding:140px 20px 0;display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:center}
-.t3-dp{position:relative;aspect-ratio:4/5;border-radius:var(--r);overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 50%,#0b1426),#070e1c);display:grid;place-items:center;font-family:var(--hf);font-size:110px;color:rgba(244,239,230,.85)}
-.t3-dr .q{font-family:var(--hf);font-size:clamp(26px,3vw,40px);line-height:1.18;margin:20px 0 10px}.by{opacity:.65;font-size:14.5px;margin:0 0 24px}.ex{opacity:.85;margin:0 0 18px}
-.t3-dr ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.t3-dr li{display:flex;gap:10px;align-items:center}.t3-dr li svg{color:var(--a)}
-.t3-rv{max-width:1280px;margin:0 auto;padding:130px 20px 0}.t3-rv>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:34px}
-.t3-rv figure{margin:0;background:#121f3a;border-radius:var(--r);padding:30px;border:1px solid var(--line)}.t3-rv blockquote{margin:0 0 20px;font-family:var(--hf);font-size:25px;line-height:1.25}.t3-rv figcaption{font-size:14px;opacity:.75}
-.t3-two{max-width:1280px;margin:0 auto;padding:120px 20px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start}
-.faq-i{border-top:1px solid var(--line)}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;font-family:var(--hf);font-size:24px}.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 20px;opacity:.75;max-width:60ch}
-.t3 .x-sec{max-width:1280px}
-@media(max-width:900px){.t3-hero{grid-template-columns:1fr}.t3-r{order:-1;min-height:340px}.t3-fade{background:linear-gradient(0deg,#0b1426,transparent 40%)}.t3-l{padding:44px 20px 56px}.t3-nav{position:relative;background:#0b1426}.t3-nav nav{display:none}.t3-cta{display:none}.t3-dr,.t3-two{grid-template-columns:1fr}.t3-st{gap:26px}.t3-tr{padding-top:80px}.t3-dr{padding-top:80px}}
+.n3{--ink:#e9eef7;--card:rgba(13,25,43,.78);--line:rgba(255,255,255,.16);--on:#fff;--fbg:#050c16;min-height:100vh;background:#08121f;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.6}
+.n3 *{box-sizing:border-box}.n3 h1,.n3 h2,.n3 h3{font-family:inherit}.n3 a{color:inherit}
+.n3 a:focus-visible,.n3 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+.n3-hero{position:relative;overflow:hidden;background:radial-gradient(900px 520px at 88% 8%,color-mix(in srgb,var(--a) 60%,transparent),transparent),linear-gradient(180deg,#0b1a2e,#08121f)}
+.n3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+.n3-shade{position:absolute;inset:0;background:linear-gradient(90deg,#08121f 12%,rgba(8,18,31,.6) 62%,rgba(8,18,31,.25))}
+.n3-top{position:relative;display:flex;justify-content:space-between;align-items:center;max-width:1180px;margin:0 auto;padding:22px 24px}
+.n3-top a{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:700;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:999px}
+.n3-grid{position:relative;max-width:1180px;margin:0 auto;padding:44px 24px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
+.n3-tag{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--a) 28%,transparent);border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}
+.n3 h1{font-size:clamp(34px,5vw,62px);line-height:1.05;letter-spacing:-.03em;font-weight:800;margin:20px 0 0;max-width:16ch}
+.n3-sub{font-size:17px;opacity:.9;margin:18px 0 0}.n3-sub em{font-family:Newsreader,serif;font-size:1.25em}
+.n3-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.n3-b{display:inline-flex;gap:8px;align-items:center;padding:15px 28px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 12px 34px color-mix(in srgb,var(--a) 55%,transparent)}
+.n3-b.ghost{background:rgba(255,255,255,.08);border:1px solid var(--line);box-shadow:none}
+.n3-stats{display:grid;grid-template-columns:repeat(4,auto);gap:10px 28px;margin-top:40px;justify-content:start}
+.n3-stats b{display:block;font-size:24px;font-weight:800}.n3-stats span{font-size:12px;opacity:.7;max-width:110px;display:block;line-height:1.3}
+.n3 .bk{backdrop-filter:blur(16px);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--a) 45%,transparent)}
+.n3-sec{max-width:1180px;margin:0 auto;padding:80px 24px 0}
+.n3 h2{font-size:clamp(27px,3.2vw,40px);letter-spacing:-.02em;font-weight:800;margin:0 0 30px}
+.n3-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.n3-tile{border-radius:22px;overflow:hidden;background:#0e1c31;border:1px solid var(--line);display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+.n3-tile:hover{transform:translateY(-4px);border-color:var(--a)}
+.n3-tph{position:relative;height:170px;background:linear-gradient(140deg,color-mix(in srgb,var(--a) 55%,#0b1a2e),#0b1a2e)}
+.n3-tph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
+.n3-tph:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,#0e1c31)}
+.n3-ti{position:absolute;z-index:2;left:18px;bottom:-22px;width:50px;height:50px;border-radius:15px;background:var(--a);display:grid;place-items:center;color:#fff;box-shadow:0 10px 24px color-mix(in srgb,var(--a) 60%,transparent)}
+.n3-tb{padding:34px 22px 22px;display:flex;flex-direction:column;flex:1}
+.n3-tb h3{margin:0;font-size:18px}.n3-tb p{margin:8px 0 18px;opacity:.72;font-size:14.5px;flex:1}
+.n3-row{display:flex;justify-content:space-between;align-items:center}.n3-row b{color:color-mix(in srgb,var(--a) 50%,#fff);font-size:16px}
+.n3-row a{font-size:13px;font-weight:700;padding:7px 16px;border-radius:999px;border:1px solid var(--line);text-decoration:none}
+.n3-doc{display:grid;grid-template-columns:.85fr 1.15fr;gap:52px;align-items:center}
+.n3-dph{position:relative;aspect-ratio:4/5;border-radius:30px;overflow:hidden;background:linear-gradient(150deg,var(--a),#0b1a2e);display:grid;place-items:center;font-size:90px;font-weight:800;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.5);max-width:440px}
+.n3-dph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.n3-kicker{color:color-mix(in srgb,var(--a) 55%,#fff);font-weight:700;margin:0 0 6px}.n3-doc h2{margin-bottom:8px}
+.n3-deg{font-family:Newsreader,serif;font-style:italic;font-size:22px;margin:0 0 10px;opacity:.9}
+.n3-doc ul{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px}
+.n3-doc li{display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:14.5px}.n3-doc li svg{color:var(--a);flex:none;filter:brightness(1.5)}
+.n3-rev{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.n3-rev figure{margin:0;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.n3-st{display:flex;gap:2px}.n3-rev blockquote{margin:12px 0 16px;font-family:Newsreader,serif;font-style:italic;font-size:19px;line-height:1.45}
+.n3-rev figcaption{font-size:13px;opacity:.7}
+.n3-faqw{max-width:820px}
+.faq-i{border-top:1px solid var(--line)}
+.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:18px 0;cursor:pointer;font-weight:600}
+.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 18px;opacity:.75}
+.n3-end{margin-top:80px;text-align:center;padding:84px 24px 110px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--a) 28%,#08121f))}
+.n3-end h2{font-size:clamp(30px,5vw,54px);margin:0}.n3-end p{opacity:.8;margin:10px 0 0}.n3-end .n3-cta{justify-content:center}
+@media(max-width:860px){.n3-grid,.n3-doc{grid-template-columns:1fr;gap:34px}.n3-grid{padding:26px 20px 56px}.n3-shade{background:linear-gradient(180deg,rgba(8,18,31,.55),#08121f 96%)}.n3-sec{padding:56px 20px 0}.n3-stats{grid-template-columns:1fr 1fr}.n3-dph{max-width:320px}}
+@media(prefers-reduced-motion:no-preference){.n3-bg{animation:n3z 20s ease-out both}@keyframes n3z{from{transform:scale(1.08)}}}
 `;

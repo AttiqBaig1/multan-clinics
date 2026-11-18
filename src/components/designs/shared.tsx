@@ -78,7 +78,7 @@ export const FWA_CSS = `
 
 export type D = ClinicTemplateData;
 export const DESIGN_NAMES: Record<number, string> = {
-  1: 'Classic Pro', 2: 'Terra', 3: 'Ink', 4: 'Bloom', 5: 'Grid',
+  1: 'Classic Pro', 2: 'Terra', 3: 'Night Suite', 4: 'Bloom', 5: 'Grid',
 };
 
 /** Each speciality gets its own accent so every clinic's site looks made for it. */
@@ -150,7 +150,7 @@ export const BookingCard: React.FC<{ d: D; title?: string; cta?: string; button?
         {d.services.map(s => <option key={s.title} value={s.title}>{s.title}</option>)}
         <option value="General consultation">General consultation</option>
       </select>
-      <span className="bk-l">Din</span>
+      <span className="bk-l">Day</span>
       <div className="bk-days" role="radiogroup" aria-label="Din">
         {days.map((x, i) => (
           <button key={i} type="button" role="radio" aria-checked={day === i} className={'bk-d' + (day === i ? ' on' : '')} onClick={() => setDay(i)}>
@@ -158,8 +158,8 @@ export const BookingCard: React.FC<{ d: D; title?: string; cta?: string; button?
           </button>
         ))}
       </div>
-      <label className="bk-l" htmlFor="bk-name">Mareez ka naam (zaroori nahi)</label>
-      <input id="bk-name" className="bk-i" value={name} onChange={e => setName(e.target.value)} placeholder="Naam" />
+      <label className="bk-l" htmlFor="bk-name">Patient name (optional)</label>
+      <input id="bk-name" className="bk-i" value={name} onChange={e => setName(e.target.value)} placeholder="Name" />
       <button className="bk-b" type="submit">{button}</button>
       <p className="bk-n">{cta || `${d.timings} · Fee: ${d.consultationFee}`}</p>
     </form>
