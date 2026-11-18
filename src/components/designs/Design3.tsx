@@ -98,7 +98,7 @@ const CSS = `
 .n3-top a{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:700;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:999px}
 .n3-grid{position:relative;max-width:1180px;margin:0 auto;padding:44px 24px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
 .n3-tag{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--a) 28%,transparent);border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}
-.n3 h1{font-size:clamp(34px,5vw,62px);line-height:1.05;letter-spacing:-.03em;font-weight:800;margin:20px 0 0;max-width:16ch}
+.n3 h1{font-size:clamp(34px,5vw,62px);line-height:1.05;letter-spacing:-.03em;font-weight:900;margin:20px 0 0;max-width:16ch}
 .n3-sub{font-size:17px;opacity:.9;margin:18px 0 0}.n3-sub em{font-family:Newsreader,serif;font-size:1.25em}
 .n3-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .n3-b{display:inline-flex;gap:8px;align-items:center;padding:15px 28px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 12px 34px color-mix(in srgb,var(--a) 55%,transparent)}
