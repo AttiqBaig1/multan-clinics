@@ -5,6 +5,7 @@ import { Design2 } from './components/designs/Design2';
 import { Design3 } from './components/designs/Design3';
 import { Design4 } from './components/designs/Design4';
 import { Design5 } from './components/designs/Design5';
+import { DesignSwitcher } from './components/designs/DesignSwitcher';
 import { DesignOptions } from './components/designs/DesignOptions';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
 import { ToastContainer } from './components/ui/ToastContainer';
@@ -399,11 +400,13 @@ function SiteApp() {
           // ?v=2..5 picks another design, ?v=options shows all 5. No ?v keeps the original page.
           const v = new URLSearchParams(window.location.search).get('v');
           if (v === 'options') return <DesignOptions d={activeData} slug={window.location.pathname.replace(/^\/+|\/+$/g, '')} />;
-          if (v === '2') return <Design2 d={activeData} />;
-          if (v === '3') return <Design3 d={activeData} />;
-          if (v === '4') return <Design4 d={activeData} />;
-          if (v === '5') return <Design5 d={activeData} />;
-          return <DynamicClinicPage data={activeData} isStandalone />;
+          const n = v === '2' || v === '3' || v === '4' || v === '5' ? Number(v) : 1;
+          return (
+            <>
+              {n === 2 ? <Design2 d={activeData} /> : n === 3 ? <Design3 d={activeData} /> : n === 4 ? <Design4 d={activeData} /> : n === 5 ? <Design5 d={activeData} /> : <DynamicClinicPage data={activeData} isStandalone />}
+              <DesignSwitcher current={n} />
+            </>
+          );
         })()
       )}
     </div>
