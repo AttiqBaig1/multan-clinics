@@ -1,4 +1,5 @@
 import React from 'react';
+import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
 import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, accentOf, galleryOf, initials, mapUrl, shortName, statsOf, telUrl, useFonts, waUrl } from './shared';
 
 /** Design 3, Night Suite: dark, cinematic. Photo-led service tiles, glowing accent, glass booking card, big doctor feature. */
@@ -8,7 +9,7 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
   const pic = (i: number) => gal.length ? gal[i % gal.length].src : '';
   return (
     <div className="n3" style={{ ['--a' as string]: accentOf(d) }}>
-      <style>{CSS}{BOOKING_CSS}{FWA_CSS}</style>
+      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
       <section className="n3-hero">
         <Img src={d.heroImage} className="n3-bg" />
         <div className="n3-shade" />
@@ -28,6 +29,8 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <WhyUs d={d} />
+
       <section className="n3-sec">
         <h2>Treatments</h2>
         <div className="n3-tiles">
@@ -41,6 +44,8 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <CostEstimator d={d} />
+
       <section className="n3-sec n3-doc">
         <div className="n3-dph"><Img src={d.doctorImage} /><span>{initials(d.doctorName)}</span></div>
         <div>
@@ -51,6 +56,8 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
           <ul>{d.badges.map((b, i) => <li key={i}><I.ShieldCheck size={18} /> {b}</li>)}</ul>
         </div>
       </section>
+
+      <Steps d={d} />
 
       <section className="n3-sec">
         <h2>Patient stories</h2>
@@ -65,6 +72,8 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <FindUs d={d} />
+
       <section className="n3-sec n3-faqw"><h2>Questions</h2><FaqList d={d} /></section>
 
       <section className="n3-end">
@@ -72,13 +81,14 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
         <p>{d.address}, {d.city} · {d.timings}</p>
         <div className="n3-cta"><a className="n3-b" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> WhatsApp</a><a className="n3-b ghost" href={telUrl(d)}><I.Phone size={18} /> {d.phone}</a></div>
       </section>
+      <FooterCols d={d} />
       <FloatingWA d={d} />
     </div>
   );
 };
 
 const CSS = `
-.n3{--ink:#e9eef7;--card:rgba(13,25,43,.78);--line:rgba(255,255,255,.16);--on:#04101c;min-height:100vh;background:#08121f;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.6}
+.n3{--ink:#e9eef7;--card:rgba(13,25,43,.78);--line:rgba(255,255,255,.16);--on:#fff;--fbg:#050c16;min-height:100vh;background:#08121f;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.6}
 .n3 *{box-sizing:border-box}.n3 h1,.n3 h2,.n3 h3{font-family:inherit}.n3 a{color:inherit}
 .n3 a:focus-visible,.n3 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
 .n3-hero{position:relative;overflow:hidden;background:radial-gradient(900px 520px at 88% 8%,color-mix(in srgb,var(--a) 60%,transparent),transparent),linear-gradient(180deg,#0b1a2e,#08121f)}
@@ -96,7 +106,6 @@ const CSS = `
 .n3-stats{display:grid;grid-template-columns:repeat(4,auto);gap:10px 28px;margin-top:40px;justify-content:start}
 .n3-stats b{display:block;font-size:24px;font-weight:800}.n3-stats span{font-size:12px;opacity:.7;max-width:110px;display:block;line-height:1.3}
 .n3 .bk{backdrop-filter:blur(16px);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--a) 45%,transparent)}
-.n3 .bk-d.on{color:#04101c}
 .n3-sec{max-width:1180px;margin:0 auto;padding:80px 24px 0}
 .n3 h2{font-size:clamp(27px,3.2vw,40px);letter-spacing:-.02em;font-weight:800;margin:0 0 30px}
 .n3-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}

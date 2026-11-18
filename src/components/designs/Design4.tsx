@@ -1,4 +1,5 @@
 import React from 'react';
+import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
 import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, accentOf, galleryOf, initials, mapUrl, statsOf, telUrl, useFonts, waUrl } from './shared';
 
 /** Design 4, Sehat: playful and colourful. Sunny yellow beside the speciality colour, big rounded blocks, bold icon cards, 3-step first visit. */
@@ -7,7 +8,7 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
   const stats = statsOf(d); const gal = galleryOf(d);
   return (
     <div className="s4" style={{ ['--a' as string]: accentOf(d) }}>
-      <style>{CSS}{BOOKING_CSS}{FWA_CSS}</style>
+      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
       <header className="s4-top">
         <span className="s4-logo">{initials(d.businessName).slice(0, 2)}</span>
         <b>{d.businessName}</b>
@@ -35,6 +36,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
 
       <section className="s4-stats">{stats.map((s, i) => <div key={i} className={'k' + (i % 4)}><b>{s.v}</b><span>{s.l}</span></div>)}</section>
 
+      <WhyUs d={d} title="Why families trust us" />
+
       <section className="s4-sec">
         <h2>How we can help</h2>
         <div className="s4-svc">
@@ -47,6 +50,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
           ))}
         </div>
       </section>
+
+      <CostEstimator d={d} />
 
       {gal.length > 1 && (
         <section className="s4-sec"><h2>A look inside</h2>
@@ -65,6 +70,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <FindUs d={d} />
+
       <section className="s4-sec s4-two">
         <div>
           <h2>Happy patients</h2>
@@ -79,14 +86,15 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
           <div className="s4-faq"><h2>Good to know</h2><FaqList d={d} /></div></div>
       </section>
 
-      <footer className="s4-foot"><b>{d.businessName}</b><span>{d.address}, {d.city}</span><a href={mapUrl(d)} target="_blank" rel="noreferrer">Open map</a></footer>
+      <CallBand d={d} />
+      <FooterCols d={d} />
       <FloatingWA d={d} />
     </div>
   );
 };
 
 const CSS = `
-.s4{--ink:#1c2340;--card:#fff;--line:#e6e9f2;--on:#fff;--r:24px;--sun:#ffc93c;min-height:100vh;background:#fffdf8;color:var(--ink);font-family:Nunito,system-ui,sans-serif;line-height:1.6;font-weight:600}
+.s4{--ink:#1c2340;--card:#fff;--line:#e6e9f2;--on:#fff;--r:24px;--sun:#ffc93c;--fbg:#1c2340;min-height:100vh;background:#fffdf8;color:var(--ink);font-family:Nunito,system-ui,sans-serif;line-height:1.6;font-weight:600}
 .s4 *{box-sizing:border-box}.s4 h1,.s4 h2,.s4 h3{font-family:inherit}.s4 a{color:inherit}
 .s4 a:focus-visible,.s4 button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .s4 .k0{--c:var(--a)}.s4 .k1{--c:#ff8a5b}.s4 .k2{--c:#8b6cf0}.s4 .k3{--c:#22b573}

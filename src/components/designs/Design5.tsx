@@ -1,4 +1,5 @@
 import React from 'react';
+import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
 import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, accentOf, galleryOf, mapUrl, shortName, statsOf, telUrl, useFonts, waUrl } from './shared';
 
 /** Design 5, Poster: the clinic name set huge on a full accent field, scrolling treatment strip, photo mosaic, hard-edged price rows. */
@@ -8,7 +9,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
   const stats = statsOf(d); const gal = galleryOf(d);
   return (
     <div className="p5" style={{ ['--a' as string]: accentOf(d) }}>
-      <style>{CSS}{BOOKING_CSS}{FWA_CSS}</style>
+      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
       <section className="p5-hero">
         <Img src={d.heroImage} className="p5-img" />
         <div className="p5-in">
@@ -26,6 +27,8 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
 
       <section className="p5-stats">{stats.map((s, i) => <div key={i}><b>{s.v}</b><span>{s.l}</span></div>)}</section>
 
+      <WhyUs d={d} title="Why choose us" />
+
       <section className="p5-sec">
         <h2>Treatments and prices</h2>
         <ul className="p5-rows">
@@ -38,6 +41,8 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
           ))}
         </ul>
       </section>
+
+      <CostEstimator d={d} />
 
       {gal.length > 1 && (
         <section className="p5-mos">{gal.map((g, i) => <figure key={i}><Img src={g.src} /><figcaption>{g.label}</figcaption></figure>)}</section>
@@ -52,6 +57,9 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
         </div>
         <div className="p5-dp"><Img src={d.doctorImage} /></div>
       </section>
+
+      <Steps d={d} />
+      <FindUs d={d} />
 
       <section className="p5-split">
         <div className="p5-l">
@@ -74,6 +82,8 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
         <div><h2>Questions</h2><FaqList d={d} /></div>
       </section>
 
+      <CallBand d={d} />
+      <FooterCols d={d} />
       <div className="p5-bar"><a href={telUrl(d)}>Call</a><a className="w" href={waUrl(d)} target="_blank" rel="noreferrer">WhatsApp</a></div>
       <FloatingWA d={d} />
     </div>
@@ -81,7 +91,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
 };
 
 const CSS = `
-.p5{--ink:#0d0d0d;--card:#fff;--line:#d9d9d9;--on:#fff;--r:6px;min-height:100vh;background:#fff;color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;line-height:1.55;padding-bottom:62px}
+.p5{--ink:#0d0d0d;--card:#fff;--line:#d9d9d9;--on:#fff;--r:6px;--hf:'Bricolage Grotesque',sans-serif;--fbg:#0d0d0d;min-height:100vh;background:#fff;color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;line-height:1.55;padding-bottom:62px}
 .p5 *{box-sizing:border-box}.p5 h1,.p5 h2,.p5 h3{font-family:'Bricolage Grotesque',sans-serif}.p5 a{color:inherit}
 .p5 a:focus-visible,.p5 button:focus-visible{outline:3px solid #000;outline-offset:3px}
 .p5-hero{position:relative;background:var(--a);color:#fff;overflow:hidden;min-height:84vh;display:flex;align-items:flex-end}

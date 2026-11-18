@@ -1,4 +1,5 @@
 import React from 'react';
+import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
 import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, accentOf, galleryOf, initials, mapUrl, statsOf, telUrl, useFonts, waUrl } from './shared';
 
 /** Design 2, Fresh: bright gradient hero with the doctor's portrait and floating info chips, overlapping stat cards, icon service cards. */
@@ -7,7 +8,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
   const stats = statsOf(d); const gal = galleryOf(d);
   return (
     <div className="f2" style={{ ['--a' as string]: accentOf(d) }}>
-      <style>{CSS}{BOOKING_CSS}{FWA_CSS}</style>
+      <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
       <div className="f2-bar"><span><I.Clock size={14} /> {d.timings}</span><a href={telUrl(d)}><I.Phone size={14} /> {d.phone}</a></div>
       <header className="f2-nav">
         <b>{d.businessName}</b>
@@ -39,6 +40,8 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
         {stats.map((s, i) => <div key={i}><b>{s.v}</b><span>{s.l}</span></div>)}
       </section>
 
+      <WhyUs d={d} />
+
       <section className="f2-sec">
         <h2>Our treatments</h2><p className="f2-lead">Clear prices, modern equipment, one specialist.</p>
         <div className="f2-svc">
@@ -51,6 +54,8 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
           ))}
         </div>
       </section>
+
+      <CostEstimator d={d} />
 
       {gal.length > 1 && (
         <section className="f2-sec">
@@ -69,6 +74,8 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <Steps d={d} />
+
       <section className="f2-sec">
         <h2>What patients say</h2>
         <div className="f2-rev">
@@ -82,6 +89,8 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
+      <FindUs d={d} />
+
       <section className="f2-cta2">
         <div className="f2-cta2-in">
           <div><h2>Book your token today</h2><p><I.MapPin size={16} /> {d.address}, {d.city}</p><p><I.Clock size={16} /> {d.timings}</p>
@@ -91,7 +100,8 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
       </section>
 
       <section className="f2-sec f2-faqw"><h2>Common questions</h2><FaqList d={d} /></section>
-      <footer className="f2-end">© {new Date().getFullYear()} {d.businessName} · {d.phone}</footer>
+      <CallBand d={d} />
+      <FooterCols d={d} />
       <FloatingWA d={d} />
     </div>
   );
