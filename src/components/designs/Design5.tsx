@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
 /** Design 5, Grid: white, hairline grid, huge tight sans, one bold accent block, photo strip. */
@@ -22,7 +22,11 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
-      <section className="t5-strip">{[0, 1, 2].map(i => <div key={i} className="p"><Img src={ph[i] || ph[0]} /></div>)}</section>
+      <section className="t5-strip">
+        <div className="p a"><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={200} /></div>
+        <div className="p b"><b>{stats[1]?.v || stats[0]?.v}</b><span>{stats[1]?.l || stats[0]?.l}</span></div>
+        <div className="p c"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>Consultation</span><em>{d.timings}</em></div>
+      </section>
 
       <section className="t5-stats">
         <div className="blk"><b>{d.doctorName}</b><span>{d.doctorTitle}</span></div>
@@ -74,8 +78,9 @@ const CSS = `
 .t5-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
 .t5-btn{display:inline-flex;gap:8px;align-items:center;background:#0e0e10;color:#fff!important;padding:17px 28px;font-weight:600;text-decoration:none}.t5-btn.o{background:#fff;color:#0e0e10!important;border:1.5px solid #0e0e10}.t5-btn:hover{background:var(--a)}
 .t5-strip{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;height:min(46vw,520px);border-block:1px solid #0e0e10}
-.p{position:relative;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#fff),#0e0e10);border-right:1px solid #0e0e10}.p:last-child{border:0}
-.p img,.pp img,.t5-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .5s}.p:hover img,.t5-tr li a:hover .pp img{filter:none}
+.p{display:flex;flex-direction:column;justify-content:flex-end;padding:28px;position:relative;overflow:hidden;border-right:1px solid #0e0e10}.p:last-child{border:0}
+.p.a{background:var(--a);color:#fff;align-items:flex-start;justify-content:center}.p.a svg{width:min(18vw,230px);height:auto;stroke-width:.9}.p.b{background:#0e0e10;color:#fff}.p.c{background:#f2f2ee}.p b{font:800 clamp(44px,7vw,110px)/.9 var(--hf);letter-spacing:-.05em}.p.c b{font-size:clamp(34px,4.6vw,68px);white-space:nowrap}.p span{font-size:15px;opacity:.75;margin-top:10px}.p em{font-style:normal;font-size:14px;opacity:.65;margin-top:4px}
+.pp img,.t5-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .5s}.p:hover img,.t5-tr li a:hover .pp img{filter:none}
 .t5-stats{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;border-inline:1px solid #0e0e10}
 .t5-stats div{padding:30px 24px;border-right:1px solid #0e0e10;display:grid;gap:4px}.t5-stats div:last-child{border:0}
 .t5-stats b{font:700 clamp(30px,3.4vw,52px)/1 var(--hf);letter-spacing:-.03em}.t5-stats b>span{font:inherit}.t5-stats span{font-size:14px;opacity:.7}

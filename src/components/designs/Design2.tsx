@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, nextDays, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
 /** Design 2, Terra: sand and deep forest, light serif display, outlined icon trust row, calm editorial lists. */
@@ -35,8 +35,10 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
           </div>
         </div>
         <div className="t2-ph">
-          <div className="t2-big"><Img src={ph[0]} /></div>
-          <div className="t2-small"><Img src={ph[1]} /></div>
+          <div className="t2-big"><i className="r1" /><i className="r2" /><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={150} /></div>
+          <div className="t2-tok"><b>Next available tokens</b>
+            <div>{nextDays().slice(0, 3).map((x, i) => <a key={i} href={waUrl(d, `Day: ${x.label} (${x.sub}). Please confirm my token.`)} target="_blank" rel="noreferrer"><span>{x.label}</span>{x.sub}</a>)}</div>
+          </div>
           <div className="t2-note"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>consultation</span></div>
         </div>
       </section>
@@ -114,8 +116,9 @@ const CSS = `
 .t2-b{display:inline-flex;gap:10px;align-items:center;background:#1c3a33;color:#f3ebe1!important;padding:16px 28px;border-radius:999px;font-weight:500;text-decoration:none;transition:transform .2s}
 .t2-b:hover{transform:translateY(-2px)}.t2-b.out{background:transparent;color:#1c3a33!important;border:1.5px solid #1c3a33}
 .t2-ph{position:relative;height:600px}
-.t2-big{position:absolute;right:0;top:0;width:82%;height:92%;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 35%,#e8dccb),#1c3a33)}
-.t2-small{position:absolute;left:0;bottom:0;width:44%;height:36%;border-radius:6px;overflow:hidden;border:8px solid #f3ebe1;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 30%,#e8dccb),#2d5247)}
+.t2-big{position:absolute;right:0;top:0;width:82%;height:92%;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--a) 45%,#1c3a33),#12302a 70%);border-radius:200px 200px 6px 6px}
+.t2-tok{position:absolute;left:0;bottom:6%;background:#fbf7f1;border-radius:14px;padding:18px 20px;box-shadow:0 18px 40px rgba(28,58,51,.18);max-width:300px}.t2-tok b{font-family:var(--hf);font-weight:400;font-size:20px;display:block;margin-bottom:12px}.t2-tok div{display:flex;gap:8px}.t2-tok a{text-decoration:none;border:1.5px solid rgba(28,58,51,.3);border-radius:10px;padding:8px 12px;font-size:13px;display:grid;text-align:center;line-height:1.25}.t2-tok a span{font-weight:700}.t2-tok a:hover{background:#1c3a33;color:#f3ebe1}.t2-big{display:grid;place-items:center;color:#f3ebe1}.t2-big svg{position:relative;z-index:1;stroke-width:.9}.t2-big .r1,.t2-big .r2{position:absolute;border:1px solid rgba(243,235,225,.25);border-radius:50%}.t2-big .r1{width:70%;aspect-ratio:1}.t2-big .r2{width:105%;aspect-ratio:1}
+.t2-small-unused{position:absolute;left:0;bottom:0;width:44%;height:36%;border-radius:6px;overflow:hidden;border:8px solid #f3ebe1;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 30%,#e8dccb),#2d5247)}
 .t2-big img,.t2-small img,.th img,.t2-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .t2-note{position:absolute;right:16px;bottom:8%;background:#f3ebe1;border-radius:6px;padding:12px 18px;display:grid}.t2-note b{font-family:var(--hf);font-weight:400;font-size:20px}.t2-note span{font-size:12.5px;opacity:.7}
 .t2-trust{max-width:1240px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}

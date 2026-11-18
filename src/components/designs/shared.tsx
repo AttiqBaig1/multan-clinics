@@ -120,19 +120,19 @@ export const useFonts = (families: string) => {
   }, [families]);
 };
 
-const DAYS = ['Ittwar', 'Peer', 'Mangal', 'Budh', 'Jumerat', 'Jumma', 'Hafta'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const nextDays = () => {
   const out: { label: string; sub: string }[] = [];
   const now = new Date();
   for (let i = 0; i < 5; i++) {
     const x = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
-    out.push({ label: i === 0 ? 'Aaj' : i === 1 ? 'Kal' : DAYS[x.getDay()], sub: x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
+    out.push({ label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : DAYS[x.getDay()], sub: x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
   }
   return out;
 };
 
 /** Working booking widget: pick a treatment and a day, WhatsApp opens with the message filled in. */
-export const BookingCard: React.FC<{ d: D; title?: string; cta?: string; button?: string }> = ({ d, title = 'Appointment request', cta, button = 'WhatsApp par bhejein' }) => {
+export const BookingCard: React.FC<{ d: D; title?: string; cta?: string; button?: string }> = ({ d, title = 'Appointment request', cta, button = 'Send on WhatsApp' }) => {
   const days = useMemo(nextDays, []);
   const [svc, setSvc] = useState(d.services[0]?.title || 'General consultation');
   const [day, setDay] = useState(0);
@@ -140,7 +140,7 @@ export const BookingCard: React.FC<{ d: D; title?: string; cta?: string; button?
   const send = (e: React.FormEvent) => {
     e.preventDefault();
     const when = `${days[day].label} (${days[day].sub})`;
-    window.open(waUrl(d, `Treatment: ${svc}. Din: ${when}.${name ? ` Mareez ka naam: ${name}.` : ''} Meherbani karke token aur time confirm kar dein.`), '_blank');
+    window.open(waUrl(d, `Treatment: ${svc}. Day: ${when}.${name ? ` Patient name: ${name}.` : ''} Please confirm my token and time.`), '_blank');
   };
   return (
     <form className="bk" onSubmit={send}>

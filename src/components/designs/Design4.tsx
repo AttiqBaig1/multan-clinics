@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
 /** Design 4, Bloom: cream and sage, arch photo masks, soft serif, wellness feel. */
@@ -23,8 +23,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
           <ul className="t4-chips">{d.badges.slice(0, 3).map((b, i) => <li key={i}><I.Check size={14} /> {b}</li>)}</ul>
         </div>
         <div className="t4-arches">
-          <div className="a1"><Img src={ph[0]} /></div>
-          <div className="a2"><Img src={ph[1]} /></div>
+          <div className="a1"><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={130} /></div>
+          <div className="a2"><I.Stethoscope size={64} strokeWidth={1.4} /></div>
           <div className="t4-circle"><b>{stats[0]?.v}</b><span>{stats[0]?.l}</span></div>
         </div>
       </section>
@@ -84,6 +84,7 @@ const CSS = `
 .t4-chips{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0;padding:0;font-size:14.5px}.t4-chips li{display:flex;gap:6px;align-items:center}.t4-chips svg{color:var(--a)}
 .t4-arches{position:relative;height:560px}
 .a1,.a2{position:absolute;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 35%,#dfe8dc),#2f4a38)}
+.a1,.a2{display:grid;place-items:center}.a1{color:#2f4a38;background:linear-gradient(180deg,color-mix(in srgb,var(--a) 30%,#dfe8dc),#dfe8dc 85%)}.a1 svg{stroke-width:1}.a2{color:#fbf7f0;background:#2f4a38}
 .a1{left:0;top:0;width:62%;height:100%;border-radius:999px 999px 24px 24px}.a2{right:0;bottom:0;width:42%;height:52%;border-radius:999px 999px 24px 24px;border:8px solid #fbf7f0}
 .a1 img,.a2 img,.ph img,.t4-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .t4-circle{position:absolute;right:6%;top:6%;width:128px;height:128px;border-radius:50%;background:var(--a);color:#fff;display:grid;place-content:center;text-align:center;line-height:1.15;transform:rotate(-8deg)}.t4-circle b{font-family:var(--hf);font-size:34px;font-weight:400}.t4-circle span{font-size:12.5px;max-width:9ch;margin:auto}

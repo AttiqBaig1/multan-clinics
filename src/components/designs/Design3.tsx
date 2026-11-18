@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, nextDays, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
 /** Design 3, Ink: deep navy and ivory, large editorial serif, split-screen hero, glowing accent. */
@@ -25,7 +25,10 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
           </div>
           <dl className="t3-st">{stats.slice(0, 3).map((s, i) => <div key={i}><dt><CountUp value={s.v} /></dt><dd>{s.l}</dd></div>)}</dl>
         </div>
-        <div className="t3-r"><Img src={ph[0]} /><div className="t3-fade" /></div>
+        <div className="t3-r"><i className="o1" /><i className="o2" /><i className="o3" /><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={170} />
+          <div className="gl g1"><b>{stats[1]?.v || stats[0]?.v}</b><span>{stats[1]?.l || stats[0]?.l}</span></div>
+          <div className="gl g2"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>Consultation</span></div>
+          <div className="gl g3"><I.CalendarCheck size={18} /><span>Next token: {nextDays()[0].label}</span></div></div>
       </section>
 
       <section id="tr" className="t3-tr">
@@ -83,8 +86,9 @@ const CSS = `
 .t3-st{display:flex;gap:44px;margin:52px 0 0;padding-top:28px;border-top:1px solid var(--line)}.t3-st div{display:grid}
 .t3-st dt{font-family:var(--hf);font-size:44px;line-height:1}.t3-st dt>span{font:inherit}.t3-st dd{margin:6px 0 0;font-size:14px;opacity:.7}
 .t3-r{position:relative;min-height:420px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#0b1426),#0b1426)}
+.t3-r{display:grid;place-items:center;overflow:hidden;color:var(--a)}.t3-r svg.lucide{position:relative;z-index:1;stroke-width:.8;filter:drop-shadow(0 0 30px color-mix(in srgb,var(--a) 60%,transparent))}.t3-r i{position:absolute;border-radius:50%;border:1px solid color-mix(in srgb,var(--a) 35%,transparent)}.o1{width:46%;aspect-ratio:1}.o2{width:72%;aspect-ratio:1;border-color:color-mix(in srgb,var(--a) 22%,transparent)!important}.o3{width:100%;aspect-ratio:1;border-color:color-mix(in srgb,var(--a) 12%,transparent)!important}.gl{position:absolute;z-index:2;background:rgba(244,239,230,.07);border:1px solid rgba(244,239,230,.18);backdrop-filter:blur(10px);border-radius:16px;padding:14px 20px;display:grid;color:#f4efe6}.gl b{font-family:var(--hf);font-weight:400;font-size:32px;line-height:1}.gl span{font-size:13px;opacity:.75;margin-top:4px}.g1{top:22%;right:8%}.g2{bottom:22%;left:10%}.g3{bottom:9%;right:10%;display:flex;gap:10px;align-items:center;padding:12px 18px;color:var(--a)}.g3 span{margin:0;color:#f4efe6;opacity:1}
 .t3-r img,.t3 .im img,.t3-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.t3-fade{position:absolute;inset:0;background:linear-gradient(90deg,#0b1426 0%,transparent 28%),linear-gradient(180deg,rgba(11,20,38,.75),transparent 22%)}
+.t3-fade{position:absolute;inset:0;display:none}
 .t3-tr{max-width:1280px;margin:0 auto;padding:130px 20px 0}
 .t3-hd{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap;margin-bottom:44px}.t3 h2{font-size:clamp(36px,4.8vw,68px);line-height:1;letter-spacing:-.015em;margin:0}.t3-hd p{margin:0;opacity:.75;max-width:36ch}
 .t3-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
