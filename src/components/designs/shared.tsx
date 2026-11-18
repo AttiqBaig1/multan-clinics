@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ClinicTemplateData } from '../../data/multanTemplates';
 import { photosFor } from '../../data/clinicPhotos';
-import { ArrowRight, ChevronRight, Check, Leaf, ArrowUpRight, Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
+import { ChevronLeft, ArrowRight, ChevronRight, Check, Leaf, ArrowUpRight, Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
 
-export const I = { Sparkles, ArrowRight, ChevronRight, Check, Leaf, Heart, ArrowUpRight, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
+export const I = { ChevronLeft, Sparkles, ArrowRight, ChevronRight, Check, Leaf, Heart, ArrowUpRight, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
 const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = { Eye, Sparkles, Shield: ShieldCheck, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope };
 export const ServiceIcon: React.FC<{ name: string; size?: number }> = ({ name, size = 24 }) => {
   const C = ICONS[name] || Stethoscope;
@@ -78,7 +78,7 @@ export const FWA_CSS = `
 
 export type D = ClinicTemplateData;
 export const DESIGN_NAMES: Record<number, string> = {
-  1: 'Classic Pro', 2: 'Academy', 3: 'Night Suite', 4: 'Daylight', 5: 'Mint',
+  1: 'Classic Pro', 2: 'Academy', 3: 'Night Suite', 4: 'Daylight', 5: 'Vivid',
 };
 
 /** Each speciality gets its own accent so every clinic's site looks made for it. */

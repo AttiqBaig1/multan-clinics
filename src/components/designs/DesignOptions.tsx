@@ -6,7 +6,7 @@ const NOTES: Record<number, string> = {
   2: 'Dark teal hero, 3-step visit, photo treatment cards, map',
   3: 'Premium dark, photo hero with booking panel',
   4: 'Light and airy, popular-treatments card, icon tiles',
-  5: 'Soft tinted light, appointment search bar, tabbed treatments',
+  5: 'Full-colour gradient hero, swipeable treatment cards, review slider',
 };
 
 /** Options page: the clinic sees all 5 designs with its own details and picks one. */
