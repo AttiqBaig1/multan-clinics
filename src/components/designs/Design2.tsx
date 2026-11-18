@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 2, Academy: dark teal hero with centred headline, glass stat chips, 3 steps, photo cards (locked from the Nishtar Academy page). */
@@ -14,10 +14,15 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
     { t: 'Walk in and be seen', p: `Come to ${d.address}. Your token is held for you and the doctor sees you on time.`, tag: d.city },
   ];
   return (
-    <div className="t2" ref={ref}>
+    <div className="t2" ref={ref} id="top">
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
       <section className="hero">
         <div className="glow" />
+        <header className="hdr">
+          <a className="logo" href="#top"><span><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={20} /></span><b>{d.businessName}</b></a>
+          <nav aria-label="Main"><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
+          <div className="hb"><a className="hc" href={telUrl(d)}><I.Phone size={15} /> <span>{d.phone}</span></a><a className="hk" href={waUrl(d)} target="_blank" rel="noreferrer">Book now</a></div>
+        </header>
         <div className="in">
           <span className="pill"><I.Sparkles size={15} /> {d.businessName} · {d.nicheTitle}, {d.city}</span>
           <h1>{d.tagline} with <span className="grad">{d.doctorName}</span></h1>
@@ -49,7 +54,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
         </div>
       </section>
 
-      <section className="sec"><div className="card fac" data-rv>
+      <section className="sec" id="dr"><div className="card fac" data-rv>
         <div className="mono"><span>{initials(d.doctorName)}</span><b>{d.doctorName}</b><em>{d.doctorTitle}</em></div>
         <div>
           <small>Your doctor</small>
@@ -58,7 +63,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
           <ul>{d.badges.map((b, i) => <li key={i}><I.BadgeCheck size={16} /> {b}</li>)}</ul>
         </div></div></section>
 
-      <section className="band alt">
+      <section className="band alt" id="rv">
         <div className="wrap"><div className="hd" data-rv><small>Patient feedback</small><h2>Trusted by patients in {d.city}</h2></div>
           <div className="g3">{d.testimonials.slice(0, 3).map((t, i) => (
             <div className="card rv" key={i} data-rv><div className="st">{'★★★★★'}</div><p>“{t.comment}”</p><b>{t.name}</b><span>{t.role}</span></div>))}</div></div>
@@ -90,6 +95,10 @@ const CSS = `
 .t2 a:focus-visible,.t2 button:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
 .hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#042f2e,#0f172a 55%,#020617);color:#fff;padding:84px 20px 90px;border-bottom:1px solid rgba(20,184,166,.25)}
 .glow{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:620px;height:300px;background:rgba(13,148,136,.2);border-radius:50%;filter:blur(70px);pointer-events:none}
+.hdr{position:relative;z-index:2;max-width:1240px;margin:-34px auto 56px;display:flex;align-items:center;gap:28px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;margin-right:auto;min-width:0}.logo span{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 8px 20px rgba(13,148,136,.4)}.logo b{font-weight:800;font-size:17px;letter-spacing:-.02em;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hdr nav{display:flex;gap:26px;font-size:14.5px;font-weight:600}.hdr nav a{text-decoration:none;color:#cbd5e1}.hdr nav a:hover{color:#fff}
+.hb{display:flex;gap:10px;align-items:center}.hc{display:inline-flex;gap:8px;align-items:center;padding:10px 18px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff!important;font-weight:700;font-size:14px;text-decoration:none}.hk{padding:11px 22px;border-radius:14px;background:#0d9488;color:#fff!important;font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 10px 24px rgba(13,148,136,.35)}.hk:hover{background:#0f766e}
 .in{position:relative;max-width:1100px;margin:0 auto;text-align:center}
 .pill{display:inline-flex;gap:8px;align-items:center;padding:7px 16px;border-radius:999px;background:rgba(20,184,166,.15);border:1px solid rgba(45,212,191,.3);color:#5eead4;font-size:13px;font-weight:600}
 .t2 h1{font-size:clamp(34px,5.6vw,66px);line-height:1.08;font-weight:900;letter-spacing:-.03em;margin:26px auto 0;max-width:15em}
@@ -123,5 +132,5 @@ const CSS = `
 .info{display:flex;gap:14px;align-items:flex-start;padding:18px 22px;margin-bottom:12px}.info svg{color:#0d9488;margin-top:3px;flex:none}.info div{display:grid;font-size:14px}.info b{font-size:12px;color:#0f766e;text-transform:uppercase;letter-spacing:.08em}.info span{color:#475569}.visit .b{margin-top:10px}
 .faq-i{border-top:1px solid #e2e8f0}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:18px 0;cursor:pointer;font-weight:700}.faq-q:focus-visible{outline:3px solid #14b8a6}.faq-a{margin:0 0 18px;color:#475569}
 .t2 .x-sec{max-width:1240px}
-@media(max-width:900px){.chips{grid-template-columns:1fr 1fr}.fac,.two,.visit{grid-template-columns:1fr}.fac{padding:28px}.fac ul{grid-template-columns:1fr}.hero{padding:56px 20px 64px}.sec{padding-top:64px}.band{margin-top:64px;padding:56px 0}.b{width:100%}}
+@media(max-width:900px){.hdr nav{display:none}.hdr{margin-top:-30px;margin-bottom:34px}.hc span{display:none}.hc{padding:11px}.hk{padding:11px 18px}.chips{grid-template-columns:1fr 1fr}.fac,.two,.visit{grid-template-columns:1fr}.fac{padding:28px}.fac ul{grid-template-columns:1fr}.hero{padding:56px 20px 64px}.sec{padding-top:64px}.band{margin-top:64px;padding:56px 0}.b{width:100%}}
 `;
