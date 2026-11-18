@@ -18,6 +18,11 @@ const P: Record<string, string[]> = {
   homecare: ['1765896387387-0538bc9f997e', '1762955911431-4c44c7c3f408', '1765896387377-e293914d1e69', '1685657814797-83706c4e5279'],
   hospital: ['1769147555720-71fc71bfc216', '1790309496664-ffa0a03f42f3', '1719934398679-d764c1410770', '1777269749032-d8d458ae594d'],
 };
+/** Bright modern clinic interiors: neutral, premium hero images that suit any speciality. */
+const HERO = ['1648775507324-b48dd3791fa5', '1758448721205-8465cebc26af', '1608979827489-2b855e79debe', '1631248055158-edec7a3c072b'];
+const WEAK = ['eye', 'cardio', 'lab', 'pet', 'gynae', 'radiology', 'psych', 'hair'];
+WEAK.forEach((k, n) => { P[k] = [HERO[n % 4], HERO[(n + 1) % 4], ...P[k]]; });
+P.eye = ['1648775507324-b48dd3791fa5', '1577410114274-ef015b5b6d29', '1758448721205-8465cebc26af', '1539036776273-021ec1d78bec', '1576210117723-cd06449a467d'];
 const ALIAS: Record<string, string> = {
   ortho: 'physio', plastic: 'skin', ivf: 'gynae', onco: 'radiology', neuro: 'radiology', surgery: 'hospital',
   ent: 'general', uro: 'general', nephro: 'general', gastro: 'general', pulmo: 'general', endo: 'general', homeo: 'general',
