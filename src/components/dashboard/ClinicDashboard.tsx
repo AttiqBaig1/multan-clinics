@@ -236,7 +236,7 @@ const Dashboard: React.FC = () => {
       <main className="main">
         <header className="hero">
           <h1>Lamba link nahi. <em>Sirf clinic ka naam.</em></h1>
-          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone aur address ek baar bharein, Generate dabayein — bas. Wahi data paanchon designs mein khud bhar jata hai, aur har design ke neeche chhota 1 2 3 4 5 switcher aata hai taake client saare options dekh sake. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
+          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone aur address ek baar bharein, Generate dabayein — bas. Wahi data chhe designs mein khud bhar jata hai, aur har design ke neeche chhota 1 2 3 4 5 6 switcher aata hai taake client saare options dekh sake. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
         </header>
 
         {/* ---------- 2. CLINICS ---------- */}
@@ -357,11 +357,11 @@ const Dashboard: React.FC = () => {
                       <a className="btn ghost" href={s.link} target="_blank" rel="noopener noreferrer">Naye tab mein kholein ↗</a>
                     </div>
                     <div className="bar" style={{ marginTop: 10 }}>
-                      <button className="btn primary" type="button" onClick={() => copy(`${s.link}?v=options`, 'o' + s.key)}>{copiedKey === 'o' + s.key ? 'Copy ho gaya ✓' : '🎨 Copy "5 designs" link (clinic ko bhejein)'}</button>
-                      <a className="btn ghost" href={`${s.link}?v=options`} target="_blank" rel="noopener noreferrer">5 designs kholein ↗</a>
+                      <button className="btn primary" type="button" onClick={() => copy(`${s.link}?v=options`, 'o' + s.key)}>{copiedKey === 'o' + s.key ? 'Copy ho gaya ✓' : '🎨 Copy "6 designs" link (clinic ko bhejein)'}</button>
+                      <a className="btn ghost" href={`${s.link}?v=options`} target="_blank" rel="noopener noreferrer">6 designs kholein ↗</a>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 10, margin: '10px 0' }}>
-                      {[1, 2, 3, 4, 5].map(n => [n === 1 ? '' : String(n), `Design ${n} · ${DESIGN_NAMES[n]}`]).map(([v, label]) => (
+                      {[1, 2, 3, 4, 5, 6].map(n => [n === 1 ? '' : String(n), `Design ${n} · ${DESIGN_NAMES[n]}`]).map(([v, label]) => (
                         <a key={label} href={`${s.link}${v ? `?v=${v}` : ''}`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', border: '1px solid var(--line, #e2e8f0)', borderRadius: 10, overflow: 'hidden', textDecoration: 'none', color: 'inherit' }}>
                           <div style={{ height: 100, overflow: 'hidden', background: '#f1f5f9' }}>
                             <iframe title={label} src={`/${s.slug}${v ? `?v=${v}` : ''}`} loading="lazy" tabIndex={-1} style={{ width: 1280, height: 800, transform: 'scale(0.117)', transformOrigin: '0 0', border: 0, pointerEvents: 'none', maxWidth: 'none' }} />
