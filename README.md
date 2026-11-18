@@ -26,8 +26,8 @@ Every saved clinic opens in five designs, all filled from the same saved details
 - `websitedemos.space/<clinic>`: Design 1, Classic Pro (original page, unchanged)
 - `websitedemos.space/<clinic>?v=2`: Design 2, Academy
 - `?v=3`: Design 3, Night Suite
-- `?v=4`: Design 4, Bloom
-- `?v=5`: Design 5, Grid
+- `?v=4`: Design 4, Daylight
+- `?v=5`: Design 5, Spotlight
 - `?v=options`: page that shows all five side by side. Send this link to the clinic so they can choose.
 
 Designs 2 to 5 live in `src/components/designs/`. Each gets its accent colour from the clinic's speciality.

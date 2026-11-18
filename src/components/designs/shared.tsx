@@ -78,7 +78,7 @@ export const FWA_CSS = `
 
 export type D = ClinicTemplateData;
 export const DESIGN_NAMES: Record<number, string> = {
-  1: 'Classic Pro', 2: 'Academy', 3: 'Night Suite', 4: 'Bloom', 5: 'Grid',
+  1: 'Classic Pro', 2: 'Academy', 3: 'Night Suite', 4: 'Daylight', 5: 'Spotlight',
 };
 
 /** Each speciality gets its own accent so every clinic's site looks made for it. */

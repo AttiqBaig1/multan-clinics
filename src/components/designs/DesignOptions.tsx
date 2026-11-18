@@ -5,8 +5,8 @@ const NOTES: Record<number, string> = {
   1: 'Full-featured: calculator, booking form, gallery',
   2: 'Dark teal hero, 3-step visit, photo treatment cards, map',
   3: 'Premium dark, photo hero with booking panel',
-  4: 'Soft cream and sage, arch photos, gentle wellness feel',
-  5: 'Bold grid layout, huge type, black and white photos',
+  4: 'Light and airy, popular-treatments card, icon tiles',
+  5: 'Full dark, ticket-style token card, bento treatments',
 };
 
 /** Options page: the clinic sees all 5 designs with its own details and picks one. */
