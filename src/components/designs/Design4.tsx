@@ -77,7 +77,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
 
 const CSS = `
 .s4{--ink:#1d2433;--card:#fff;--line:#e3e7ee;--on:#fff;--r:20px;min-height:100vh;background:#fff;color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.55}
-.s4 *{box-sizing:border-box}.s4 a{color:inherit}
+.s4 *{box-sizing:border-box}
+.s4 h1,.s4 h2,.s4 h3,.s4 h4{font-family:inherit}.s4 a{color:inherit}
 .s4-top{display:flex;align-items:center;gap:12px;max-width:1160px;margin:0 auto;padding:16px 24px}
 .s4-top b{margin-right:auto;font-size:17px}
 .s4-logo{width:38px;height:38px;border-radius:12px;background:var(--a);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}

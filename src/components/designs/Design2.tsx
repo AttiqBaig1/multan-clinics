@@ -80,6 +80,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
 const CSS = `
 .m2{--ink:#10262c;--card:#fff;--line:#d5e0e3;--on:#fff;--r:18px;min-height:100vh;background:#f1f6f7;color:var(--ink);font-family:Figtree,system-ui,sans-serif;line-height:1.55}
 .m2 *{box-sizing:border-box}
+.m2 h1,.m2 h2,.m2 h3{font-family:inherit}
 .m2 a{color:inherit}
 .m2-top{display:flex;align-items:center;gap:24px;max-width:1160px;margin:0 auto;padding:18px 24px}
 .m2-brand{font-family:Fraunces,serif;font-weight:600;font-size:20px;margin-right:auto}
@@ -105,7 +106,7 @@ const CSS = `
 .m2-lead{opacity:.75;margin:10px 0 0;font-size:17px}
 .m2-menu{list-style:none;margin:36px 0 0;padding:0;max-width:820px}
 .m2-menu li{padding:22px 0;border-top:1px solid var(--line)}.m2-menu li:last-child{border-bottom:1px solid var(--line)}
-.m2-row{display:flex;align-items:baseline;gap:12px}.m2-row h3{font-size:20px;font-weight:600;margin:0}
+.m2-row{display:flex;align-items:baseline;gap:12px}.m2-row h3{font-family:Fraunces,serif;font-size:20px;font-weight:600;margin:0}
 .m2-row i{flex:1;border-bottom:2px dotted color-mix(in srgb,var(--ink) 30%,transparent);transform:translateY(-4px)}
 .m2-row b{color:var(--a);font-size:17px;white-space:nowrap}
 .m2-menu p{margin:6px 0 0;opacity:.78;max-width:60ch}

@@ -72,7 +72,8 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
 
 const CSS = `
 .n3{--ink:#e9eef7;--card:rgba(13,25,43,.72);--line:rgba(255,255,255,.16);--on:#04101c;min-height:100vh;background:#08121f;color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.55}
-.n3 *{box-sizing:border-box}.n3 a{color:inherit}
+.n3 *{box-sizing:border-box}
+.n3 h1,.n3 h2,.n3 h3,.n3 h4{font-family:inherit}.n3 a{color:inherit}
 .n3-hero{position:relative;overflow:hidden;background:radial-gradient(900px 500px at 85% 10%,color-mix(in srgb,var(--a) 55%,transparent),transparent),linear-gradient(180deg,#0b1a2e,#08121f)}
 .n3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.38}
 .n3-shade{position:absolute;inset:0;background:linear-gradient(90deg,#08121f 20%,rgba(8,18,31,.55) 70%,rgba(8,18,31,.35))}
