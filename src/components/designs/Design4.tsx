@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, accentOf, initials, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 4, Daylight: light and airy, gradient headline, floating popular-treatments card, icon tiles, dark doctor block. */
@@ -12,6 +12,7 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
   return (
     <div className="t4" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
+      <div className="hw"><div className="hbg4"><Img src={pics(d, 1600)[0]} /></div>
       <header className="nav"><b><i><ServiceIcon name={icon(0)} size={18} /></i>{d.businessName}</b>
         <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
         <a className="call" href={telUrl(d)}><I.Phone size={15} /> {d.phone}</a></header>
@@ -39,6 +40,8 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
           <div className="fl f2"><I.BadgeCheck size={16} /> {d.badges[0]}</div>
         </div>
       </section>
+
+      </div>
 
       <section className="strip"><div>{stats.map((s, i) => <p key={i} data-rv><b>{s.v}</b><span>{s.l}</span></p>)}</div></section>
 
@@ -96,6 +99,7 @@ const CSS = `
 .nav nav{display:flex;gap:26px;font-size:14.5px;font-weight:500;color:#475569}.nav nav a{text-decoration:none}.nav nav a:hover{color:var(--ink)}
 .call{display:inline-flex;gap:8px;align-items:center;background:#0f172a;color:#fff!important;padding:10px 20px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none}
 .hero{position:relative;max-width:1240px;margin:0 auto;padding:40px 20px 80px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.55}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.93) 38%,rgba(248,250,252,.5) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
 .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}.b1{width:420px;height:420px;left:-120px;top:-60px;background:color-mix(in srgb,var(--a) 22%,transparent)}.b2{width:380px;height:380px;right:-60px;bottom:0;background:color-mix(in srgb,var(--a) 14%,#a78bfa 20%)}
 .l,.r{position:relative;z-index:1}
 .pill{display:inline-flex;gap:7px;align-items:center;padding:7px 15px;border-radius:999px;background:#fff;border:1px solid #e2e8f0;font-size:13px;font-weight:600;color:var(--a);box-shadow:0 1px 2px rgba(15,23,42,.05)}

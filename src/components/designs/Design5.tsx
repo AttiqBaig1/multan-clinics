@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, accentOf, initials, nextDays, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, nextDays, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 5, Vivid: full-colour gradient hero, white sheet rising over it, swipeable treatment cards, review slider. */
@@ -19,6 +19,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
 
       <div className="top">
+        <div className="tbg"><Img src={pics(d, 1600)[1] || pics(d, 1600)[0]} /></div>
         <i className="o o1" /><i className="o o2" />
         <header className="nav"><b><span><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={17} /></span>{d.businessName}</b>
           <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
@@ -108,6 +109,7 @@ const CSS = `
 .t5{--ink:#111827;--card:#fff;--line:#e5e7eb;--on:#fff;--r:26px;--hf:Manrope,sans-serif;--hw:800;--hw3:700;--hls:-.035em;--btn:var(--a);--btn-fg:#fff;--wi-bg:color-mix(in srgb,var(--a) 12%,#fff);--wi-fg:var(--a);--ico:var(--a);--est-bg:#111827;--est-fg:#fff;--band-bg:var(--a);--band-fg:#fff;--fbg:#0b0f1a;--fink:#e5e7eb;--deep:color-mix(in srgb,var(--a) 78%,#000);min-height:100vh;background:var(--deep);color:var(--ink);font-family:Manrope,system-ui,sans-serif;font-size:16px;line-height:1.6;overflow-x:clip}
 .t5 *{box-sizing:border-box}.t5 h1,.t5 h2,.t5 h3{font-family:Manrope,sans-serif}.t5 a{color:inherit}
 .t5 a:focus-visible,.t5 button:focus-visible,.t5 [tabindex]:focus-visible{outline:3px solid #fde047;outline-offset:3px}
+.tbg{position:absolute;inset:0}.tbg img{width:100%;height:100%;object-fit:cover;mix-blend-mode:luminosity;opacity:.34}.tbg:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--deep) 80%,transparent),transparent 80%)}.top>.nav{position:relative;z-index:2}
 .top{position:relative;overflow:hidden;color:#fff;background:linear-gradient(135deg,var(--deep) 0%,color-mix(in srgb,var(--a) 55%,#4c1d95) 100%);padding-bottom:190px}
 .o{position:absolute;border-radius:50%;pointer-events:none}.o1{width:560px;height:560px;right:-160px;top:-200px;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 65%)}.o2{width:420px;height:420px;left:-140px;bottom:-120px;border:60px solid rgba(255,255,255,.07)}
 .nav{position:relative;z-index:2;max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:28px;padding:22px 20px}.nav b{display:flex;gap:10px;align-items:center;font-weight:800;font-size:17px;margin-right:auto;letter-spacing:-.02em}.nav b span{width:36px;height:36px;border-radius:12px;background:#fff;color:var(--deep);display:grid;place-items:center}

@@ -17,6 +17,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
     <div className="t2" ref={ref} id="top">
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
       <section className="hero">
+        <div className="hbg"><Img src={pics(d, 1600)[0]} /></div>
         <div className="glow" />
         <header className="hdr">
           <a className="logo" href="#top"><span><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={20} /></span><b>{d.businessName}</b></a>
@@ -94,6 +95,7 @@ const CSS = `
 .t2 *{box-sizing:border-box}.t2 h1,.t2 h2,.t2 h3{font-family:Inter,sans-serif}.t2 a{color:inherit}
 .t2 a:focus-visible,.t2 button:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
 .hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#042f2e,#0f172a 55%,#020617);color:#fff;padding:84px 20px 90px;border-bottom:1px solid rgba(20,184,166,.25)}
+.hbg{position:absolute;inset:0}.hbg img{width:100%;height:100%;object-fit:cover;opacity:.42}.hbg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,47,46,.78) 0%,rgba(8,30,38,.86) 60%,#020617 100%)}.hero>.hdr,.hero>.in{position:relative;z-index:1}
 .glow{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:620px;height:300px;background:rgba(13,148,136,.2);border-radius:50%;filter:blur(70px);pointer-events:none}
 .hdr{position:relative;z-index:2;max-width:1240px;margin:-34px auto 56px;display:flex;align-items:center;gap:28px}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;margin-right:auto;min-width:0}.logo span{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 8px 20px rgba(13,148,136,.4)}.logo b{font-weight:800;font-size:17px;letter-spacing:-.02em;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
