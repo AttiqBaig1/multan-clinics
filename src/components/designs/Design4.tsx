@@ -99,7 +99,7 @@ const CSS = `
 .nav nav{display:flex;gap:26px;font-size:14.5px;font-weight:500;color:#475569}.nav nav a{text-decoration:none}.nav nav a:hover{color:var(--ink)}
 .call{display:inline-flex;gap:8px;align-items:center;background:#0f172a;color:#fff!important;padding:10px 20px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none}
 .hero{position:relative;max-width:1240px;margin:0 auto;padding:40px 20px 80px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
-.hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.55}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.93) 38%,rgba(248,250,252,.5) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
+.hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.8}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.9) 34%,rgba(248,250,252,.25) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
 .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}.b1{width:420px;height:420px;left:-120px;top:-60px;background:color-mix(in srgb,var(--a) 22%,transparent)}.b2{width:380px;height:380px;right:-60px;bottom:0;background:color-mix(in srgb,var(--a) 14%,#a78bfa 20%)}
 .l,.r{position:relative;z-index:1}
 .pill{display:inline-flex;gap:7px;align-items:center;padding:7px 15px;border-radius:999px;background:#fff;border:1px solid #e2e8f0;font-size:13px;font-weight:600;color:var(--a);box-shadow:0 1px 2px rgba(15,23,42,.05)}
