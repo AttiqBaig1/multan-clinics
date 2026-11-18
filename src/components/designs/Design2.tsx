@@ -46,7 +46,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
             <article key={i}>
               <div className="f2-ic"><ServiceIcon name={s.icon} /></div>
               <h3>{s.title}</h3><p>{s.desc}</p>
-              <div className="f2-foot"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer">Ask on WhatsApp</a></div>
+              <div className="f2-foot"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer">Ask us</a></div>
             </article>
           ))}
         </div>
@@ -135,7 +135,7 @@ const CSS = `
 .f2-ic{width:54px;height:54px;border-radius:16px;background:color-mix(in srgb,var(--a) 13%,#fff);color:var(--a);display:grid;place-items:center}
 .f2-svc h3{font-size:18px;margin:18px 0 6px}.f2-svc p{margin:0 0 18px;color:#5b6b82;font-size:14.5px;flex:1}
 .f2-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:14px}
-.f2-foot b{color:var(--a)}.f2-foot a{font-size:13px;font-weight:600;color:#128c7e}
+.f2-foot b{color:var(--a);white-space:nowrap}.f2-foot a{font-size:13px;font-weight:600;color:#128c7e;white-space:nowrap;text-decoration:none;border:1px solid #bfe6dc;border-radius:999px;padding:5px 14px}
 .f2-gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:190px;gap:16px;margin-top:28px}
 .f2-gal figure{margin:0;position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(140deg,color-mix(in srgb,var(--a) 30%,#fff),color-mix(in srgb,var(--a) 70%,#14233b))}
 .f2-gal .big{grid-row:span 2}.f2-gi,.f2-gi img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
