@@ -166,7 +166,7 @@ const CSS = `
 .t6 .x-sec{max-width:1240px}
 .t6 .ht h1{font-size:clamp(28px,3.6vw,46px);font-weight:600;text-transform:uppercase;line-height:1.12;letter-spacing:.005em}
 .ht p{font-size:15px;max-width:26em}
-.tr6{position:absolute;z-index:2;right:36px;top:34%;max-width:250px;margin:0;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88)}
+.tr6{position:absolute;z-index:2;right:36px;top:112px;max-width:250px;margin:0;padding:12px 16px;border-radius:16px;background:rgba(9,36,46,.55);backdrop-filter:blur(8px);font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88)}
 .pills{max-width:440px;gap:8px}.pills a{padding:9px 18px;font-size:13px;font-weight:500}
 .t6 .two6 h2,.t6 .about h2,.t6 .bn h2,.t6 .hd.l h2{font-size:clamp(24px,2.7vw,36px);font-weight:500;text-transform:uppercase;line-height:1.18;letter-spacing:.005em}
 .t6 small{color:#4b5d6c;font-weight:500}
