@@ -13,9 +13,21 @@ import { detectNiche, fetchClient } from './utils/clientStore';
 import { findClientBySlug, slugToTitleCase, deriveClinicFromSlug, STORAGE_KEYS } from './utils/slugRegistry';
 import { Sparkles, Stethoscope, Sliders, Layers, RefreshCw, Zap, MessageCircle, Lock, ShieldCheck, Key } from 'lucide-react';
 
+import { PHOTO_GROUPS, photosFor } from './data/clinicPhotos';
+const IS_PHOTOS = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('photos');
 const IS_DASHBOARD = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('dashboard');
 
 export default function App() {
+  if (IS_PHOTOS) return (
+    <div style={{ background: '#fff', color: '#111', padding: 16 }}>
+      {PHOTO_GROUPS.map(g => (
+        <div key={g} style={{ marginBottom: 14 }}><b>{g}</b>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {photosFor(g, 360).map((u, i) => <img key={i} src={u} alt="" style={{ width: 220, height: 150, objectFit: 'cover' }} title={u} />)}
+          </div></div>
+      ))}
+    </div>
+  );
   if (IS_DASHBOARD) return <><ClinicDashboard /><ToastContainer /></>;
   return <SiteApp />;
 }
