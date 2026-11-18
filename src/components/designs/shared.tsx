@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ClinicTemplateData, PAKISTANI_IMAGES } from '../../data/multanTemplates';
+import { ClinicTemplateData } from '../../data/multanTemplates';
+import { photosFor } from '../../data/clinicPhotos';
 import { Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
 
 export const I = { Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
@@ -21,14 +22,46 @@ export const statsOf = (d: D) => {
   return out.slice(0, 4);
 };
 
-/** Photos for galleries: the clinic's own pictures first, then the speciality's facility photo. */
-export const galleryOf = (d: D): { src: string; label: string }[] => {
-  const out: { src: string; label: string }[] = [];
-  (d.procedures || []).forEach(p => out.push({ src: p.img, label: p.title }));
-  const fac = PAKISTANI_IMAGES.facilities.find(f => f.id === `fac-${d.niche}`);
-  if (fac) out.push({ src: fac.url, label: fac.name });
-  if (d.heroImage && !out.some(o => o.src === d.heroImage)) out.push({ src: d.heroImage, label: d.nicheTitle });
-  return out.slice(0, 4);
+/** Speciality photos from the curated pool (hero first). */
+export const pics = (d: D, w = 1400) => photosFor(d.niche, w);
+export const galleryOf = (d: D): { src: string; label: string }[] =>
+  pics(d, 900).map((src, i) => ({ src, label: ['', 'Our clinic', 'Care and technology', 'Patient comfort'][i] || d.nicheTitle }));
+
+/** Fade-up on scroll; does nothing when the visitor prefers reduced motion. */
+export const useReveal = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+    root.classList.add('rv-on');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target); } }), { threshold: 0.1 });
+    root.querySelectorAll('[data-rv]').forEach(n => io.observe(n));
+    return () => io.disconnect();
+  }, []);
+  return ref;
+};
+export const RV_CSS = `.rv-on [data-rv]{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}.rv-on [data-rv].rv-in{opacity:1;transform:none}`;
+
+/** Counts up to a number when it scrolls into view. Non-numeric text is shown as is. */
+export const CountUp: React.FC<{ value: string }> = ({ value }) => {
+  const m = value.match(/^([^\d]*)(\d[\d,]*)(.*)$/);
+  const [n, setN] = useState<number | null>(null);
+  const el = React.useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!m || !el.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const target = parseInt(m[2].replace(/,/g, ''), 10);
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const tick = (t: number) => { const k = Math.min(1, (t - t0) / 1100); setN(Math.round(target * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    });
+    io.observe(el.current);
+    return () => io.disconnect();
+  }, [value]);
+  if (!m) return <span>{value}</span>;
+  return <span ref={el}>{m[1]}{(n ?? parseInt(m[2].replace(/,/g, ''), 10)).toLocaleString('en-US')}{m[3]}</span>;
 };
 
 export const FloatingWA: React.FC<{ d: D }> = ({ d }) => (
