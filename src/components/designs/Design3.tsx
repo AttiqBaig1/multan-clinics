@@ -84,7 +84,7 @@ const CSS = `
 .t3-st dt{font-family:var(--hf);font-size:44px;line-height:1}.t3-st dt>span{font:inherit}.t3-st dd{margin:6px 0 0;font-size:14px;opacity:.7}
 .t3-r{position:relative;min-height:420px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#0b1426),#0b1426)}
 .t3-r img,.t3 .im img,.t3-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.t3-fade{position:absolute;inset:0;background:linear-gradient(90deg,#0b1426 0%,transparent 28%)}
+.t3-fade{position:absolute;inset:0;background:linear-gradient(90deg,#0b1426 0%,transparent 28%),linear-gradient(180deg,rgba(11,20,38,.75),transparent 22%)}
 .t3-tr{max-width:1280px;margin:0 auto;padding:130px 20px 0}
 .t3-hd{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap;margin-bottom:44px}.t3 h2{font-size:clamp(36px,4.8vw,68px);line-height:1;letter-spacing:-.015em;margin:0}.t3-hd p{margin:0;opacity:.75;max-width:36ch}
 .t3-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
