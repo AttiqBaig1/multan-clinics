@@ -41,7 +41,7 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
       </section>
 
       <section id="dr" className="t3-dr">
-        <div className="t3-dp" data-rv>{d.doctorImage ? <Img src={d.doctorImage} /> : <span>{initials(d.doctorName)}</span>}</div>
+        <div className="t3-dp" data-rv><span>{initials(d.doctorName)}</span></div>
         <div data-rv>
           <p className="t3-k">Meet your doctor</p>
           <h2>{d.doctorName}</h2>

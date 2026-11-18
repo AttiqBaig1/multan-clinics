@@ -46,7 +46,7 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
 
       <section id="dr" className="t4-dr">
         <div className="t4-di">
-          <div className="t4-dp" data-rv>{d.doctorImage ? <Img src={d.doctorImage} /> : <span>{initials(d.doctorName)}</span>}</div>
+          <div className="t4-dp" data-rv><span>{initials(d.doctorName)}</span></div>
           <div data-rv>
             <p className="t4-tag"><I.Heart size={15} /> Your doctor</p>
             <h2>{d.doctorName}</h2>
