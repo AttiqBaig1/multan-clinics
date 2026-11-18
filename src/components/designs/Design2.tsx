@@ -70,7 +70,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
             <p>{d.doctorExperience}</p>
             <ul>{d.badges.map((b, i) => <li key={i}>{b}</li>)}</ul>
           </div>
-          <div className="t2-dp" data-rv><Img src={ph[2] || ph[0]} /><span>{initials(d.doctorName)}</span></div>
+          <div className="t2-dp" data-rv>{d.doctorImage ? <Img src={d.doctorImage} /> : <span>{initials(d.doctorName)}</span>}</div>
         </div>
       </section>
 

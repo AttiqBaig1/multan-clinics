@@ -44,7 +44,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
       </section>
 
       <section id="dr" className="t5-dr">
-        <div className="t5-dp" data-rv><Img src={ph[2] || ph[0]} /><span>{initials(d.doctorName)}</span></div>
+        <div className="t5-dp" data-rv>{d.doctorImage ? <Img src={d.doctorImage} /> : <span>{initials(d.doctorName)}</span>}</div>
         <div data-rv><h2>{d.doctorName}</h2><p className="dg">{d.doctorTitle}</p><p>{d.doctorExperience}</p>
           <ul>{d.badges.map((b, i) => <li key={i}>{b}</li>)}</ul></div>
       </section>
