@@ -1,93 +1,94 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, CountUp, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, accentOf, initials, mapUrl, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
-/** Design 2, Bento: floating pill nav, photo collage hero, then one bento grid that shows treatments, doctor, hours, reviews at a glance. */
+/** Design 2, Terra: sand and deep forest, light serif display, outlined icon trust row, calm editorial lists. */
 export const Design2: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600');
+  useFonts('family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=DM+Sans:wght@400;500;600;700');
   const ref = useReveal();
-  const ph = pics(d, 1200); const stats = statsOf(d);
-  const rating = stats.find(s => s.l.startsWith('Patient'))?.v;
-  const t0 = d.testimonials[0];
+  const ph = pics(d, 1400); const stats = statsOf(d);
+  const trust = [
+    { i: <I.ShieldCheck size={34} strokeWidth={1.3} />, t: d.doctorTitle.split(',')[0] + ' specialist' },
+    { i: <I.CalendarCheck size={34} strokeWidth={1.3} />, t: 'Fixed tokens on WhatsApp' },
+    { i: <I.Award size={34} strokeWidth={1.3} />, t: stats[0]?.v + ' ' + (stats[0]?.l || '').toLowerCase() },
+    { i: <I.BadgeCheck size={34} strokeWidth={1.3} />, t: `${d.services.length} treatments, prices listed` },
+    { i: <I.Clock size={34} strokeWidth={1.3} />, t: d.timings.split('(')[0].trim() },
+  ];
   return (
-    <div className="b2" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
+    <div className="t2" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
-      <header className="b2-nav">
-        <span className="b2-mono">{initials(d.businessName)}</span><b>{d.businessName}</b>
-        <nav><a href="#care">Treatments</a><a href="#doctor">Doctor</a><a href="#visit">Visit</a></nav>
-        <a className="b2-bk" href={waUrl(d)} target="_blank" rel="noreferrer">Book now</a>
+      <div className="t2-ann">Appointments by WhatsApp token. {d.timings}. <a href={waUrl(d)} target="_blank" rel="noreferrer">Book now</a></div>
+      <header className="t2-nav">
+        <b>{d.businessName}</b>
+        <nav><a href="#care">Treatments</a><a href="#doctor">Doctor</a><a href="#reviews">Reviews</a><a href="#visit">Visit</a></nav>
+        <a className="t2-join" href={telUrl(d)}>{d.phone}</a>
       </header>
 
-      <section className="b2-hero">
-        <div className="b2-hl">
-          {rating && <span className="b2-pill"><I.Star size={15} fill="#f5b301" stroke="#f5b301" /> {rating} rated by patients</span>}
+      <section className="t2-hero">
+        <div className="t2-copy">
+          <p className="t2-kick">{d.nicheTitle}, {d.city}</p>
           <h1>{d.tagline}</h1>
-          <p>{d.nicheTitle} in {d.city}. See {d.doctorName} at {d.address}, with a fixed token so you are never left waiting.</p>
-          <div className="b2-cta">
-            <a className="b2-btn" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> Book on WhatsApp</a>
-            <a className="b2-btn ghost" href={telUrl(d)}><I.Phone size={18} /> {d.phone}</a>
-          </div>
-          <div className="b2-trust">
-            <div className="b2-av">{d.testimonials.slice(0, 3).map((t, i) => <span key={i}>{initials(t.name)}</span>)}</div>
-            <small>Trusted by patients across {d.city}</small>
+          <p className="t2-sub">{d.doctorName} sees you personally at {d.address}. Choose a day, receive a fixed token, and be seen without the long wait.</p>
+          <div className="t2-cta">
+            <a className="t2-b" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp <I.MessageCircle size={17} /></a>
+            <a className="t2-b out" href="#care">See treatments</a>
           </div>
         </div>
-        <div className="b2-col" aria-hidden>
-          <div className="b2-p1"><Img src={ph[0]} /></div>
-          <div className="b2-p2"><Img src={ph[1]} /></div>
-          <div className="b2-p3"><Img src={ph[2] || ph[0]} /></div>
-          <div className="b2-glass"><I.Clock size={18} /><div><b>Open</b><small>{d.timings}</small></div></div>
+        <div className="t2-ph">
+          <div className="t2-big"><Img src={ph[0]} /></div>
+          <div className="t2-small"><Img src={ph[1]} /></div>
+          <div className="t2-note"><b>{d.consultationFee.replace(/\s*\(.*\)/, '')}</b><span>consultation</span></div>
         </div>
       </section>
 
-      <section id="care" className="b2-sec">
-        <h2 className="b2-h" data-rv>Everything you need to know, at a glance</h2>
-        <div className="b2-grid">
-          <article className="bt big" data-rv>
-            <Img src={ph[3] || ph[0]} /><div className="shade" />
-            <div className="cap"><b>{d.services.length} treatments</b><span>with the price written next to each one</span>
-              <a href={waUrl(d)} target="_blank" rel="noreferrer">Book a visit</a></div>
-          </article>
-          {d.services.slice(0, 4).map((s, i) => (
-            <article key={i} className="bt svc" data-rv>
-              <span className="ic"><ServiceIcon name={s.icon} /></span>
-              <h3>{s.title}</h3><p>{s.desc}</p><b>{s.price || 'Ask at clinic'}</b>
-            </article>
+      <section className="t2-trust">{trust.map((x, i) => <div key={i} data-rv>{x.i}<span>{x.t}</span></div>)}</section>
+
+      <section className="t2-say" data-rv>
+        <p>Care that starts with listening. {d.doctorName} takes the time to explain the problem, the options and the cost, before any treatment begins.</p>
+      </section>
+
+      <section id="care" className="t2-care">
+        <div className="t2-cl" data-rv><h2>Treatments</h2><p>Every price is written next to the treatment. The final fee is confirmed by the doctor after examination.</p>
+          <a className="t2-b" href={waUrl(d)} target="_blank" rel="noreferrer">Book a visit</a></div>
+        <ul>
+          {d.services.map((s, i) => (
+            <li key={i} data-rv>
+              <div className="th"><Img src={ph[(i + 1) % ph.length]} /></div>
+              <div className="tx"><h3>{s.title}</h3><p>{s.desc}</p></div>
+              <b>{s.price || 'Ask at clinic'}</b>
+            </li>
           ))}
-          <article id="doctor" className="bt doc" data-rv>
-            <span className="dm">{initials(d.doctorName)}</span>
-            <div><h3>{d.doctorName}</h3><p className="deg">{d.doctorTitle}</p><p>{d.doctorExperience}</p>
-              <div className="chips">{d.badges.slice(0, 3).map((b, i) => <span key={i}>{b}</span>)}</div></div>
-          </article>
-          {stats.slice(0, 2).map((s, i) => (
-            <article key={i} className={'bt stat' + (i ? ' dark' : '')} data-rv><b><CountUp value={s.v} /></b><span>{s.l}</span></article>
-          ))}
-          <article className="bt rev" data-rv>
-            <div className="stars">{Array.from({ length: Math.round(t0?.rating || 5) }).map((_, k) => <I.Star key={k} size={16} fill="#f5b301" stroke="#f5b301" />)}</div>
-            <blockquote>{t0?.comment}</blockquote><small>{t0?.name}, {t0?.role}</small>
-          </article>
-          <a className="bt map" href={mapUrl(d)} target="_blank" rel="noreferrer" data-rv>
-            <I.MapPin size={26} /><div><b>{d.address}</b><span>{d.city} · tap for directions</span></div>
-          </a>
+        </ul>
+      </section>
+
+      <section id="doctor" className="t2-doc">
+        <div className="t2-di">
+          <div data-rv>
+            <p className="t2-kick l">Your doctor</p>
+            <h2>{d.doctorName}</h2>
+            <p className="deg">{d.doctorTitle}</p>
+            <p>{d.doctorExperience}</p>
+            <ul>{d.badges.map((b, i) => <li key={i}>{b}</li>)}</ul>
+          </div>
+          <div className="t2-dp" data-rv><Img src={ph[2] || ph[0]} /><span>{initials(d.doctorName)}</span></div>
         </div>
       </section>
 
-      <WhyUs d={d} />
+      <WhyUs d={d} title="Why patients choose us" />
       <CostEstimator d={d} />
       <Steps d={d} />
 
-      <section className="b2-sec">
-        <h2 className="b2-h" data-rv>What patients say</h2>
-        <div className="b2-rv">{d.testimonials.slice(0, 3).map((t, i) => (
-          <figure key={i} data-rv><div className="stars">{Array.from({ length: Math.round(t.rating) }).map((_, k) => <I.Star key={k} size={15} fill="#f5b301" stroke="#f5b301" />)}</div>
-            <blockquote>{t.comment}</blockquote><figcaption><span>{initials(t.name)}</span><div><b>{t.name}</b><small>{t.role}</small></div></figcaption></figure>
+      <section id="reviews" className="t2-rev">
+        <h2 className="x-h" data-rv>In patients' words</h2>
+        <div>{d.testimonials.slice(0, 3).map((t, i) => (
+          <figure key={i} data-rv><blockquote>“{t.comment}”</blockquote><figcaption><b>{t.name}</b><span>{t.role}</span></figcaption></figure>
         ))}</div>
       </section>
 
       <div id="visit"><FindUs d={d} /></div>
 
-      <section className="b2-sec b2-two">
-        <div><h2 className="b2-h" data-rv>Book your token</h2><p className="b2-lead">Pick a treatment and a day. WhatsApp opens with your message ready to send.</p><FaqList d={d} /></div>
+      <section className="t2-two">
+        <div><h2 className="x-h" data-rv>Book your token</h2><p className="t2-lead">Pick a treatment and a day. WhatsApp opens with your message ready to send.</p><FaqList d={d} /></div>
         <BookingCard d={d} title="Request an appointment" />
       </section>
       <FooterCols d={d} />
@@ -97,54 +98,49 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
 };
 
 const CSS = `
-.b2{--ink:#0f1c2e;--card:#fff;--line:#e3e9f1;--on:#fff;--r:26px;--hf:Outfit,sans-serif;min-height:100vh;background:radial-gradient(900px 500px at 10% -10%,color-mix(in srgb,var(--a) 14%,transparent),transparent),radial-gradient(800px 500px at 100% 0,color-mix(in srgb,var(--a) 10%,transparent),transparent),#f7f9fc;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;overflow-x:clip}
-.b2 *{box-sizing:border-box}.b2 h1,.b2 h2,.b2 h3{font-family:var(--hf)}.b2 a{color:inherit}
-.b2 a:focus-visible,.b2 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
-.b2-nav{position:sticky;top:12px;z-index:40;margin:12px auto 0;max-width:1120px;width:calc(100% - 24px);display:flex;align-items:center;gap:12px;padding:10px 12px 10px 14px;border-radius:999px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);box-shadow:0 8px 30px rgba(15,28,46,.1),0 0 0 1px rgba(15,28,46,.05)}
-.b2-nav b{font-family:var(--hf);font-size:16px;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.b2-mono{width:34px;height:34px;border-radius:50%;background:var(--a);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
-.b2-nav nav{display:flex;gap:22px;font-size:14px;font-weight:500;margin-right:14px}.b2-nav nav a{text-decoration:none;opacity:.75}.b2-nav nav a:hover{opacity:1}
-.b2-bk{background:var(--ink);color:#fff!important;text-decoration:none;padding:10px 20px;border-radius:999px;font-weight:600;font-size:14px;white-space:nowrap}
-.b2-hero{max-width:1180px;margin:0 auto;padding:56px 20px 30px;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
-.b2-pill{display:inline-flex;gap:6px;align-items:center;padding:7px 14px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px var(--line);font-size:13.5px;font-weight:500}
-.b2 h1{font-size:clamp(36px,5.4vw,66px);line-height:1.04;font-weight:700;letter-spacing:-.035em;margin:20px 0 0;max-width:14ch}
-.b2-hl>p{font-size:18px;max-width:46ch;margin:20px 0 0;color:#46566d}
-.b2-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-.b2-btn{display:inline-flex;gap:8px;align-items:center;padding:16px 26px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:600;text-decoration:none;box-shadow:0 14px 30px color-mix(in srgb,var(--a) 40%,transparent)}
-.b2-btn.ghost{background:#fff;color:var(--ink)!important;box-shadow:0 0 0 1px var(--line)}
-.b2-trust{display:flex;align-items:center;gap:12px;margin-top:30px}.b2-trust small{color:#5b6b82}
-.b2-av{display:flex}.b2-av span{width:36px;height:36px;border-radius:50%;background:var(--a);color:#fff;border:3px solid #f7f9fc;display:grid;place-items:center;font-size:12px;font-weight:700;margin-left:-8px}.b2-av span:first-child{margin-left:0}.b2-av span:nth-child(2){filter:hue-rotate(40deg)}.b2-av span:nth-child(3){filter:hue-rotate(-40deg)}
-.b2-col{position:relative;height:520px}
-.b2-col>div{position:absolute;overflow:hidden;border-radius:30px;background:linear-gradient(150deg,color-mix(in srgb,var(--a) 30%,#fff),color-mix(in srgb,var(--a) 75%,#0f1c2e));box-shadow:0 24px 60px rgba(15,28,46,.18)}
-.b2-col img,.bt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.b2-p1{left:6%;top:0;width:58%;height:68%}.b2-p2{right:0;top:12%;width:34%;height:40%}.b2-p3{right:6%;bottom:0;width:52%;height:36%}
-.b2-col .b2-glass{display:flex;gap:10px;align-items:center;left:0;bottom:12%;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);padding:12px 18px;border-radius:20px;overflow:visible}
-.b2-glass svg{color:var(--a)}.b2-glass b{display:block;font-size:14px}.b2-glass small{color:#5b6b82;font-size:12px}
-.b2-sec{max-width:1180px;margin:0 auto;padding:84px 20px 0}
-.b2-h{font-family:var(--hf);font-size:clamp(28px,3.8vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1.08;margin:0 0 30px;max-width:20ch}
-.b2-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(190px,auto);gap:16px}
-.bt{position:relative;border-radius:var(--r);padding:24px;background:#fff;box-shadow:0 0 0 1px var(--line);overflow:hidden;display:flex;flex-direction:column}
-.bt.big{grid-column:span 2;grid-row:span 2;padding:0;justify-content:flex-end;background:linear-gradient(150deg,var(--a),#0f1c2e)}
-.bt .shade{position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(8,16,30,.85))}
-.bt .cap{position:relative;color:#fff;padding:30px;display:grid;gap:4px}.bt .cap b{font-family:var(--hf);font-size:32px;line-height:1}.bt .cap span{opacity:.85}
-.bt .cap a{justify-self:start;margin-top:14px;background:#fff;color:var(--ink);text-decoration:none;font-weight:600;padding:11px 20px;border-radius:999px;font-size:14px}
-.bt.svc{transition:transform .25s,box-shadow .25s}.bt.svc:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,28,46,.12),0 0 0 1px var(--a)}
-.bt .ic{width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--a) 13%,#fff);color:var(--a);display:grid;place-items:center}
-.bt.svc h3{font-size:18px;margin:14px 0 4px;line-height:1.2}.bt.svc p{font-size:13.5px;color:#5b6b82;margin:0 0 12px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.bt.svc b{color:var(--a)}
-.bt.doc{grid-column:span 2;flex-direction:row;gap:20px;align-items:center;background:color-mix(in srgb,var(--a) 9%,#fff)}
-.dm{width:96px;height:96px;border-radius:50%;background:var(--a);color:#fff;font-family:var(--hf);font-size:34px;font-weight:700;display:grid;place-items:center;flex:none}
-.bt.doc h3{margin:0;font-size:22px}.bt.doc .deg{color:var(--a);font-weight:600;margin:2px 0}.bt.doc p{margin:2px 0;font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{font-size:12px;padding:4px 10px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px var(--line)}
-.bt.stat{justify-content:flex-end}.bt.stat b{font-family:var(--hf);font-size:clamp(34px,4vw,52px);line-height:1;color:var(--a)}.bt.stat>span{font-size:13px;color:#5b6b82;margin-top:6px}
-.bt.stat.dark{background:var(--ink);color:#fff}.bt.stat.dark b{color:#fff}.bt.stat.dark>span{color:#b9c6da}
-.bt.rev{grid-column:span 2;justify-content:space-between}.stars{display:flex;gap:2px}.bt.rev blockquote{margin:10px 0;font-family:var(--hf);font-size:19px;line-height:1.35}.bt.rev small{color:#5b6b82}
-.bt.map{grid-column:span 2;flex-direction:row;gap:16px;align-items:center;text-decoration:none;background:var(--a);color:#fff}.bt.map b{display:block;font-family:var(--hf);font-size:19px}.bt.map span{opacity:.88;font-size:14px}
-.b2-rv{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.b2-rv figure{margin:0;background:#fff;border-radius:var(--r);padding:26px;box-shadow:0 0 0 1px var(--line)}.b2-rv blockquote{margin:12px 0 18px;font-size:15.5px}
-.b2-rv figcaption{display:flex;gap:12px;align-items:center}.b2-rv figcaption span{width:40px;height:40px;border-radius:50%;background:var(--a);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}.b2-rv small{display:block;color:#64748b;font-size:12.5px}
-.b2-two{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:start}.b2-lead{color:#5b6b82;margin:-14px 0 24px}
-.faq-i{border-top:1px solid var(--line)}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:17px 0;cursor:pointer;font-weight:600}
-.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 17px;color:#5b6b82}
-@media(max-width:900px){.b2-hero,.b2-two{grid-template-columns:1fr}.b2-col{height:380px}.b2-grid{grid-template-columns:1fr 1fr}.bt.big{grid-row:span 1;min-height:280px}.bt.doc,.bt.rev,.bt.map{grid-column:span 2}.b2-nav nav{display:none}.b2-sec{padding-top:60px}.b2-hero{padding-top:36px}}
-@media(max-width:520px){.b2-grid{grid-template-columns:1fr}.bt.big,.bt.doc,.bt.rev,.bt.map{grid-column:span 1}.bt.doc{flex-direction:column;align-items:flex-start}}
+.t2{--ink:#1c3a33;--card:#fbf7f1;--line:rgba(28,58,51,.18);--on:#fff;--r:6px;--hf:Fraunces,serif;--hw:300;--hw3:500;--hls:-.02em;--btn:#1c3a33;--btn-fg:#f3ebe1;--wi-bg:rgba(28,58,51,.08);--wi-fg:#1c3a33;--ico:#1c3a33;--est-bg:#1c3a33;--est-fg:#f3ebe1;--band-bg:#1c3a33;--band-fg:#f3ebe1;--fbg:#12261f;min-height:100vh;background:#f3ebe1;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.65;overflow-x:clip}
+.t2 *{box-sizing:border-box}.t2 h1,.t2 h2,.t2 h3{font-family:var(--hf);font-weight:var(--hw)}.t2 a{color:inherit}
+.t2 a:focus-visible,.t2 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+.t2 .x-sec,.t2-care,.t2-rev,.t2-two{max-width:1240px}
+.t2-ann{background:#cfe3d6;text-align:center;font-size:14.5px;padding:10px 16px}.t2-ann a{font-weight:700;text-decoration:underline;margin-left:8px}
+.t2-nav{background:#12302a;color:#f3ebe1;display:flex;align-items:center;gap:28px;padding:16px max(20px,calc((100vw - 1240px)/2))}
+.t2-nav b{font-family:var(--hf);font-weight:400;font-size:21px;margin-right:auto}.t2-nav nav{display:flex;gap:28px;font-size:15px}.t2-nav nav a{text-decoration:none;opacity:.85}.t2-nav nav a:hover{opacity:1}
+.t2-join{border:1.5px solid #f3ebe1;border-radius:999px;padding:9px 22px;text-decoration:none;font-weight:500;font-size:15px}
+.t2-hero{max-width:1240px;margin:0 auto;padding:72px 20px 56px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.t2-kick{font-size:15px;font-weight:500;margin:0 0 20px;color:var(--ink)}.t2-kick:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--a);margin-right:10px}
+.t2 h1{font-size:clamp(46px,6.6vw,96px);line-height:1;letter-spacing:-.025em;margin:0;max-width:12ch;font-variation-settings:"opsz" 144}
+.t2-sub{font-size:19px;max-width:44ch;margin:26px 0 0;opacity:.85}
+.t2-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.t2-b{display:inline-flex;gap:10px;align-items:center;background:#1c3a33;color:#f3ebe1!important;padding:16px 28px;border-radius:999px;font-weight:500;text-decoration:none;transition:transform .2s}
+.t2-b:hover{transform:translateY(-2px)}.t2-b.out{background:transparent;color:#1c3a33!important;border:1.5px solid #1c3a33}
+.t2-ph{position:relative;height:600px}
+.t2-big{position:absolute;right:0;top:0;width:82%;height:92%;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 35%,#e8dccb),#1c3a33)}
+.t2-small{position:absolute;left:0;bottom:0;width:44%;height:36%;border-radius:6px;overflow:hidden;border:8px solid #f3ebe1;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 30%,#e8dccb),#2d5247)}
+.t2-big img,.t2-small img,.th img,.t2-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.t2-note{position:absolute;right:16px;bottom:8%;background:#f3ebe1;border-radius:6px;padding:12px 18px;display:grid}.t2-note b{font-family:var(--hf);font-weight:400;font-size:20px}.t2-note span{font-size:12.5px;opacity:.7}
+.t2-trust{max-width:1240px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.t2-trust div{position:relative;border:1.5px solid rgba(28,58,51,.35);border-radius:14px;padding:44px 14px 22px;text-align:center;font-size:15px;line-height:1.35;margin-top:22px}
+.t2-trust svg{position:absolute;left:50%;top:-18px;transform:translateX(-50%);background:#f3ebe1;padding:0 8px;box-sizing:content-box}
+.t2-say{max-width:980px;margin:0 auto;padding:110px 20px 20px;text-align:center}
+.t2-say p{font-family:var(--hf);font-weight:300;font-size:clamp(26px,3.6vw,46px);line-height:1.2;letter-spacing:-.015em;margin:0}
+.t2-care{margin:0 auto;padding:90px 20px 0;display:grid;grid-template-columns:.7fr 1.3fr;gap:64px;align-items:start}
+.t2-cl{position:sticky;top:30px}.t2 h2{font-size:clamp(32px,4.2vw,58px);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px}.t2-cl p{opacity:.8;margin:0 0 26px;max-width:36ch}
+.t2-care ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.t2-care li{display:grid;grid-template-columns:110px 1fr auto;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
+.th{position:relative;width:110px;height:110px;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 35%,#e8dccb),#2d5247)}
+.t2-care h3{margin:0;font-size:26px;line-height:1.15;font-weight:400}.t2-care p{margin:6px 0 0;font-size:15px;opacity:.75;max-width:48ch}
+.t2-care b{font-family:var(--hf);font-weight:400;font-size:22px;color:var(--a);filter:brightness(.85);white-space:nowrap}
+.t2-doc{background:#1c3a33;color:#f3ebe1;margin-top:110px;padding:96px 20px}
+.t2-di{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1fr .85fr;gap:64px;align-items:center}
+.t2-doc h2{color:#f3ebe1}.t2-kick.l{color:#cfe3d6}.t2-doc .deg{font-family:var(--hf);font-size:24px;font-weight:300;margin:0 0 14px;color:#cfe3d6}
+.t2-doc ul{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid rgba(243,235,225,.25)}.t2-doc li{padding:14px 0;border-bottom:1px solid rgba(243,235,225,.25)}
+.t2-dp{position:relative;aspect-ratio:4/5;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 50%,#1c3a33),#12261f);display:grid;place-items:center;font-family:var(--hf);font-size:100px;font-weight:300;color:rgba(243,235,225,.9)}
+.t2-rev{margin:0 auto;padding:110px 20px 0}.t2-rev>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:34px}
+.t2-rev figure{margin:0;border-top:1px solid #1c3a33;padding-top:22px}.t2-rev blockquote{margin:0 0 20px;font-family:var(--hf);font-weight:300;font-size:23px;line-height:1.3}
+.t2-rev figcaption{display:grid;font-size:14px}.t2-rev figcaption span{opacity:.7}
+.t2-two{margin:0 auto;padding:100px 20px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start}.t2-lead{opacity:.8;margin:-6px 0 26px}
+.faq-i{border-top:1px solid var(--line)}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;font-family:var(--hf);font-size:21px}
+.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 20px;opacity:.8;max-width:60ch}
+.t2 .x-why article,.t2 .x-steps li,.t2 .x-fi{background:#fbf7f1;border-radius:14px}
+@media(max-width:900px){.t2-hero,.t2-care,.t2-di,.t2-two{grid-template-columns:1fr}.t2-ph{height:420px}.t2-trust{grid-template-columns:1fr 1fr}.t2-cl{position:static}.t2-care li{grid-template-columns:80px 1fr}.t2-care li b{grid-column:2}.th{width:80px;height:80px}.t2-nav nav{display:none}.t2-hero{padding-top:44px}.t2-say{padding-top:70px}.t2-doc{margin-top:70px;padding:64px 20px}}
 `;

@@ -1,127 +1,98 @@
-import React, { useState } from 'react';
-import { D, BOOKING_CSS, BookingCard, CountUp, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, accentOf, initials, mapUrl, pics, shortName, statsOf, telUrl, useFonts, useReveal, waUrl } from './shared';
+import React from 'react';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, CountUp } from './shared';
 import { CostEstimator, FindUs, FooterCols, SECTIONS_CSS, Steps, WhyUs } from './Sections';
 
-/** Design 5, Poster: huge name on a full accent field, photo-reveal treatment index, mosaic and outlined stats. */
+/** Design 5, Grid: white, hairline grid, huge tight sans, one bold accent block, photo strip. */
 export const Design5: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Archivo:wdth,wght@100,500;100,700;100,800&family=Hanken+Grotesk:wght@400;500;600;700');
+  useFonts('family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600');
   const ref = useReveal();
-  const [hov, setHov] = useState(0);
-  const ph = pics(d, 1200); const stats = statsOf(d);
-  const strip = [...d.services.map(s => s.title), ...d.services.map(s => s.title)];
+  const ph = pics(d, 1400); const stats = statsOf(d);
   return (
-    <div className="p5" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
+    <div className="t5" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
-      <section className="p5-hero">
-        <Img src={ph[0]} className="p5-img" />
-        <div className="p5-in">
-          <p className="p5-meta"><I.MapPin size={16} /> {d.nicheTitle}, {d.city}</p>
-          <h1>{shortName(d.businessName)}</h1>
-          <p className="p5-line">{d.tagline}</p>
-          <div className="p5-cta">
-            <a className="p5-b" href={waUrl(d)} target="_blank" rel="noreferrer"><I.MessageCircle size={18} /> Book on WhatsApp</a>
-            <a className="p5-b out" href={telUrl(d)}><I.Phone size={18} /> {d.phone}</a>
-          </div>
-        </div>
-      </section>
-      <div className="p5-strip" aria-hidden><div>{strip.map((t, i) => <span key={i}>{t}</span>)}</div></div>
+      <header className="t5-nav"><b>{d.businessName}</b>
+        <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
+        <a className="t5-cta" href={waUrl(d)} target="_blank" rel="noreferrer">Book now</a></header>
 
-      <section className="p5-stats">{stats.map((s, i) => <div key={i} data-rv><b><CountUp value={s.v} /></b><span>{s.l}</span></div>)}</section>
-
-      <section className="p5-sec">
-        <h2 data-rv>Treatments</h2>
-        <div className="p5-idx">
-          <ul>
-            {d.services.map((s, i) => (
-              <li key={i} className={hov === i ? 'on' : ''} onMouseEnter={() => setHov(i)} onFocus={() => setHov(i)} onClick={() => setHov(i)} data-rv>
-                <span className="n">{String(i + 1).padStart(2, '0')}</span>
-                <div><h3>{s.title}</h3><p>{s.desc}</p></div>
-                <b>{s.price || 'Ask'}</b>
-                <a className="go" href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer" aria-label={`Enquire about ${s.title}`}><I.MessageCircle size={18} /></a>
-              </li>
-            ))}
-          </ul>
-          <div className="p5-view" aria-hidden>
-            {d.services.map((s, i) => <div key={i} className={'f' + (hov === i ? ' on' : '')}><Img src={ph[(i + 1) % ph.length]} /><span className="ic"><ServiceIcon name={s.icon} size={28} /></span></div>)}
-          </div>
+      <section className="t5-hero">
+        <h1>{d.businessName}</h1>
+        <div className="t5-hr">
+          <p>{d.tagline}</p>
+          <div className="t5-row"><a className="t5-btn" href={waUrl(d)} target="_blank" rel="noreferrer">Book on WhatsApp <I.ArrowUpRight size={18} /></a><a className="t5-btn o" href={telUrl(d)}>{d.phone}</a></div>
         </div>
       </section>
 
-      <WhyUs d={d} title="Why choose us" />
+      <section className="t5-strip">{[0, 1, 2].map(i => <div key={i} className="p"><Img src={ph[i] || ph[0]} /></div>)}</section>
+
+      <section className="t5-stats">
+        <div className="blk"><b>{d.doctorName}</b><span>{d.doctorTitle}</span></div>
+        {stats.slice(0, 3).map((s, i) => <div key={i}><b><CountUp value={s.v} /></b><span>{s.l}</span></div>)}
+      </section>
+
+      <section id="tr" className="t5-tr">
+        <div className="t5-hd" data-rv><h2>Treatments</h2><p>{d.nicheTitle} in {d.city}. Prices listed. {d.consultationFee}</p></div>
+        <ul>{d.services.map((s, i) => (
+          <li key={i} data-rv>
+            <a href={waUrl(d)} target="_blank" rel="noreferrer">
+              <span className="n">{String(i + 1).padStart(2, '0')}</span>
+              <span className="t"><h3>{s.title}</h3><em>{s.desc}</em></span>
+              <span className="pp"><Img src={ph[(i + 1) % ph.length]} /></span>
+              <b>{s.price || 'Ask at clinic'}</b>
+              <I.ArrowUpRight size={22} />
+            </a>
+          </li>))}</ul>
+      </section>
+
+      <section id="dr" className="t5-dr">
+        <div className="t5-dp" data-rv><Img src={ph[2] || ph[0]} /><span>{initials(d.doctorName)}</span></div>
+        <div data-rv><h2>{d.doctorName}</h2><p className="dg">{d.doctorTitle}</p><p>{d.doctorExperience}</p>
+          <ul>{d.badges.map((b, i) => <li key={i}>{b}</li>)}</ul></div>
+      </section>
+
+      <WhyUs d={d} title="Why patients choose us" />
       <CostEstimator d={d} />
-
-      <section className="p5-mos">{ph.slice(0, 4).map((u, i) => <figure key={i} data-rv><Img src={u} /></figure>)}</section>
-
-      <section className="p5-sec p5-docw">
-        <div data-rv>
-          <h2>{d.doctorName}</h2>
-          <p className="p5-deg">{d.doctorTitle}</p>
-          <p>{d.doctorExperience}</p>
-          <ul>{d.badges.map((b, i) => <li key={i}><I.BadgeCheck size={20} /> {b}</li>)}</ul>
-        </div>
-        <div className="p5-dp" aria-hidden data-rv>{initials(d.doctorName)}</div>
-      </section>
-
       <Steps d={d} />
-      <FindUs d={d} />
 
-      <section className="p5-sec p5-two">
-        <div>
-          <h2 data-rv>Patients say</h2>
-          {d.testimonials.slice(0, 2).map((t, i) => <blockquote key={i} data-rv>“{t.comment}”<footer>{t.name}, {t.role}</footer></blockquote>)}
-        </div>
-        <div><h2 data-rv>Book a token</h2><BookingCard d={d} title="Pick a day" /><div style={{ height: 30 }} /><FaqList d={d} /></div>
-      </section>
-      <FooterCols d={d} />
-      <div className="p5-bar"><a href={telUrl(d)}>Call</a><a className="w" href={waUrl(d)} target="_blank" rel="noreferrer">WhatsApp</a></div>
-      <FloatingWA d={d} />
+      <section id="rv" className="t5-rv"><h2 className="x-h" data-rv>Reviews</h2>
+        <div>{d.testimonials.slice(0, 3).map((t, i) => <figure key={i} data-rv><blockquote>{t.comment}</blockquote><figcaption><b>{t.name}</b> {t.role}</figcaption></figure>)}</div></section>
+      <div id="vs"><FindUs d={d} /></div>
+      <section className="t5-two"><div><h2 className="x-h" data-rv>Questions</h2><FaqList d={d} /></div><BookingCard d={d} title="Request an appointment" /></section>
+      <FooterCols d={d} /><FloatingWA d={d} />
     </div>
   );
 };
 
 const CSS = `
-.p5{--ink:#0d0d0d;--card:#fff;--line:#d9d9d9;--on:#fff;--r:6px;--hf:Archivo,sans-serif;--fbg:#0d0d0d;min-height:100vh;background:#fff;color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;line-height:1.55;padding-bottom:62px;overflow-x:clip}
-.p5 *{box-sizing:border-box}.p5 h1,.p5 h2,.p5 h3{font-family:var(--hf)}.p5 a{color:inherit}
-.p5 a:focus-visible,.p5 button:focus-visible,.p5 li:focus-visible{outline:3px solid #000;outline-offset:3px}
-.p5-hero{position:relative;background:var(--a);color:#fff;overflow:hidden;min-height:88vh;display:flex;align-items:flex-end}
-.p5-img{position:absolute;right:0;top:0;width:46%;height:100%;object-fit:cover;mix-blend-mode:multiply;opacity:.95}
-.p5-in{position:relative;padding:48px 32px 60px;max-width:1280px;margin:0 auto;width:100%}
-.p5-meta{display:flex;gap:6px;align-items:center;font-weight:600;margin:0 0 12px;font-size:17px}
-.p5 h1{font-weight:800;font-size:clamp(52px,12vw,176px);line-height:.88;letter-spacing:-.04em;margin:0;max-width:11ch;text-wrap:balance}
-.p5-line{font-size:clamp(18px,2vw,24px);font-weight:500;max-width:34ch;margin:22px 0 0}
-.p5-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
-.p5-b{display:inline-flex;gap:8px;align-items:center;padding:17px 28px;background:#0d0d0d;color:#fff!important;font-weight:700;text-decoration:none;border-radius:6px}.p5-b.out{background:transparent;border:2px solid #fff}
-.p5-strip{background:#0d0d0d;color:#fff;overflow:hidden;white-space:nowrap;padding:14px 0}.p5-strip div{display:inline-block;animation:p5m 38s linear infinite}
-.p5-strip span{font-family:var(--hf);font-weight:700;font-size:20px;margin:0 22px}.p5-strip span:after{content:"+";margin-left:44px;color:var(--a);filter:brightness(1.4)}
-@keyframes p5m{to{transform:translateX(-50%)}}
-@media(prefers-reduced-motion:reduce){.p5-strip div{animation:none}.p5-strip{overflow-x:auto}}
-.p5-stats{max-width:1280px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:repeat(4,1fr);border-bottom:3px solid #0d0d0d}
-.p5-stats div{padding:30px 20px 26px 0}.p5-stats b{display:block;font-family:var(--hf);font-size:clamp(34px,5vw,68px);font-weight:800;line-height:1;color:transparent;-webkit-text-stroke:2px var(--a)}.p5-stats div>span{font-size:14px;opacity:.75}
-.p5-sec{max-width:1280px;margin:0 auto;padding:90px 32px 0}
-.p5 h2{font-weight:800;font-size:clamp(32px,5vw,68px);line-height:1;letter-spacing:-.04em;margin:0 0 28px}
-.p5-idx{display:grid;grid-template-columns:1.25fr .75fr;gap:48px;align-items:start}
-.p5-idx ul{list-style:none;margin:0;padding:0;border-top:3px solid #0d0d0d}
-.p5-idx li{display:grid;grid-template-columns:auto 1fr auto auto;gap:20px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s,padding .2s}
-.p5-idx li.on{background:color-mix(in srgb,var(--a) 10%,#fff);padding-left:16px;padding-right:16px}
-.p5-idx .n{font-family:var(--hf);font-weight:800;font-size:18px;color:var(--a)}
-.p5-idx h3{margin:0;font-size:clamp(20px,2.4vw,30px);letter-spacing:-.02em}.p5-idx p{margin:4px 0 0;opacity:.72;max-width:52ch;font-size:15px}
-.p5-idx b{font-family:var(--hf);font-size:clamp(17px,1.8vw,24px);color:var(--a);white-space:nowrap}
-.p5-idx .go{width:42px;height:42px;border-radius:50%;background:#0d0d0d;color:#fff;display:grid;place-items:center;text-decoration:none}
-.p5-view{position:sticky;top:24px;aspect-ratio:4/5;background:var(--a);overflow:hidden;box-shadow:14px 14px 0 #0d0d0d}
-.p5-view .f{position:absolute;inset:0;opacity:0;transform:scale(1.06);transition:opacity .45s,transform .6s}.p5-view .f.on{opacity:1;transform:none}
-.p5-view img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.p5-view .ic{position:absolute;left:16px;bottom:16px;width:60px;height:60px;background:#fff;color:var(--a);display:grid;place-items:center}
-.p5-mos{max-width:1280px;margin:90px auto 0;padding:0 32px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:12px;height:380px}
-.p5-mos figure{margin:0;position:relative;overflow:hidden;background:linear-gradient(150deg,var(--a),#0d0d0d)}.p5-mos img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.p5-docw{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
-.p5-deg{font-weight:700;color:var(--a);font-size:19px;margin:0 0 6px}.p5-docw ul{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:10px}
-.p5-docw li{display:flex;gap:10px;align-items:center;font-weight:600;border-top:1px solid var(--line);padding-top:10px}.p5-docw li svg{color:var(--a);flex:none}
-.p5-dp{aspect-ratio:1;background:var(--a);color:#fff;font-family:var(--hf);font-weight:800;font-size:clamp(90px,16vw,220px);display:grid;place-items:center;letter-spacing:-.05em;box-shadow:16px 16px 0 #0d0d0d}
-.p5-two{display:grid;grid-template-columns:1fr 1fr;gap:64px}
-.p5 blockquote{margin:0 0 28px;font-size:21px;font-weight:500;line-height:1.4;padding-top:16px;border-top:3px solid var(--a)}.p5 blockquote footer{font-size:14px;opacity:.7;margin-top:8px;font-weight:400}
-.faq-i{border-top:1px solid var(--line)}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:16px 0;cursor:pointer;font-weight:700}
-.faq-q:focus-visible{outline:3px solid #000}.faq-a{margin:0 0 16px;opacity:.78}
-.p5-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:1fr 1fr}.p5-bar a{text-align:center;padding:18px;font-weight:800;text-decoration:none;background:#0d0d0d;color:#fff}.p5-bar a.w{background:var(--a)}
-@media(min-width:861px){.p5{padding-bottom:0}.p5-bar{display:none}}
-@media(max-width:860px){.p5-img{width:100%;opacity:.3}.p5-docw,.p5-two,.p5-idx{grid-template-columns:1fr;gap:32px}.p5-view{display:none}.p5-idx li{grid-template-columns:auto 1fr;gap:12px}.p5-idx b,.p5-idx .go{grid-column:2}.p5-sec{padding:60px 20px 0}.p5-in{padding:36px 20px 44px}.p5-stats{grid-template-columns:1fr 1fr;padding:0 20px}.p5-mos{grid-template-columns:1fr 1fr;height:auto;grid-auto-rows:170px;padding:0 20px;margin-top:60px}.p5-dp{box-shadow:10px 10px 0 #0d0d0d;max-width:300px}.fwa{bottom:76px}}
+.t5{--ink:#0e0e10;--card:#fff;--line:#0e0e10;--on:#fff;--r:0px;--hf:'Inter Tight',sans-serif;--hw:700;--hw3:600;--hls:-.035em;--btn:#0e0e10;--btn-fg:#fff;--wi-bg:var(--a);--wi-fg:#fff;--ico:var(--a);--est-bg:#0e0e10;--est-fg:#fff;--band-bg:var(--a);--band-fg:#fff;--fbg:#0e0e10;min-height:100vh;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:17px;line-height:1.6;overflow-x:clip}
+.t5 *{box-sizing:border-box}.t5 h1,.t5 h2,.t5 h3{font-family:var(--hf);font-weight:var(--hw)}.t5 a{color:inherit}
+.t5 a:focus-visible,.t5 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+.t5-nav{display:flex;align-items:center;gap:28px;padding:18px max(20px,calc((100vw - 1320px)/2));border-bottom:1px solid #0e0e10}.t5-nav b{font:700 18px var(--hf);letter-spacing:-.02em;margin-right:auto}.t5-nav nav{display:flex;gap:26px;font-size:15px}.t5-nav nav a{text-decoration:none}
+.t5-cta{background:var(--a);color:#fff!important;padding:10px 20px;font-weight:600;text-decoration:none;font-size:15px}
+.t5-hero{max-width:1320px;margin:0 auto;padding:60px 20px 40px}
+.t5 h1{font-size:clamp(52px,10.5vw,170px);line-height:.88;letter-spacing:-.05em;margin:0;overflow-wrap:anywhere}
+.t5-hr{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:44px;align-items:end}.t5-hr p{font:500 clamp(22px,2.4vw,34px)/1.2 var(--hf);letter-spacing:-.02em;margin:0;max-width:24ch}
+.t5-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.t5-btn{display:inline-flex;gap:8px;align-items:center;background:#0e0e10;color:#fff!important;padding:17px 28px;font-weight:600;text-decoration:none}.t5-btn.o{background:#fff;color:#0e0e10!important;border:1.5px solid #0e0e10}.t5-btn:hover{background:var(--a)}
+.t5-strip{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;height:min(46vw,520px);border-block:1px solid #0e0e10}
+.p{position:relative;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#fff),#0e0e10);border-right:1px solid #0e0e10}.p:last-child{border:0}
+.p img,.pp img,.t5-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .5s}.p:hover img,.t5-tr li a:hover .pp img{filter:none}
+.t5-stats{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;border-inline:1px solid #0e0e10}
+.t5-stats div{padding:30px 24px;border-right:1px solid #0e0e10;display:grid;gap:4px}.t5-stats div:last-child{border:0}
+.t5-stats b{font:700 clamp(30px,3.4vw,52px)/1 var(--hf);letter-spacing:-.03em}.t5-stats b>span{font:inherit}.t5-stats span{font-size:14px;opacity:.7}
+.t5-stats .blk{background:var(--a);color:#fff}.t5-stats .blk b{font-size:clamp(24px,2.6vw,38px)}.t5-stats .blk span{opacity:.9}
+.t5-tr{max-width:1320px;margin:0 auto;padding:120px 20px 0}.t5-hd{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:34px}
+.t5 h2{font-size:clamp(40px,6vw,92px);line-height:.92;letter-spacing:-.04em;margin:0}.t5-hd p{margin:0;max-width:34ch;opacity:.75}
+.t5-tr ul{list-style:none;margin:0;padding:0;border-top:2px solid #0e0e10}.t5-tr li{border-bottom:1px solid #0e0e10}
+.t5-tr li a{display:grid;grid-template-columns:50px 1fr 140px auto 30px;gap:22px;align-items:center;padding:20px 0;text-decoration:none;transition:padding .25s}.t5-tr li a:hover{padding-left:14px;background:color-mix(in srgb,var(--a) 8%,#fff)}
+.n{font-size:14px;opacity:.5}.t h3{margin:0;font-size:clamp(22px,2.6vw,34px);letter-spacing:-.03em;line-height:1.1}.t em{display:block;font-style:normal;font-size:15px;opacity:.7;margin-top:4px;max-width:52ch}
+.pp{position:relative;height:84px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 40%,#fff),#0e0e10);overflow:hidden}.t5-tr b{font:700 20px var(--hf);color:var(--a);white-space:nowrap}
+.t5-dr{max-width:1320px;margin:120px auto 0;padding:0 20px;display:grid;grid-template-columns:.9fr 1.1fr;gap:0;border:1px solid #0e0e10;margin-inline:auto}
+.t5-dp{position:relative;min-height:440px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 50%,#fff),#0e0e10);display:grid;place-items:center;font:800 100px var(--hf);color:rgba(255,255,255,.85)}
+.t5-dr>div:last-child{padding:48px}.dg{font:600 22px var(--hf);color:var(--a);margin:12px 0}.t5-dr ul{list-style:none;margin:24px 0 0;padding:0;border-top:1px solid #0e0e10}.t5-dr li{padding:12px 0;border-bottom:1px solid #0e0e10}
+.t5-rv{max-width:1320px;margin:0 auto;padding:120px 20px 0}.t5-rv>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));border:1px solid #0e0e10;margin-top:34px}
+.t5-rv figure{margin:0;padding:32px;border-right:1px solid #0e0e10}.t5-rv figure:last-child{border:0}.t5-rv blockquote{margin:0 0 22px;font:500 22px/1.3 var(--hf);letter-spacing:-.02em}.t5-rv figcaption{font-size:14px;opacity:.75}
+.t5-two{max-width:1320px;margin:0 auto;padding:110px 20px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start}
+.faq-i{border-top:1px solid #0e0e10}.faq-q{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;font:600 21px var(--hf);letter-spacing:-.02em}.faq-q:focus-visible{outline:3px solid var(--a)}.faq-a{margin:0 0 20px;opacity:.8;max-width:60ch}
+.t5 .x-sec{max-width:1320px}
+@media(max-width:900px){.t5-hr,.t5-dr,.t5-two{grid-template-columns:1fr}.t5-row{justify-content:flex-start}.t5-strip{grid-template-columns:1fr 1fr;height:auto}.t5-strip .p{height:200px}.t5-strip .p:first-child{grid-column:span 2}.t5-stats{grid-template-columns:1fr 1fr}.t5-stats div{border-bottom:1px solid #0e0e10}.t5-tr li a{grid-template-columns:1fr auto;gap:10px}.n,.pp{display:none}.t5-nav nav{display:none}.t5-dr>div:last-child{padding:28px}.t5-tr{padding-top:80px}}
 `;

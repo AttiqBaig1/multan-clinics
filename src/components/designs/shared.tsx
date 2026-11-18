@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ClinicTemplateData } from '../../data/multanTemplates';
 import { photosFor } from '../../data/clinicPhotos';
-import { Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
+import { Check, Leaf, ArrowUpRight, Eye, Sparkles, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award } from 'lucide-react';
 
-export const I = { Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
+export const I = { Check, Leaf, Heart, ArrowUpRight, Star, MessageCircle, Phone, MapPin, Clock, BadgeCheck, CalendarCheck, Award, ShieldCheck, Stethoscope };
 const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = { Eye, Sparkles, Shield: ShieldCheck, ShieldCheck, Activity, Heart, Zap, Smile, Crosshair, Sun, Package, Stethoscope };
 export const ServiceIcon: React.FC<{ name: string; size?: number }> = ({ name, size = 24 }) => {
   const C = ICONS[name] || Stethoscope;
@@ -78,7 +78,7 @@ export const FWA_CSS = `
 
 export type D = ClinicTemplateData;
 export const DESIGN_NAMES: Record<number, string> = {
-  1: 'Classic Pro', 2: 'Mist', 3: 'Night Suite', 4: 'Sehat', 5: 'Poster',
+  1: 'Classic Pro', 2: 'Terra', 3: 'Ink', 4: 'Bloom', 5: 'Grid',
 };
 
 /** Each speciality gets its own accent so every clinic's site looks made for it. */
@@ -177,8 +177,8 @@ export const BOOKING_CSS = `
 .bk-days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .bk-d{font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:8px 2px;cursor:pointer;display:grid;gap:1px;text-align:center}
 .bk-d b{font-size:13px}.bk-d small{font-size:11px;opacity:.65}
-.bk-d.on{background:var(--a);color:var(--on);border-color:var(--a)}
-.bk-b{font:inherit;font-weight:700;font-size:15.5px;margin-top:10px;padding:14px;border:0;border-radius:12px;background:var(--a);color:var(--on);cursor:pointer}
+.bk-d.on{background:var(--btn,var(--a));color:var(--btn-fg,var(--on));border-color:var(--btn,var(--a))}
+.bk-b{font:inherit;font-weight:700;font-size:15.5px;margin-top:10px;padding:14px;border:0;border-radius:12px;background:var(--btn,var(--a));color:var(--btn-fg,var(--on));cursor:pointer}
 .bk-b:hover{filter:brightness(1.07)}
 .bk-n{font-size:12px;opacity:.7;margin:4px 0 0;text-align:center}
 `;
