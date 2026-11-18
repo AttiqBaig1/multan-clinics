@@ -11,6 +11,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
   const ph = pics(d, 1400);
   const ph2 = pics(d, 900);
   const at = (i: number) => ph2[i % Math.max(ph2.length, 1)];
+  const niche = d.nicheTitle.split(/[&,]/)[0].trim().replace(/\s+(clinic|center|centre|hospital)$/i, '') || d.nicheTitle;
   const rating = stats.find(s => /rating/i.test(s.l));
   const embed = `https://maps.google.com/maps?q=${encodeURIComponent(d.businessName + ', ' + d.address + ', ' + d.city)}&output=embed`;
   const scroll = (n: number) => rail.current?.scrollBy({ left: n * 300, behavior: 'smooth' });
@@ -27,10 +28,11 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
           <nav aria-label="Main"><a href="#tr">Treatments</a><a href="#ab">About</a><a href="#rv">Reviews</a><a href="#vs">Contact</a></nav>
           <a className="hbk" href={waUrl(d)} target="_blank" rel="noreferrer">Book now <I.ArrowRight size={16} /></a>
         </header>
+        <p className="tr6">Trusted {d.nicheTitle.toLowerCase()} in {d.city}, with modern technology and clear prices.</p>
         <div className="cont">
           <div className="ht">
-            <h1>{d.tagline}<span>with {d.doctorName}</span></h1>
-            <p>{d.doctorTitle}. {d.doctorExperience.replace(/[.\s]+$/, '')}.</p>
+            <h1>Modern {niche} with care for you</h1>
+            <p>{d.doctorName}, {d.doctorTitle}. {d.doctorExperience.replace(/[.\s]+$/, '')}.</p>
             <div className="pills">{d.services.slice(0, 6).map((s, i) => <a key={i} className={i === 0 ? 'on' : ''} href="#tr">{s.title.length > 30 ? s.title.slice(0, 28) + '…' : s.title}</a>)}</div>
           </div>
           <aside className="dcard">
@@ -43,7 +45,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
 
       <section className="sec" id="tr">
         <div className="two6" data-rv>
-          <div><small>Our treatments</small><h2>Care you can see, prices you can plan for</h2></div>
+          <div><small>Our treatments</small><h2>Discover our {niche} services</h2></div>
           <p>{d.nicheTitle} in {d.city} with clear prices. The final fee is confirmed by the doctor after examination. {d.consultationFee}.</p>
         </div>
         <div className="railrow">
@@ -67,11 +69,11 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
         <div className="ph" data-rv><Img src={at(2)} /><span>{d.city}</span></div>
         <div data-rv>
           <small>About the clinic</small>
-          <h2>Modern care with a personal touch</h2>
+          <h2>High standards of care and a personal approach</h2>
           <p>{d.doctorName} leads {d.businessName} in {d.city}. {d.doctorExperience}</p>
-          <a className="ol" href="#vs">Visit details <I.ArrowRight size={16} /></a>
+          <a className="ol" href="#vs">Details <I.ArrowRight size={16} /></a>
           <div className="mini">
-            <div><span className="av">{initials(d.doctorName)}</span><div><b>{d.doctorName}</b><em>{d.doctorTitle.split(',')[0]}</em></div></div>
+            <div><span className="av">{initials(d.doctorName)}</span><div><b>{d.doctorName}</b><em>{d.doctorTitle.split(',')[0]}</em><small>{'★★★★★'} {rating?.v || '5.0'}</small></div></div>
             <div><span className="av alt"><I.Clock size={18} /></span><div><b>Timings</b><em>{d.timings.split('(')[0].trim()}</em></div></div>
           </div>
         </div>
@@ -162,5 +164,15 @@ const CSS = `
 .visit{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:stretch;padding-bottom:10px}.visit iframe{width:100%;min-height:400px;height:100%;border:0;border-radius:26px;box-shadow:0 20px 44px rgba(15,31,46,.12)}
 .inf{display:flex;gap:14px;align-items:flex-start;background:#f6f9fb;border:1px solid var(--line);border-radius:18px;padding:16px 20px;margin-bottom:12px}.inf svg{color:var(--a);margin-top:3px;flex:none}.inf div{display:grid;font-size:14px}.inf b{font-size:12px;color:var(--a)}.inf span,.inf a{color:#475569}
 .t6 .x-sec{max-width:1240px}
-@media(max-width:900px){.hd6{padding:16px 18px}.hd6 nav{display:none}.cont{flex-direction:column;align-items:stretch;padding:28px 20px 22px}.dcard{min-width:0}.frame{min-height:640px}.shade{background:linear-gradient(0deg,rgba(9,36,46,.92) 20%,rgba(9,36,46,.45) 100%)}.two6,.about,.two,.visit,.bn{grid-template-columns:1fr}.two6{gap:12px}.railrow{grid-template-columns:1fr}.side{flex-direction:row;flex-wrap:wrap;align-items:center}.side p{display:none}.arrows{margin-left:auto}.sec{padding-top:60px}.ph{height:300px}.mini{grid-template-columns:1fr}.bn>div:first-child{padding:30px 24px}.stat6>div{border:0}}
+.t6 .ht h1{font-size:clamp(28px,3.6vw,46px);font-weight:600;text-transform:uppercase;line-height:1.12;letter-spacing:.005em}
+.ht p{font-size:15px;max-width:26em}
+.tr6{position:absolute;z-index:2;right:36px;top:34%;max-width:250px;margin:0;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88)}
+.pills{max-width:440px;gap:8px}.pills a{padding:9px 18px;font-size:13px;font-weight:500}
+.t6 .two6 h2,.t6 .about h2,.t6 .bn h2,.t6 .hd.l h2{font-size:clamp(24px,2.7vw,36px);font-weight:500;text-transform:uppercase;line-height:1.18;letter-spacing:.005em}
+.t6 small{color:#4b5d6c;font-weight:500}
+.t6 .sec{padding-top:72px}
+.mini small{display:block;color:#f59e0b;font-size:12px;letter-spacing:1px;margin-top:2px}
+.bn{background:linear-gradient(110deg,#e2eff1,#f1f7f8)}.bn .b.p{background:color-mix(in srgb,var(--a) 82%,#0b2430);padding:12px 22px;font-size:14px}
+.stat6 b{font-weight:700}
+@media(max-width:900px){.tr6{display:none}.hd6{padding:16px 18px}.hd6 nav{display:none}.cont{flex-direction:column;align-items:stretch;padding:28px 20px 22px}.dcard{min-width:0}.frame{min-height:640px}.shade{background:linear-gradient(0deg,rgba(9,36,46,.92) 20%,rgba(9,36,46,.45) 100%)}.two6,.about,.two,.visit,.bn{grid-template-columns:1fr}.two6{gap:12px}.railrow{grid-template-columns:1fr}.side{flex-direction:row;flex-wrap:wrap;align-items:center}.side p{display:none}.arrows{margin-left:auto}.sec{padding-top:60px}.ph{height:300px}.mini{grid-template-columns:1fr}.bn>div:first-child{padding:30px 24px}.stat6>div{border:0}}
 `;
