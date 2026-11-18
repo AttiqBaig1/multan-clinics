@@ -235,7 +235,7 @@ const Dashboard: React.FC = () => {
       <main className="main">
         <header className="hero">
           <h1>Lamba link nahi. <em>Sirf clinic ka naam.</em></h1>
-          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone aur address bharein, Generate dabayein — bas. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
+          <p>Har clinic ka saaf, chhota link — jaise <code>{host}/laser-eye-centre-multan</code>. Naam, doctor, qualification, phone aur address ek baar bharein, Generate dabayein — bas. Wahi data paanchon designs mein khud bhar jata hai, aur har design ke neeche chhota 1 2 3 4 5 switcher aata hai taake client saare options dekh sake. Koi account ya token nahi. Ek hi naam dobara aaye to naya link <code>-2</code> leta hai, purana kabhi nahi badalta.</p>
         </header>
 
         {/* ---------- 2. CLINICS ---------- */}

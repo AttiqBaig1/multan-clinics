@@ -35,6 +35,11 @@ export default function App() {
 
 function SiteApp() {
   const [activeData, setActiveData] = useState<ClinicTemplateData>(MULTAN_PRESETS[0]); // Default: Multan Dental Clinic
+
+  // Browser tab title follows the clinic that is on screen.
+  useEffect(() => {
+    if (activeData?.businessName) document.title = `${activeData.businessName} | ${activeData.nicheTitle}, ${activeData.city}`;
+  }, [activeData]);
   const [isGeneratorMode, setIsGeneratorMode] = useState<boolean>(false);
   const [showStudioNav, setShowStudioNav] = useState<boolean>(false);
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
