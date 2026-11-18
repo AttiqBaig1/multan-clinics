@@ -94,7 +94,7 @@ const CSS = `
 .c3-nav b{font-family:var(--hf);font-size:18px}.c3-nav a{text-decoration:none;font-weight:700;font-size:14px;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);border:1px solid var(--line)}
 .c3-in{position:relative;padding:130px max(20px,calc((100vw - 1240px)/2)) 44px}
 .c3-tag{margin:0 0 14px;font-weight:700;font-size:14px;color:color-mix(in srgb,var(--a) 45%,#fff)}
-.c3 h1{font-size:clamp(42px,9vw,128px);line-height:.95;font-weight:800;letter-spacing:-.04em;margin:0;max-width:13ch;text-wrap:balance}
+.c3 h1{font-size:clamp(40px,8vw,112px);line-height:1;font-weight:700;letter-spacing:-.03em;margin:0;max-width:13ch;text-wrap:balance}
 .c3-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .c3-b{display:inline-flex;gap:8px;align-items:center;padding:16px 28px;border-radius:999px;background:var(--a);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 14px 40px color-mix(in srgb,var(--a) 55%,transparent)}
 .c3-b.ghost{background:rgba(255,255,255,.1);border:1px solid var(--line);box-shadow:none;backdrop-filter:blur(8px)}
