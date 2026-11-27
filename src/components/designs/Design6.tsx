@@ -4,7 +4,7 @@ import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 6, Dental: photo hero inside a rounded frame, doctor card, service pills, photo service cards, about block, stats and a booking banner. */
 export const Design6: React.FC<{ d: D }> = ({ d }) => {
-  useFonts('family=Inter:wght@900&family=Manrope:wght@400;500;600;700;800');
+  useFonts('family=Plus+Jakarta+Sans:wght@700;800&family=Manrope:wght@400;500;600;700;800');
   const ref = useReveal();
   const rail = useRef<HTMLDivElement>(null);
   const stats = statsOf(d);
@@ -164,7 +164,7 @@ const CSS = `
 .visit{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:stretch;padding-bottom:10px}.visit iframe{width:100%;min-height:400px;height:100%;border:0;border-radius:26px;box-shadow:0 20px 44px rgba(15,31,46,.12)}
 .inf{display:flex;gap:14px;align-items:flex-start;background:#f6f9fb;border:1px solid var(--line);border-radius:18px;padding:16px 20px;margin-bottom:12px}.inf svg{color:var(--a);margin-top:3px;flex:none}.inf div{display:grid;font-size:14px}.inf b{font-size:12px;color:var(--a)}.inf span,.inf a{color:#475569}
 .t6 .x-sec{max-width:1240px}
-.t6 .ht h1{font-family:Inter,Manrope,sans-serif;font-size:clamp(32px,4.4vw,56px);font-weight:900;line-height:1.06;letter-spacing:-.035em;text-transform:none}.t6 .ht{max-width:620px}.t6 .ht h1 span{display:inline;margin:0}
+.t6 .ht h1{font-family:'Plus Jakarta Sans',Manrope,sans-serif;font-size:clamp(32px,4.4vw,56px);font-weight:800;line-height:1.1;letter-spacing:-.025em;text-transform:none}.t6 .ht{max-width:620px}.t6 .ht h1 span{display:inline;margin:0}
 .ht p{font-size:15px;max-width:26em}
 .tr6{position:absolute;z-index:2;right:36px;top:112px;max-width:250px;margin:0;padding:12px 16px;border-radius:16px;background:rgba(10,30,64,.55);backdrop-filter:blur(8px);font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88)}
 .pills{max-width:440px;gap:8px}.pills a{padding:9px 18px;font-size:13px;font-weight:500}

@@ -25,8 +25,17 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
             </div>
             <div className="n3-stats">{stats.map((s, i) => <div key={i}><b>{s.v}</b><span>{s.l}</span></div>)}</div>
           </div>
-          <BookingCard d={d} title="Book your visit" />
+          <div className="n3-arch">
+            <div className="n3-ar"><Img src={heroPics(d)[1] || heroPics(d)[0]} /></div>
+            <div className="n3-chip c1"><I.Star size={15} fill="#d9b26a" stroke="#d9b26a" /> <b>{stats[1]?.v || stats[0]?.v}</b> {stats[1]?.l}</div>
+            <div className="n3-chip c2"><I.Clock size={15} /> {d.timings.split('(')[0].trim()}</div>
+          </div>
         </div>
+      </section>
+
+      <section className="n3-sec n3-book" id="bk">
+        <div><p className="n3-kicker">Book your visit</p><h2>Pick a day and get a fixed token</h2><p>Send your request on WhatsApp. We confirm a time slot within minutes, so you skip the waiting room.</p></div>
+        <BookingCard d={d} title="Book your visit" />
       </section>
 
       <WhyUs d={d} />
@@ -93,10 +102,14 @@ const CSS = `
 .n3 *{box-sizing:border-box}.n3 h1,.n3 h2,.n3 h3{font-family:inherit}.n3 a{color:inherit}
 .n3 a:focus-visible,.n3 button:focus-visible{outline:3px solid var(--a);outline-offset:3px}
 .n3-hero{position:relative;overflow:hidden;background:radial-gradient(900px 520px at 88% 8%,color-mix(in srgb,var(--a) 60%,transparent),transparent),linear-gradient(180deg,#17120c,#0d0b09)}
-.n3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+.n3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;filter:grayscale(.5)}
 .n3-shade{position:absolute;inset:0;background:linear-gradient(90deg,#0d0b09 12%,rgba(13,11,9,.62) 62%,rgba(13,11,9,.25))}
 .n3-top{position:relative;display:flex;justify-content:space-between;align-items:center;max-width:1180px;margin:0 auto;padding:22px 24px}
 .n3-top a{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:700;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:999px}
+.n3-arch{position:relative;max-width:420px;width:100%;justify-self:center}.n3-ar{aspect-ratio:4/5;border-radius:999px 999px 30px 30px;overflow:hidden;border:2px solid #d9b26a;padding:10px;background:linear-gradient(160deg,#2a2013,#0d0b09);box-shadow:0 40px 80px rgba(0,0,0,.55),0 0 0 10px rgba(217,178,106,.1)}.n3-ar img{width:100%;height:100%;object-fit:cover;border-radius:990px 990px 22px 22px;display:block}
+.n3-chip{position:absolute;display:flex;gap:8px;align-items:center;background:rgba(18,14,9,.88);backdrop-filter:blur(10px);border:1px solid rgba(217,178,106,.5);border-radius:16px;padding:12px 18px;font-size:13.5px;color:#f1ece2;box-shadow:0 18px 40px rgba(0,0,0,.45)}.n3-chip b{font:800 20px 'Playfair Display',serif;color:#d9b26a}.n3-chip svg{color:#d9b26a}.n3-chip.c1{left:-34px;bottom:78px}.n3-chip.c2{right:-20px;top:46px}
+.n3-book{display:grid;grid-template-columns:1fr minmax(0,460px);gap:48px;align-items:center}.n3-book h2{margin-bottom:14px}.n3-book p{opacity:.78}
+@media(max-width:860px){.n3-book{grid-template-columns:1fr}.n3-chip.c1{left:-6px}.n3-chip.c2{right:-6px}.n3-arch{max-width:320px}}
 .n3-grid{position:relative;max-width:1180px;margin:0 auto;padding:44px 24px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
 .n3-tag{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--a) 28%,transparent);border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}
 .n3 h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(34px,5vw,64px);line-height:1.08;letter-spacing:-.015em;font-weight:900;margin:20px 0 0;max-width:15em;text-wrap:balance}.n3 h1 span{color:color-mix(in srgb,var(--a) 55%,#fff)}

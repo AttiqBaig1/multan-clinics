@@ -30,6 +30,7 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
           <div className="rate"><span>{'★★★★★'}</span><b>{stats[1]?.v || stats[0]?.v}</b><em>{stats[1]?.l || stats[0]?.l}</em></div>
         </div>
         <div className="r">
+          <div className="arch"><Img src={heroPics(d)[1] || heroPics(d)[0]} /></div>
           <div className="pop">
             <h3>Popular treatments</h3>
             {d.services.slice(0, 3).map((s, i) => (
@@ -102,7 +103,7 @@ const CSS = `
 .bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(210px,auto);gap:18px}.bento article{border:1px solid #e5e7eb;border-radius:26px;padding:26px;background:#fff;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(15,23,42,.05)}.bento article.big{grid-column:span 2;grid-row:span 2;background:linear-gradient(150deg,var(--a),color-mix(in srgb,var(--a) 55%,#0f172a));color:#fff;border:0;justify-content:flex-end}.bento article.big h3{font-size:30px;line-height:1.1;letter-spacing:-.02em}.bento article.big p{color:rgba(255,255,255,.85);font-size:16px}.bento article.big .ic{background:rgba(255,255,255,.2);color:#fff;margin-bottom:auto}.bento article.big .ft b{color:#fff;font-size:20px}.bento article.big .ft a{background:#fff;color:#0f172a}.bento article.wide{grid-column:span 2}.bento h3{margin:14px 0 6px}.bento p{margin:0 0 18px;color:#64748b;flex:1;font-size:14.5px}.bento .ft{display:flex;justify-content:space-between;align-items:center;gap:10px}
 @media(max-width:900px){.bento{grid-template-columns:1fr 1fr}.bento article.big{grid-column:span 2;grid-row:auto;min-height:260px}}
 @media(max-width:560px){.bento{grid-template-columns:1fr}.bento article.big,.bento article.wide{grid-column:auto}}
-.hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.8}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.9) 34%,rgba(248,250,252,.25) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
+.hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.1}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.9) 34%,rgba(248,250,252,.25) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
 .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}.b1{width:420px;height:420px;left:-120px;top:-60px;background:color-mix(in srgb,var(--a) 22%,transparent)}.b2{width:380px;height:380px;right:-60px;bottom:0;background:color-mix(in srgb,var(--a) 14%,#a78bfa 20%)}
 .l,.r{position:relative;z-index:1}
 .pill{display:inline-flex;gap:7px;align-items:center;padding:7px 15px;border-radius:999px;background:#fff;border:1px solid #e2e8f0;font-size:13px;font-weight:600;color:var(--a);box-shadow:0 1px 2px rgba(15,23,42,.05)}
@@ -112,7 +113,10 @@ const CSS = `
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.b{display:inline-flex;gap:8px;align-items:center;padding:15px 28px;border-radius:16px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .2s}.b:hover{transform:translateY(-2px)}
 .b.p{background:var(--a);color:#fff!important;box-shadow:0 14px 30px color-mix(in srgb,var(--a) 35%,transparent)}.b.s{background:#fff;border:1px solid #e2e8f0;color:var(--ink)!important}
 .rate{display:flex;gap:10px;align-items:center;margin-top:34px;font-size:14px}.rate span{color:#f59e0b;letter-spacing:2px}.rate b{font-size:18px}.rate em{font-style:normal;color:#64748b}
-.pop{background:#fff;border:1px solid #e2e8f0;border-radius:28px;padding:26px;box-shadow:0 30px 60px rgba(15,23,42,.1)}.pop h3{margin:0 0 14px;font-size:18px;font-weight:800}
+.r{position:relative}.arch{width:82%;margin-left:auto;aspect-ratio:4/5;border-radius:999px 999px 34px 34px;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 30%,#fff),#e2e8f0);box-shadow:0 40px 80px rgba(15,23,42,.18)}.arch img{width:100%;height:100%;object-fit:cover;display:block}
+.r .pop{position:absolute;left:-70px;bottom:24px;width:min(300px,78%);padding:16px;box-shadow:0 30px 70px rgba(15,23,42,.22)}
+@media(max-width:900px){.arch{width:70%;margin:0 auto}.r .pop{position:relative;left:auto;bottom:auto;width:100%;margin-top:-60px}}
+.pop{background:#fff;border:1px solid #e2e8f0;border-radius:28px;padding:26px;box-shadow:0 30px 60px rgba(15,23,42,.1)}.pop h3{margin:0 0 8px;font-size:17px;font-weight:800}
 .pop a{display:flex;gap:14px;align-items:center;padding:14px;border-radius:18px;text-decoration:none;transition:background .2s}.pop a:hover{background:#f1f5f9}.pop a>svg{margin-left:auto;color:#94a3b8;flex:none}
 .pop i,.ic{width:46px;height:46px;border-radius:15px;background:color-mix(in srgb,var(--a) 12%,#fff);color:var(--a);display:grid;place-items:center;flex:none}.pop span{display:grid}.pop b{font-size:15px;font-weight:700;line-height:1.3}.pop em{font-style:normal;font-size:13.5px;color:var(--a);font-weight:700}
 .fee{display:flex;gap:8px;align-items:center;margin-top:12px;padding:12px 16px;border-radius:14px;background:#f1f5f9;font-size:13.5px;font-weight:600;color:#475569}
