@@ -1,6 +1,6 @@
 import React from 'react';
 import { WhyUs, CostEstimator, Steps, FindUs, CallBand, FooterCols, SECTIONS_CSS } from './Sections';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, pics, accentOf, galleryOf, initials, mapUrl, shortName, statsOf, telUrl, useFonts, waUrl } from './shared';
+import { D, heroPics, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, ServiceIcon, pics, accentOf, galleryOf, initials, mapUrl, shortName, statsOf, telUrl, useFonts, waUrl } from './shared';
 
 /** Design 3, Night Suite: dark, cinematic. Photo-led service tiles, glowing accent, glass booking card, big doctor feature. */
 export const Design3: React.FC<{ d: D }> = ({ d }) => {
@@ -11,7 +11,7 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
     <div className="n3" style={{ ['--a' as string]: accentOf(d) }}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}</style>
       <section className="n3-hero">
-        <Img src={d.heroImage || pics(d, 1600)[1] || pics(d, 1600)[0]} className="n3-bg" />
+        <Img src={heroPics(d)[0]} className="n3-bg" />
         <div className="n3-shade" />
         <header className="n3-top"><b>{d.businessName}</b><a href={telUrl(d)}><I.Phone size={15} /> {d.phone}</a></header>
         <div className="n3-grid">

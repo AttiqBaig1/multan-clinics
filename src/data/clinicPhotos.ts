@@ -30,3 +30,15 @@ const ALIAS: Record<string, string> = {
 export const PHOTO_GROUPS = Object.keys(P);
 export const photosFor = (niche: string, w = 1400): string[] =>
   (P[niche] || P[ALIAS[niche]] || P.general).map(id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${w}`);
+
+/** Best hero photo per speciality (index among photos that are not plain clinic interiors). Others follow in order. */
+const HERO_PICK: Record<string, number> = { general: 0, dental: 1, skin: 1, cardio: 1, gynae: 1, lab: 2, psych: 1 };
+export const heroPhotos = (niche: string, w = 1600): string[] => {
+  const key = P[niche] ? niche : (ALIAS[niche] || 'general');
+  const all = P[key] || P.general;
+  const people = all.filter(id => !HERO.includes(id));
+  const pool = people.length ? people : all;
+  const k = Math.min(HERO_PICK[key] ?? 0, pool.length - 1);
+  const ordered = [pool[k], ...pool.filter((_, i) => i !== k), ...all.filter(id => !pool.includes(id))];
+  return ordered.map(id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${w}`);
+};

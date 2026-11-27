@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, heroPics, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 4, Daylight: light and airy, gradient headline, floating popular-treatments card, icon tiles, dark doctor block. */
@@ -12,7 +12,7 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
   return (
     <div className="t4" ref={ref} style={{ ['--a' as string]: accentOf(d) }}>
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
-      <div className="hw"><div className="hbg4"><Img src={pics(d, 1600)[0]} /></div>
+      <div className="hw"><div className="hbg4"><Img src={heroPics(d)[0]} /></div>
       <header className="nav"><b><i><ServiceIcon name={icon(0)} size={18} /></i>{d.businessName}</b>
         <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>
         <a className="call" href={telUrl(d)}><I.Phone size={15} /> {d.phone}</a></header>

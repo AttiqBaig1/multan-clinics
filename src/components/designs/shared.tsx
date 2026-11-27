@@ -23,6 +23,8 @@ export const statsOf = (d: D) => {
 };
 
 /** Speciality photos from the curated pool (hero first). */
+import { heroPhotos } from '../../data/clinicPhotos';
+export const heroPics = (d: D, w = 1600) => heroPhotos(d.niche, w);
 export const pics = (d: D, w = 1400) => photosFor(d.niche, w);
 export const galleryOf = (d: D): { src: string; label: string }[] =>
   pics(d, 900).map((src, i) => ({ src, label: ['', 'Our clinic', 'Care and technology', 'Patient comfort'][i] || d.nicheTitle }));

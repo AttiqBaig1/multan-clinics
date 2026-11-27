@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, heroPics, accentOf, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 6, Dental: photo hero inside a rounded frame, doctor card, service pills, photo service cards, about block, stats and a booking banner. */
@@ -21,7 +21,7 @@ export const Design6: React.FC<{ d: D }> = ({ d }) => {
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
 
       <section className="frame">
-        <div className="bg"><Img src={ph[1] || ph[0]} /></div>
+        <div className="bg"><Img src={heroPics(d)[0]} /></div>
         <div className="shade" />
         <header className="hd6">
           <a className="lg" href="#top"><i><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={20} /></i><b>{d.businessName}</b></a>

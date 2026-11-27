@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, nextDays, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, heroPics, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, RV_CSS, ServiceIcon, Img, pics, accentOf, initials, nextDays, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 5, Vivid: full-colour gradient hero, white sheet rising over it, swipeable treatment cards, review slider. */
@@ -19,7 +19,7 @@ export const Design5: React.FC<{ d: D }> = ({ d }) => {
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
 
       <div className="top">
-        <div className="tbg"><Img src={pics(d, 1600)[1] || pics(d, 1600)[0]} /></div>
+        <div className="tbg"><Img src={heroPics(d)[0]} /></div>
         <i className="o o1" /><i className="o o2" />
         <header className="nav"><b><span><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={17} /></span>{d.businessName}</b>
           <nav><a href="#tr">Treatments</a><a href="#dr">Doctor</a><a href="#rv">Reviews</a><a href="#vs">Visit</a></nav>

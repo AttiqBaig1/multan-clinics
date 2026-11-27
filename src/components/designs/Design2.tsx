@@ -1,5 +1,5 @@
 import React from 'react';
-import { D, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
+import { D, heroPics, BOOKING_CSS, BookingCard, FaqList, FloatingWA, FWA_CSS, I, Img, RV_CSS, ServiceIcon, initials, pics, statsOf, telUrl, useFonts, useReveal, waUrl, mapUrl } from './shared';
 import { CostEstimator, FooterCols, SECTIONS_CSS } from './Sections';
 
 /** Design 2, Academy: dark teal hero with centred headline, glass stat chips, 3 steps, photo cards (locked from the Nishtar Academy page). */
@@ -17,7 +17,7 @@ export const Design2: React.FC<{ d: D }> = ({ d }) => {
     <div className="t2" ref={ref} id="top">
       <style>{CSS}{BOOKING_CSS}{FWA_CSS}{SECTIONS_CSS}{RV_CSS}</style>
       <section className="hero">
-        <div className="hbg"><Img src={pics(d, 1600)[0]} /></div>
+        <div className="hbg"><Img src={(heroPics(d)[1] || heroPics(d)[0])} /></div>
         <div className="glow" />
         <header className="hdr">
           <a className="logo" href="#top"><span><ServiceIcon name={d.services[0]?.icon || 'Stethoscope'} size={20} /></span><b>{d.businessName}</b></a>
