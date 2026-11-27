@@ -1,7 +1,7 @@
 /** Curated Unsplash photos per speciality (first one is the hero). Bright, clean, no stock doctor face passed off as the clinic's doctor. */
 const P: Record<string, string[]> = {
   general: ['1758691463333-c79215e8bc3b', '1762625570087-6d98fca29531', '1777269749032-d8d458ae594d', '1758691463331-2ac00e6f676f'],
-  dental: ['1598256989800-fe5f95da9787', '1777331903190-341a3dd0441b', '1593022356769-11f762e25ed9', '1606811971618-4486d14f3f99'],
+  dental: ['1777331903190-341a3dd0441b', '1674775372064-8c75d3f8c757', '1663755489920-5e09f66d011a', '1674775372058-c4c8813c6611', '1593022356769-11f762e25ed9', '1606811971618-4486d14f3f99', '1598256989800-fe5f95da9787'],
   eye: ['1766310549795-dd0fc75d499f', '1539036776273-021ec1d78bec', '1576210117723-cd06449a467d', '1549872901-c350913bd5cb'],
   skin: ['1731514771613-991a02407132', '1713085085470-fba013d67e65', '1761718210089-ba3bb5ccb54f', '1616394584738-fc6e612e71b9'],
   physio: ['1649751361457-01d3a696c7e6', '1706353399656-210cca727a33', '1668422550557-f096364b72b4', '1709880754472-be89c13abc52'],
@@ -32,7 +32,7 @@ export const photosFor = (niche: string, w = 1400): string[] =>
   (P[niche] || P[ALIAS[niche]] || P.general).map(id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${w}`);
 
 /** Best hero photo per speciality (index among photos that are not plain clinic interiors). Others follow in order. */
-const HERO_PICK: Record<string, number> = { general: 0, dental: 1, skin: 1, cardio: 1, gynae: 1, lab: 2, psych: 1 };
+const HERO_PICK: Record<string, number> = { general: 0, dental: 0, skin: 1, cardio: 1, gynae: 1, lab: 2, psych: 1 };
 export const heroPhotos = (niche: string, w = 1600): string[] => {
   const key = P[niche] ? niche : (ALIAS[niche] || 'general');
   const all = P[key] || P.general;
