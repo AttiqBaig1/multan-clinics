@@ -6,6 +6,7 @@ import { Design3 } from './components/designs/Design3';
 import { Design4 } from './components/designs/Design4';
 import { Design5 } from './components/designs/Design5';
 import { Design6 } from './components/designs/Design6';
+import { enrichClinic } from './components/designs/shared';
 import { DesignSwitcher } from './components/designs/DesignSwitcher';
 import { DesignOptions } from './components/designs/DesignOptions';
 import { ClinicTemplateData, MULTAN_PRESETS } from './data/multanTemplates';
@@ -409,7 +410,7 @@ function SiteApp() {
           const n = v === '2' || v === '3' || v === '4' || v === '5' || v === '6' ? Number(v) : 1;
           return (
             <>
-              {n === 2 ? <Design2 d={activeData} /> : n === 3 ? <Design3 d={activeData} /> : n === 4 ? <Design4 d={activeData} /> : n === 5 ? <Design5 d={activeData} /> : n === 6 ? <Design6 d={activeData} /> : <DynamicClinicPage data={activeData} isStandalone />}
+              {n === 2 ? <Design2 d={enrichClinic(activeData)} /> : n === 3 ? <Design3 d={enrichClinic(activeData)} /> : n === 4 ? <Design4 d={enrichClinic(activeData)} /> : n === 5 ? <Design5 d={enrichClinic(activeData)} /> : n === 6 ? <Design6 d={enrichClinic(activeData)} /> : <DynamicClinicPage data={activeData} isStandalone />}
               <DesignSwitcher current={n} />
             </>
           );

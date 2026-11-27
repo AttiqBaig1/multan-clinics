@@ -198,3 +198,17 @@ export const FaqList: React.FC<{ d: D; wrap?: string }> = ({ d, wrap = 'faq' }) 
     </div>
   );
 };
+
+
+/** Designs 2-6 only: top up thin content so every clinic page feels complete. Facts come from the clinic's own data. */
+export const enrichClinic = (d: D): D => {
+  const more: { q: string; a: string }[] = [
+    { q: 'How much is the consultation fee?', a: `${d.consultationFee}. The doctor confirms any treatment cost after examination, so there are no surprises.` },
+    { q: 'What are the clinic timings?', a: `${d.timings}. Message us on WhatsApp to get a fixed token and avoid waiting.` },
+    { q: 'Where is the clinic?', a: `${d.businessName} is at ${d.address}, ${d.city}. Use the Directions button to open the map.` },
+    { q: 'Do I need to book in advance?', a: 'Booking is recommended. Pick a day on this page and send the request on WhatsApp. We reply with your token.' },
+  ];
+  const have = new Set(d.faqs.map(f => f.q));
+  const faqs = [...d.faqs, ...more.filter(f => !have.has(f.q))].slice(0, Math.max(4, d.faqs.length));
+  return { ...d, faqs };
+};
