@@ -47,12 +47,18 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
 
       <section className="sec" id="tr">
         <div className="hd" data-rv><small>Treatments and prices</small><h2>Clear care, clear prices</h2><p>The final fee is confirmed by the doctor after examination.</p></div>
-        <div className="grid">{d.services.map((s, i) => (
-          <article key={i} data-rv>
-            <i className="ic"><ServiceIcon name={s.icon} size={26} /></i>
+        <div className="bento">{d.services.map((s, i) => (
+          <article key={i} className={i === 0 ? 'big' : d.services.length === 4 && i === 3 ? 'wide' : ''} data-rv>
+            <i className="ic"><ServiceIcon name={s.icon} size={i === 0 ? 34 : 26} /></i>
             <h3>{s.title}</h3><p>{s.desc}</p>
             <div className="ft"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d)} target="_blank" rel="noreferrer">Book <I.ArrowRight size={14} /></a></div>
           </article>))}</div>
+      </section>
+
+      <section className="sec" id="rv">
+        <div className="hd" data-rv><small>Patient feedback</small><h2>Trusted in {d.city}</h2></div>
+        <div className="revs">{d.testimonials.slice(0, 3).map((t, i) => (
+          <figure key={i} data-rv><span className="q">“</span><blockquote>{t.comment}</blockquote><figcaption><b>{t.name}</b>{t.role}</figcaption></figure>))}</div>
       </section>
 
       <section className="sec" id="dr"><div className="doc" data-rv>
@@ -64,12 +70,6 @@ export const Design4: React.FC<{ d: D }> = ({ d }) => {
         <div className="hd" data-rv><small>Your first visit</small><h2>Three simple steps</h2></div>
         <div className="steps">{['Message us on WhatsApp', 'Get your fixed token', 'Walk in and be seen'].map((t, i) => (
           <div key={i} data-rv><span>{i + 1}</span><h3>{t}</h3><p>{[`Tell us the treatment and the day. ${d.timings}.`, 'We confirm a time slot within minutes, so you do not queue.', `Visit ${d.address}. The doctor sees you on time.`][i]}</p></div>))}</div>
-      </section>
-
-      <section className="sec" id="rv">
-        <div className="hd" data-rv><small>Patient feedback</small><h2>Trusted in {d.city}</h2></div>
-        <div className="revs">{d.testimonials.slice(0, 3).map((t, i) => (
-          <figure key={i} data-rv><span className="q">“</span><blockquote>{t.comment}</blockquote><figcaption><b>{t.name}</b>{t.role}</figcaption></figure>))}</div>
       </section>
 
       <CostEstimator d={d} />
@@ -99,6 +99,9 @@ const CSS = `
 .nav nav{display:flex;gap:26px;font-size:14.5px;font-weight:500;color:#475569}.nav nav a{text-decoration:none}.nav nav a:hover{color:var(--ink)}
 .call{display:inline-flex;gap:8px;align-items:center;background:#0f172a;color:#fff!important;padding:10px 20px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none}
 .hero{position:relative;max-width:1240px;margin:0 auto;padding:40px 20px 80px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(210px,auto);gap:18px}.bento article{border:1px solid #e5e7eb;border-radius:26px;padding:26px;background:#fff;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(15,23,42,.05)}.bento article.big{grid-column:span 2;grid-row:span 2;background:linear-gradient(150deg,var(--a),color-mix(in srgb,var(--a) 55%,#0f172a));color:#fff;border:0;justify-content:flex-end}.bento article.big h3{font-size:30px;line-height:1.1;letter-spacing:-.02em}.bento article.big p{color:rgba(255,255,255,.85);font-size:16px}.bento article.big .ic{background:rgba(255,255,255,.2);color:#fff;margin-bottom:auto}.bento article.big .ft b{color:#fff;font-size:20px}.bento article.big .ft a{background:#fff;color:#0f172a}.bento article.wide{grid-column:span 2}.bento h3{margin:14px 0 6px}.bento p{margin:0 0 18px;color:#64748b;flex:1;font-size:14.5px}.bento .ft{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media(max-width:900px){.bento{grid-template-columns:1fr 1fr}.bento article.big{grid-column:span 2;grid-row:auto;min-height:260px}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.bento article.big,.bento article.wide{grid-column:auto}}
 .hw{position:relative;overflow:hidden}.hbg4{position:absolute;inset:0}.hbg4 img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;opacity:.8}.hbg4:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#f8fafc 0%,rgba(248,250,252,.9) 34%,rgba(248,250,252,.25) 100%),linear-gradient(0deg,#f8fafc 0%,transparent 22%)}
 .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}.b1{width:420px;height:420px;left:-120px;top:-60px;background:color-mix(in srgb,var(--a) 22%,transparent)}.b2{width:380px;height:380px;right:-60px;bottom:0;background:color-mix(in srgb,var(--a) 14%,#a78bfa 20%)}
 .l,.r{position:relative;z-index:1}

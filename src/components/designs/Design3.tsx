@@ -31,21 +31,6 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
 
       <WhyUs d={d} />
 
-      <section className="n3-sec">
-        <h2>Treatments</h2>
-        <div className="n3-tiles">
-          {d.services.map((s, i) => (
-            <article key={i} className="n3-tile">
-              <div className="n3-tph"><Img src={pic(i)} /><span className="n3-ti"><ServiceIcon name={s.icon} /></span></div>
-              <div className="n3-tb"><h3>{s.title}</h3><p>{s.desc}</p>
-                <div className="n3-row"><b>{s.price || 'Ask at clinic'}</b><a href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer">Enquire</a></div></div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <CostEstimator d={d} />
-
       <section className="n3-sec n3-doc">
         <div className="n3-dph"><Img src={d.doctorImage} /><span>{initials(d.doctorName)}</span></div>
         <div>
@@ -56,6 +41,22 @@ export const Design3: React.FC<{ d: D }> = ({ d }) => {
           <ul>{d.badges.map((b, i) => <li key={i}><I.ShieldCheck size={18} /> {b}</li>)}</ul>
         </div>
       </section>
+
+      <section className="n3-sec" id="tr">
+        <h2>Treatments and prices</h2>
+        <div className="n3-menu">
+          {d.services.map((s, i) => (
+            <a key={i} className="n3-mi" href={waUrl(d, `Mujhe ${s.title} ke baare mein poochna hai.`)} target="_blank" rel="noreferrer">
+              <span className="n3-mn">{String(i + 1).padStart(2, '0')}</span>
+              <span className="n3-mt"><b>{s.title}</b><em>{s.desc}</em></span>
+              <span className="n3-mp">{s.price || 'Ask at clinic'}</span>
+              <span className="n3-mg"><I.ArrowRight size={18} /></span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <CostEstimator d={d} />
 
       <Steps d={d} />
 
@@ -111,6 +112,9 @@ const CSS = `
 .n3-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
 .n3-tile{border-radius:22px;overflow:hidden;background:#0e1c31;border:1px solid var(--line);display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
 .n3-tile:hover{transform:translateY(-4px);border-color:var(--a)}
+.n3-menu{display:grid;border-top:1px solid var(--line)}.n3-mi{display:grid;grid-template-columns:56px 1fr auto 44px;gap:18px;align-items:center;padding:22px 8px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;transition:background .2s,padding .2s}.n3-mi:hover{background:color-mix(in srgb,var(--a) 10%,transparent);padding-left:18px}
+.n3-mn{font:900 26px Inter,sans-serif;color:color-mix(in srgb,var(--a) 60%,#fff);opacity:.9}.n3-mt b{display:block;font-size:20px;letter-spacing:-.01em}.n3-mt em{display:block;font-style:normal;opacity:.68;font-size:14.5px;margin-top:4px}.n3-mp{font-weight:800;font-size:17px;color:color-mix(in srgb,var(--a) 50%,#fff);white-space:nowrap}.n3-mg{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center}
+@media(max-width:700px){.n3-mi{grid-template-columns:36px 1fr;gap:10px}.n3-mp{grid-column:2}.n3-mg{display:none}}
 .n3-tph{position:relative;height:170px;background:linear-gradient(140deg,color-mix(in srgb,var(--a) 55%,#0b1a2e),#0b1a2e)}
 .n3-tph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
 .n3-tph:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,#0e1c31)}
